@@ -10,9 +10,9 @@ class Driver extends Model
     /** @use HasFactory<\Database\Factories\DriverFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'image',
-        'active_since',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'image',
+    //     'active_since',
+    // ];
 }
