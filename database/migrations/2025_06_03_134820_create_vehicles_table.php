@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('engine_cc');
             $table->string('transmission_type');
             $table->string('type');
+            $table->string('vehicle_category');
+            $table->string('vehicle_location');
             $table->timestamps();
         });
     }
