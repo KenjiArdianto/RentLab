@@ -5,19 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Driver extends Model
+class TransactionStatus extends Model
 {
-    /** @use HasFactory<\Database\Factories\DriverFactory> */
+    /** @use HasFactory<\Database\Factories\TransactionStatusFactory> */
     use HasFactory;
 
-    public function location() 
-    {
-        return $this->belongsTo(Location::class);
-    }
-    
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
-
 }
