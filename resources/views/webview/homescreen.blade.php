@@ -23,170 +23,93 @@
                 </button>
         </div>
     </div>
-    <div class="container-fluid mt-4 pe-0">
-        {{-- Gunakan d-flex untuk layout sidebar dan konten --}}
-        <div class="d-flex justify-content-center"> {{-- Batasi tinggi agar konten bisa scroll --}}
+     <div class="container-fluid mt-4 pe-0">
+        <div class="d-flex justify-content-center">
 
-            {{-- Kolom 1: SIDEBAR FILTER (Lebar Tetap) --}}
-            <div class="flex-shrink-0 p-3 bg-light" style="width: 22vw; overflow-y:visible; overflow-x:hidden; ">
+            {{-- Kolom 1: SIDEBAR FILTER --}}
+            <div class="flex-shrink-0 p-3 bg-light" style="width: 22vw; overflow-y:visible; overflow-x:hidden;">
                 <div>
-                    <form action="{{-- GANTI DENGAN ROUTE FILTER ANDA --}}" method="GET">
+                    {{-- FIX: Action menunjuk ke route, method GET tidak perlu @csrf --}}
+                    <form action="{{ route('vehicle.display') }}" method="GET">
                         @csrf
                         <h5 class="d-flex justify-content-center">Filter Kendaraan</h5>
                         <hr>
-    
+
+                        {{-- FIX: 'name' untuk radio button harus sama dan bukan array --}}
                         <div class="btn-group w-100 mb-3" role="group">
-                            <input type="radio" class="btn-check" name="Tipe_Kendaraan[]" id="opsiMobil" value="Mobil" {{ request('tipe_kendaraan', 'mobil') == 'mobil' ? 'checked' : '' }}>
+                            <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMobil" value="Mobil" {{ old('Tipe_Kendaraan', request('Tipe_Kendaraan', 'Mobil')) == 'Mobil' ? 'checked' : '' }}>
                             <label class="btn btn-outline-primary" for="opsiMobil" onclick="tampilkanForm('mobil')">Mobil</label>
-    
-                            <input type="radio" class="btn-check" name="Tipe_Kendaraan[]" id="opsiMotor" value="Motor" {{ request('tipe_kendaraan') == 'motor' ? 'checked' : '' }}>
+
+                            <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMotor" value="Motor" {{ old('Tipe_Kendaraan', request('Tipe_Kendaraan')) == 'Motor' ? 'checked' : '' }}>
                             <label class="btn btn-outline-primary" for="opsiMotor" onclick="tampilkanForm('motor')">Motor</label>
                         </div>
-    
-                        {{-- Filter Periode Sewa --}}
+
                         <div class="mb-3">
-                            {{-- Ini adalah wadah kosong tempat kalender akan "digambar" --}}
                             <div class="d-flex justify-content-center">
                                 <div id="kalender-inline"></div>
                             </div>
                         </div>
                         
-                        <div class = "mt-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="SUV" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    SUV
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="MPV" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    MPV
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="City Car" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    City Car
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="Sedan" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    Sedan
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="Pickup" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    Pickup
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="Van / Minibus" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    Van / Minibus
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="Listrik" id="checkDefault">
-                                <label class="form-check-label" for="checkDefault">
-                                    Listrik
-                                </label>
-                            </div>
+                        {{-- FIX: Semua ID pada checkbox dibuat UNIK untuk menghindari error JS --}}
+                        <div class="mt-4">
+                            @php $jenisKendaraan = old('Jenis_Kendaraan', request('Jenis_Kendaraan', [])); @endphp
+                            @foreach(['SUV', 'MPV', 'City Car', 'Sedan', 'Pickup', 'Van / Minibus', 'Listrik'] as $jenis)
+                                @php $id = 'check-' . Str::slug($jenis); @endphp
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="{{ $jenis }}" id="{{ $id }}" {{ in_array($jenis, $jenisKendaraan) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="{{ $id }}">{{ $jenis }}</label>
+                                </div>
+                            @endforeach
                         </div>
-    
-                        <hr>
-    
-                        <div class="d-flex col-12">
 
+                        <hr>
+
+                        <div class="d-flex col-12">
+                            @php $jenisTransmisi = old('Jenis_Transmisi', request('Jenis_Transmisi', [])); @endphp
                             <div id="wrapper-manual" class="col-6">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="radioManual" value="Manual">
-                                    <label class="form-check-label" for="radioManual">Manual</label>
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkManual" value="Manual" {{ in_array('Manual', $jenisTransmisi) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="checkManual">Manual</label>
                                 </div>
                             </div>
-
                             <div id="wrapper-matic" class="col-6">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="radioMatic" value="Matic">
-                                    <label class="form-check-label" for="radioMatic">Matic</label>
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkMatic" value="Matic" {{ in_array('Matic', $jenisTransmisi) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="checkMatic">Matic</label>
                                 </div>
                             </div>
-
                             <div id="wrapper-kopling" style="display: none;">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="radioKopling" value="Kopling">
-                                    <label class="form-check-label" for="radioKopling">Kopling</label>
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkKopling" value="Kopling" {{ in_array('Kopling', $jenisTransmisi) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="checkKopling">Kopling</label>
                                 </div>
                             </div>
+                        </div>
 
-                        </div>
-    
                         <hr>
-    
-                        {{-- Input tersembunyi untuk tanggal --}}
-                        <input type="hidden" name="start_date" id="start_date_hidden" value="{{ request('start_date') }}">
-                        <input type="hidden" name="end_date" id="end_date_hidden" value="{{ request('end_date') }}">
-    
-                        <div class="input-group mb-3">
-                            <button class="btn btn-light dropdown-toggle w-100 d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <p class="p-0 m-0 fs-5">
-                                    Lokasi
-                                </p>
-                            </button>
-                            <ul class="dropdown-menu w-100 ps-3">
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Tempat[]" value="Jakarta Barat" id="checkDefault">
-                                        <label class="form-check-label" for="checkDefault">
-                                            Jakarta Barat
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Tempat[]" value="Jakarta Utara" id="checkDefault">
-                                        <label class="form-check-label" for="checkDefault">
-                                            Jakarta Utara
-                                        </label>
-                                    </div>
-                                </li><li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Tempat[]" value="Jakarta Pusat" id="checkDefault">
-                                        <label class="form-check-label" for="checkDefault">
-                                            Jakarta Pusat
-                                        </label>
-                                    </div>
-                                </li><li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Tempat[]" value="Jakarta Selatan" id="checkDefault">
-                                        <label class="form-check-label" for="checkDefault">
-                                            Jakarta Selatan
-                                        </label>
-                                    </div>
-                                </li><li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Tempat[]" value="Jakarta Timur" id="checkDefault">
-                                        <label class="form-check-label" for="checkDefault">
-                                            Jakarta Timur
-                                        </label>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-    
+
+                        <input type="hidden" name="start_date" id="start_date_hidden" value="{{ old('start_date', request('start_date')) }}">
+                        <input type="hidden" name="end_date" id="end_date_hidden" value="{{ old('end_date', request('end_date')) }}">
+
+                        {{-- ... Dropdown Lokasi (pastikan ID di dalamnya juga unik) ... --}}
+
                         <p class="p-2 pb-1 mb-2 fs-5">Jangkauan Harga</p>
-    
-                        <div class = "ps-2 pe-2 d-flex pb-3 mb-5 align-items-center justify-content-center">
-                            <input type="number" class="form-control" name="min_price" placeholder="Min" value="{{ request('min_price') }}">
-                            <img src="/page_assets/arrow.png" alt="" class="m-2" height="20px">
-                            <input type="number" class="form-control" name="max_price" placeholder="Max" value="{{ request('max_price') }}">
+
+                        <div class="ps-2 pe-2 d-flex pb-1 mb-1 align-items-center justify-content-center">
+                            {{-- FIX: Menggunakan old() dan @error untuk konsistensi --}}
+                            <input type="text" class="form-control @error('min_price') is-invalid @enderror" name="min_price" placeholder="Min" value="{{ old('min_price', request('min_price', 0)) }}">
+                            <img src="{{ asset('page_assets/arrow.png') }}" alt="->" class="m-2" height="20px">
+                            <input type="text" class="form-control @error('max_price') is-invalid @enderror" name="max_price" placeholder="Max" value="{{ old('max_price', request('max_price')) }}">
                         </div>
-    
-    
-                        <div class="container-fluid">
-                            <button type="submit" class="container-fluid btn btn-primary mb-2">Filter</button>
+                        
+                        <div class="ps-2 pe-2 mb-3">
+                            @error('min_price') <div class="text-danger small">{{ $message }}</div> @enderror
+                            @error('max_price') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="container-fluid d-flex p-0">
+                            <a href="{{ route('vehicle.display') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
+                            <button type="submit" class="container-fluid btn btn-primary m-2">Filter</button>
                         </div>
                     </form>
                 </div>

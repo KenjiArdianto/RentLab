@@ -34,7 +34,7 @@
 <a href="{{ $href }}" class="text-decoration-none d-block">
     <div class="mt-2 m-1 border border-dark rounded-3">
         <span>
-            <img src="{{$vehicle_item->image}}" alt="" class = "rounded-top" style="width: 100%; aspect-ratio: 3 / 2; ">
+            <img src="{{$vehicle_item->image}}" alt="" class = "rounded-top" style="width: 100%; aspect-ratio: 3 / 1.75; ">
         </span>
     
         {{-- <hr class = "p-0 mt-2 mb-1"> --}}

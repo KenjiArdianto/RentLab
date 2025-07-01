@@ -10,60 +10,42 @@ class VehicleController extends Controller
 {
     public function display(Request $request)
     {
-        // 1. Mulai dengan query builder, bukan langsung get() atau paginate()
-        $query = Vehicle::query();
-
-        // 2. Terapkan filter satu per satu jika ada inputnya
-
-        // Filter berdasarkan Tipe Kendaraan (Mobil/Motor)
-        if ($request->filled('Tipe_Kendaraan')) {
-            // Asumsi di database Anda ada kolom 'type' atau sejenisnya
-            $query->where('type', $request->input('Tipe_Kendaraan'));
+        if (!$request->filled('min_price')) {
+            $request->merge(['min_price' => 0]);
         }
+        
+        $validatedData = $request->validate([
+            'Tipe_Kendaraan'    => 'nullable|string|in:Mobil,Motor', // Contoh validasi
+            'Jenis_Kendaraan'   => 'nullable',
+            'Jenis_Transmisi'   => 'nullable',
+            'Tempat'            => 'nullable',
+            'min_price'         => 'required|numeric|gte:0', // 'required' karena sudah kita pastikan ada di atas
+            'max_price'         => 'nullable|numeric|gte:min_price'
+        ]);
 
-        // Filter berdasarkan Jenis Kendaraan (SUV, MPV, dll) - ini adalah array dari checkbox
-        if ($request->filled('Jenis_Kendaraan')) {
-            // Asumsi nama kolomnya 'category'
-            $query->whereIn('vehicle_category', $request->input('Jenis_Kendaraan'));
-        }
+        $query = Vehicle::query()
+            // Gunakan `when` untuk kode yang lebih bersih daripada `if`.
+            // Kondisi hanya berjalan jika nilai ada di dalam $validatedData.
 
-        // Filter berdasarkan Jenis Transmisi (Manual, Matic, dll) - ini juga array
-        if ($request->filled('Jenis_Transmisi')) {
-            // Asumsi nama kolomnya 'transmission'
-            $query->whereIn('transmission_type', $request->input('Jenis_Transmisi'));
-        }
-
-        // Filter berdasarkan Lokasi (Tempat)
-        if ($request->filled('Tempat')) {
-             // Asumsi nama kolomnya 'location'
-            $query->whereIn('vehicle_location', $request->input('Tempat'));
-        }
-
-        // Filter berdasarkan Jangkauan Harga
-        if ($request->filled('min_price')) {
-            // Asumsi nama kolomnya 'price_per_day'
-            $query->where('price', '>=', $request->input('min_price'));
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->input('max_price'));
-        }
-
-        // Filter berdasarkan Ketersediaan Tanggal (Ini yang paling kompleks)
-        // if ($request->filled('start_date') && $request->filled('end_date')) {
-        //     $startDate = $request->input('start_date');
-        //     $endDate = $request->input('end_date');
-
-        //     // Cari kendaraan yang TIDAK MEMILIKI booking yang tumpang tindih dengan rentang tanggal yang dipilih.
-        //     // Ini membutuhkan relasi 'bookings' di model Vehicle.
-        //     $query->whereDoesntHave('bookings', function ($q) use ($startDate, $endDate) {
-        //         $q->where(function ($subQuery) use ($startDate, $endDate) {
-        //             // Kondisi tumpang tindih:
-        //             // 1. Booking dimulai sebelum rentang kita berakhir DAN berakhir setelah rentang kita dimulai.
-        //             $subQuery->where('start_date', '<', $endDate)
-        //                      ->where('end_date', '>', $startDate);
-        //         });
-        //     });
-        // }
+            ->when(isset($validatedData['Tipe_Kendaraan']), function ($q) use ($validatedData) {
+                return $q->where('type', $validatedData['Tipe_Kendaraan']);
+            })
+            ->when(isset($validatedData['Jenis_Kendaraan']), function ($q) use ($validatedData) {
+                return $q->whereIn('vehicle_category', $validatedData['Jenis_Kendaraan']);
+            })
+            ->when(isset($validatedData['Jenis_Transmisi']), function ($q) use ($validatedData) {
+                return $q->whereIn('transmission_type', $validatedData['Jenis_Transmisi']);
+            })
+            ->when(isset($validatedData['Tempat']), function ($q) use ($validatedData) {
+                return $q->whereIn('vehicle_location', $validatedData['Tempat']);
+            })
+            ->when(isset($validatedData['min_price']), function ($q) use ($validatedData) {
+                // Sekarang kita menggunakan data yang sudah divalidasi dan di-default
+                return $q->where('price', '>=', $validatedData['min_price']);
+            })
+            ->when(isset($validatedData['max_price']), function ($q) use ($validatedData) {
+                return $q->where('price', '<=', $validatedData['max_price']);
+            });
 
 
         // 3. Setelah semua filter diterapkan, eksekusi query dengan pagination
