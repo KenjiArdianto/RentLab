@@ -1,66 +1,6 @@
 @extends('admin.master')
 
 @section('content')
-    {{-- <div class="container-flex text-center my-4">
-        <div class="row">
-            <div class="col">
-                <div class="text"></div>
-                <h5><strong>LogID</strong></h5>
-            </div>
-            <div class="col">
-                <h5><strong>Username</strong></h5>
-            </div>
-            <div class="col">
-                <h5><strong>UserID</strong></h5>
-            </div>
-            <div class="col">
-                <h5><strong>Action</strong></h5>
-            </div>
-            <div class="col">
-                <h5><strong>Date Time</strong></h5>
-            </div>
-        </div>
-
-        @php
-    $logs = [
-        [
-            'id' => 101,
-            'username' => 'admin',
-            'user_id' => 1,
-            'action' => 'Login',
-            'created_at' => '2022-12-12 12:12:12',
-        ],
-        [
-            'id' => 102,
-            'username' => 'admin',
-            'user_id' => 1,
-            'action' => 'Login',
-            'created_at' => '2022-12-12 12:12:12',
-        ]
-    ];
-@endphp
-
-@foreach ($logs as $log)
-    <div class="row">
-        <div class="col">
-            <p>{{ $log['id'] }}</p>
-        </div>
-        <div class="col">
-            <p>{{ $log['username'] }}</p>
-        </div>
-        <div class="col">
-            <p>{{ $log['user_id'] }}</p>
-        </div>
-        <div class="col">
-            <p>{{ $log['action'] }}</p>
-        </div>
-        <div class="col">
-            <p>{{ $log['created_at'] }}</p>
-        </div>
-    </div>
-@endforeach
-
-    </div> --}}
 
     <div class="container-fluid justify-content-between align-items-center">
         <form action="{{ route('admin.drivers.search') }}" method="GET">
@@ -69,45 +9,57 @@
         </form>
     </div>  
 
+    <form action="{{ route('admin.drivers.destroy') }}" method="POST">
+        @csrf
+        @method('DELETE')
 
-    <div class="mx-5 my-5">
-        @foreach ($drivers as $driver)
-            <p>{{ $driver->name }}</p>
-        @endforeach
+        <div class="mt-4 d-flex justify-content-center">
+            <button type="submit" class="btn btn-danger">Delete Selected</button>
+        </div>
+
+        <div class="container-flex m-4">
+            <div class="row row-cols-1 row-cols-lg-4 g-4">
+                <div class="col">
+                    <div class="card text-center d-flex align-items-center justify-content-center" style="width: 23vw; height: 60vh; font-size: 48px; cursor: pointer; cursor: pointer; border: 1.5px dashed black;!important;">
+                        +
+                    </div>
+                </div>
+                @foreach ($drivers as $driver)
+                    <div class="col">
+                        <div class="card" style="width: 23vw; height: 60vh; cursor: pointer; border: 1px solid black;!important;">
+                            <div class="container-flex text-center " >
+                                <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $driver->id }}" id="checkDefault" style="border: 1px solid black;!important; box-shadow: 0 0 3px rgba(0,0,0,0.3);!important">
+                            </div>
+                            {{-- <img src="{{ asset('storage/' . $driver->image) }}" alt="Driver Image" class="card-img-top"> --}}
+                            <img src="{{ asset($driver->image) }}" alt="Driver Image" class="card-img-top">
+                            <div class="card-body">
+                                <table class="table table-borderless mb-0">
+                                    <tr>
+                                        <th class="text-start" style="width: 40%;">Name</th>
+                                        <td style="width: 5%;">:</td>
+                                        <td><strong>{{ $driver->name }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-start">Driver ID</th>
+                                        <td>:</td>
+                                        <td>{{ $driver->id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-start">Kota</th>
+                                        <td>:</td>
+                                        <td>{{ $driver->city }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>        
+    </form>
+    
+    <div class="container">
+        {{ $drivers->onEachSide(5)->links('pagination::bootstrap-5') }}
     </div>
 
-    <nav aria-label="Page navigation example" class="d-flex justify-content-center align-items-center">
-        <ul class="pagination pagination-lg">
-            <li class="page-item text-center" style="width: 15vw;">
-                <a class="page-link" href="?page={{ $drivers->currentPage() - 1 }}" aria-label="Previous">
-                    Previous
-                </a>
-            </li>
-            <input type="text" class="form-control rounded-0" value="{{ $drivers->currentPage() }}">
-            <li class="page-item text-center" style="width: 15vw;">
-                
-            </li>
-            <div class="page-item text-center border border-dark">
-                <a class="page-link" href="?page={{ $drivers->currentPage() + 1 }}" aria-label="Next">
-                    Next
-                </a>
-            </div>
-        </ul>
-    </nav>
-
 @endsection
-
-
-
-
-
-
-
-
-
-
-{{-- @for ($i = 1; $i <= ceil($drivers->total() / $drivers->perPage()); $i++)
-                <div>
-                    <li class="page-item"><a class="page-link" href="?page={{ $i }}">{{ $i }}</a></li>
-                </div>
-            @endfor --}}

@@ -2,24 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
-use App\Models\Driver;
 
-
-class AdminDriverController extends Controller
+class AdminVehicleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $drivers = Driver::paginate(16);
-        return view('admin.drivers', compact('drivers'));
-    }
-
-    public function search(Request $request){
-        return $request->query('search');
-
+        //
+        $v = Vehicle::with('vehicleCategories')->where('id', 1)->get();
+        // dd($v);
+        return view('admin.vehicles', compact('v'));
     }
 
     /**
@@ -68,22 +64,5 @@ class AdminDriverController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    public function destroySelected(Request $ids)
-    {
-        $id_list = $ids->input('selected', []);
-        $deleted=FALSE;
-        
-        if (empty($id_list)) {
-            return back()->with('error', 'No items selected.');
-        }
-
-        Driver::whereIn('id', $id_list)->delete();
-        $deleted=TRUE;
-
-        return back()->with('success', 'Selected drivers deleted.');
-        // dd($id_list);
-
     }
 }

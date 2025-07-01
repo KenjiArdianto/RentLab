@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDriverController;
+use App\Http\Controllers\AdminVehicleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +22,7 @@ Route::get('/admin/users', function () {
 
 Route::get('/admin/drivers',[AdminDriverController::class, 'index'])->name('admin.drivers');
 Route::get('/admin/drivers-',[AdminDriverController::class, 'search'])->name('admin.drivers.search');
-
+Route::delete('/admin/drivers/delete-selected', [AdminDriverController::class, 'destroySelected'])->name('admin.drivers.destroy');
 
 // Route::get('/admin/drivers/{page_number}',[AdminDriverController::class, 'index'])->name('admin.drivers');
 
@@ -30,10 +31,10 @@ Route::get('/admin/transactions', function () {
     return view('admin.transactions');
 })->name('admin.transactions');
 
-Route::get('/admin/vehicles', function () {
-    return view('admin.vehicles');
-})->name('admin.vehicles');
+Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
 
 Route::get('/admin/reviews', function () {
     return view('admin.reviews');
 })->name('admin.reviews');
+
+
