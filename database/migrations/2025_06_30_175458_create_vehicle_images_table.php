@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ratings', function (Blueprint $table) {
+        Schema::create('vehicle_images', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('reviewer_id');
-            $table->unsignedBigInteger('reviewed_id');
-            $table->unsignedBigInteger('transaction_id');
-            $table->string('type');
-            $table->integer('rating');
-            $table->text('comment');
+            $table->foreignId('vehicle_id');
+            $table->string('image');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ratings');
+        Schema::dropIfExists('vehicle_images');
     }
 };

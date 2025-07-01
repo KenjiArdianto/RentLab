@@ -2,17 +2,20 @@
 
 namespace Database\Seeders;
 
-use App\Models\Vehicle;
+use App\Models\VehicleType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class VehicleSeeder extends Seeder
+class VehicleTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Vehicle::factory(120)->create();
+        VehicleType::insert([
+            ['type' => 'Car'],
+            ['type' => 'Motor'],
+        ]);
     }
 }
