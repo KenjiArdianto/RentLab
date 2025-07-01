@@ -56,7 +56,7 @@
 
                                 <label for="search-input" class="search-icon-label">
                                     <div type = "search" aria-label="Search">
-                                        <img src="{{ asset('build/assets/icons8-search-50.png') }}" alt="" width="20" height="20" class="">
+                                        <img src="{{ asset('/navbar_assets/icons8-search-50.png') }}" alt="" width="20" height="20" class="">
                                     </div>
                                 </label>
 
@@ -72,13 +72,13 @@
                     <div class="col-auto">
                         <ul class="navbar-nav flex-row">
                             <a class="navbar-brand ms-2 me-5 p-0 d-flex align-items-center" href="#">
-                                <img src="{{ asset('build/assets/reshot-icon-cart-CU9PKG8Z5X.svg') }}" width="30" height="30" alt="">
+                                <img src="{{ asset('/navbar_assets/reshot-icon-cart-CU9PKG8Z5X.svg') }}" width="30" height="30" alt="">
                             </a>
                             <a class="navbar-brand mx-2 ps-2 d-flex align-items-center" href="#">
-                                <img src="{{ asset('build/assets/reshot-icon-orders-SA9HJC27ED.svg') }}" width="30" height="30" alt="">
+                                <img src="{{ asset('/navbar_assets/reshot-icon-orders-SA9HJC27ED.svg') }}" width="30" height="30" alt="">
                             </a>
                             <a class="navbar-brand p-0 ms-5 me-0 d-flex align-items-center" href="#">
-                                <img src="{{ asset('build/assets/reshot-icon-profile-QX6KDSLJC5.svg') }}" width="50" height="50" alt="">
+                                <img src="{{ asset('/navbar_assets/reshot-icon-profile-QX6KDSLJC5.svg') }}" width="50" height="50" alt="">
                             </a>
                         </ul>
                     </div>
