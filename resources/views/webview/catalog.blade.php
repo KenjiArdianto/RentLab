@@ -1,28 +1,4 @@
 <x-layout>
-    <div class="container-fluid px-0">
-        <div id="carouselExampleIndicators" class="carousel slide w-100" style="width: 100%;">
-                <div class="carousel-indicators">
-                    @foreach ($advertisement as $adv)
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $loop->index }}" class="@if($loop->first) active @endif" aria-current="true" aria-label="Slide {{ $loop->iteration }}"></button>
-                    @endforeach
-                </div>
-                <div class="carousel-inner">
-                    @foreach ($advertisement as $adv)
-                        <div class="carousel-item @if($loop->first) active @endif">
-                            <img src="{{asset($adv->path)}}" class="d-block w-100" alt="...">
-                        </div>
-                    @endforeach
-                </div>
-                <button class="carousel-control-prev" type="button"  data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-        </div>
-    </div>
      <div class="container-fluid mt-4 pe-0">
         <div class="d-flex justify-content-center">
 
@@ -30,15 +6,11 @@
             <div class="flex-shrink-0 p-3 bg-light" style="width: 22vw; overflow-y:visible; overflow-x:hidden;">
                 <div>
                     {{-- FIX: Action menunjuk ke route, method GET tidak perlu @csrf --}}
-                    <form action="{{ route('vehicle.display') }}" method="GET">
+                    <form action="{{ route('vehicle.catalog', $vehicle) }}" method="GET">
                         @csrf
                         <h5 class="d-flex justify-content-center">Filter Kendaraan</h5>
                         <hr>
 
-                        @if(request()->has('search'))
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                        @endif
-                        
                         {{-- FIX: 'name' untuk radio button harus sama dan bukan array --}}
                         <div class="btn-group w-100 mb-3" role="group">
                             <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMobil" value="Mobil" {{ old('Tipe_Kendaraan', request('Tipe_Kendaraan', 'Mobil')) == 'Mobil' ? 'checked' : '' }}>
@@ -112,9 +84,13 @@
                         </div>
 
                         <div class="container-fluid d-flex p-0">
-                            <a href="{{ route('vehicle.display') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
+                            <a href="{{ route('vehicle.catalog') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
                             <button type="submit" class="container-fluid btn btn-primary m-2">Filter</button>
                         </div>
+
+                        @if(request()->has('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
                     </form>
                 </div>
             </div>
@@ -154,7 +130,7 @@
         </div>
 
     </div>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Ambil elemen input tersembunyi

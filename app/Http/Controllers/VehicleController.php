@@ -4,59 +4,79 @@ namespace App\Http\Controllers;
 
 use App\Models\Advertisement;
 use App\Models\Vehicle;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
-    public function display(Request $request)
+    public function filter(Request $request, Builder $query) // Pastikan $query tidak boleh null
     {
         if (!$request->filled('min_price')) {
             $request->merge(['min_price' => 0]);
         }
         
         $validatedData = $request->validate([
-            'Tipe_Kendaraan'    => 'nullable|string|in:Mobil,Motor', // Contoh validasi
-            'Jenis_Kendaraan'   => 'nullable',
-            'Jenis_Transmisi'   => 'nullable',
-            'Tempat'            => 'nullable',
-            'min_price'         => 'required|numeric|gte:0', // 'required' karena sudah kita pastikan ada di atas
-            'max_price'         => 'nullable|numeric|gte:min_price'
+            'Tipe_Kendaraan'  => 'nullable|string|in:Mobil,Motor',
+            'Jenis_Kendaraan' => 'nullable|array', // Seharusnya array karena dari checkbox
+            'Jenis_Transmisi' => 'nullable|array', // Seharusnya array
+            'Tempat'          => 'nullable|array', // Seharusnya array
+            'min_price'       => 'required|numeric|gte:0',
+            'max_price'       => 'nullable|numeric|gte:min_price'
         ]);
 
-        $query = Vehicle::query()
-            // Gunakan `when` untuk kode yang lebih bersih daripada `if`.
-            // Kondisi hanya berjalan jika nilai ada di dalam $validatedData.
-
-            ->when(isset($validatedData['Tipe_Kendaraan']), function ($q) use ($validatedData) {
-                return $q->where('type', $validatedData['Tipe_Kendaraan']);
+        // Gunakan $request->whenFilled() agar lebih bersih
+        $query
+            ->when($request->filled('Tipe_Kendaraan'), function ($q) use ($request) {
+                return $q->where('type', $request->input('Tipe_Kendaraan'));
             })
-            ->when(isset($validatedData['Jenis_Kendaraan']), function ($q) use ($validatedData) {
-                return $q->whereIn('vehicle_category', $validatedData['Jenis_Kendaraan']);
+            ->when($request->filled('Jenis_Kendaraan'), function ($q) use ($request) {
+                return $q->whereIn('vehicle_category', $request->input('Jenis_Kendaraan'));
             })
-            ->when(isset($validatedData['Jenis_Transmisi']), function ($q) use ($validatedData) {
-                return $q->whereIn('transmission_type', $validatedData['Jenis_Transmisi']);
+            ->when($request->filled('Jenis_Transmisi'), function ($q) use ($request) {
+                return $q->whereIn('transmission_type', $request->input('Jenis_Transmisi'));
             })
-            ->when(isset($validatedData['Tempat']), function ($q) use ($validatedData) {
-                return $q->whereIn('vehicle_location', $validatedData['Tempat']);
+            ->when($request->filled('Tempat'), function ($q) use ($request) {
+                return $q->whereIn('vehicle_location', $request->input('Tempat'));
             })
             ->when(isset($validatedData['min_price']), function ($q) use ($validatedData) {
-                // Sekarang kita menggunakan data yang sudah divalidasi dan di-default
-                return $q->where('price', '>=', $validatedData['min_price']);
+                 return $q->where('price', '>=', $validatedData['min_price']);
             })
             ->when(isset($validatedData['max_price']), function ($q) use ($validatedData) {
-                return $q->where('price', '<=', $validatedData['max_price']);
+                 return $q->where('price', '<=', $validatedData['max_price']);
             });
+        
+        return $query;
+    }
 
+    public function display(Request $request)
+    {
+        $vehicleQuery = Vehicle::query();
 
-        // 3. Setelah semua filter diterapkan, eksekusi query dengan pagination
-        // withQueryString() PENTING agar link pagination tetap membawa parameter filter
-        $vehicle = $query->orderBy('id')->paginate(12)->withQueryString();
+        $this->filter($request, $vehicleQuery);
 
-        // Ambil data iklan (ini tidak berubah)
+        $vehicle = $vehicleQuery->orderBy('id')->paginate(12)->withQueryString();
+
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
 
-        // 4. Kirim data yang sudah difilter ke view
         return view('webview.homescreen', ["vehicle" => $vehicle, "advertisement" => $advertisement]);
+    }
+
+    public function catalog(Request $request)
+    {
+        $vehicleQuery = Vehicle::query();
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $vehicleQuery->where('name', 'LIKE', '%' . $searchTerm . '%');
+        }
+        
+        $this->filter($request, $vehicleQuery); 
+        
+        $vehicle = $vehicleQuery->orderBy('id')->paginate(12)->withQueryString();
+
+        return view('webview.catalog', [
+            "vehicle" => $vehicle
+        ]); 
     }
     
     public function detail(Vehicle $vehicle){

@@ -49,11 +49,10 @@
                     </div>
 
                     <div class="col">
-                        <form class="d-flex justify-content-start align-items-center mt-0 mb-0" role="search"> 
-
+                        
+                        <form action="{{ route('vehicle.catalog') }}" method="GET" class="d-flex justify-content-start align-items-center mt-0 mb-0" role="search">
                             <div class = "p-1 d-flex column justify-content-start align-items-center 
                             form-control border-primary ps-3 pe-3 w-100 rounded-4 search-container">
-
                                 <label for="search-input" class="search-icon-label">
                                     <div type = "search" aria-label="Search">
                                         <img src="{{ asset('/navbar_assets/icons8-search-50.png') }}" alt="" width="20" height="20" class="">
@@ -61,11 +60,10 @@
                                 </label>
 
                                 <div class = "container-fluid p-0">
-                                    <input class = "container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="Search" aria-label="Search">
+                                    <input id="search-input" name="search" class="container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="Cari kendaraan..." aria-label="Search" value="{{ request('search') }}">
                                 </div>
-                                
-                            </div>   
-
+                            </div>
+                            
                         </form>
                     </div>
 
