@@ -36,10 +36,10 @@ class DatabaseSeeder extends Seeder
             
             DriverSeeder::class,
             VehicleSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
 
             // CartSeeder::class,
-            // TransactionSeeder::class,
+            TransactionSeeder::class,
 
 
         ]);

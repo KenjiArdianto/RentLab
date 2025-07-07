@@ -23,7 +23,92 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-06-03',
                 'end_book_date' => '2023-06-04',
                 'return_date' => '2023-06-05',
-                'status' => 0
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'vehicle_id' => 3,
+                'user_id' => 1,
+                'driver_id' => 0, // Tanpa driver
+                'start_book_date' => '2023-05-03',
+                'end_book_date' => '2023-05-07',
+                'return_date' => '2023-05-07',
+                'status' => 1, // On Payment
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Transaksi 2: On Booking, Dengan Driver
+            [
+                'vehicle_id' => 5,
+                'user_id' => 1,
+                'driver_id' => 2,
+                'start_book_date' => '2025-06-10',
+                'end_book_date' => '2025-06-15',
+                'return_date' => '2025-06-15',
+                'status' => 2, // On Booking
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Transaksi 3: Car Taken, Dengan Driver
+            [
+                'vehicle_id' => 2,
+                'user_id' => 1,
+                'driver_id' => 4,
+                'start_book_date' => '2025-06-20',
+                'end_book_date' => '2025-06-25',
+                'return_date' => '2025-06-25',
+                'status' => 3, // Car Taken
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Transaksi 4: Review By Admin, Tanpa Driver
+             [
+                'vehicle_id' => 7,
+                'user_id' => 1,
+                'driver_id' => 0, // Tanpa driver
+                'start_book_date' => '2025-05-10',
+                'end_book_date' => '2025-05-15',
+                'return_date' => '2025-05-15',
+                'status' => 4, // Review By Admin
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Transaksi 5: Review By User, Dengan Driver
+            [
+                'vehicle_id' => 1,
+                'user_id' => 1,
+                'driver_id' => 3,
+                'start_book_date' => '2025-04-01',
+                'end_book_date' => '2025-04-05',
+                'return_date' => '2025-04-05',
+                'status' => 6, // Review By User
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Transaksi 6: Closed, Dengan Driver
+            [
+                'vehicle_id' => 4,
+                'user_id' => 1,
+                'driver_id' => 1,
+                'start_book_date' => '2025-02-10',
+                'end_book_date' => '2025-02-12',
+                'return_date' => '2025-02-12',
+                'status' => 6, // Closed
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Transaksi 7: Canceled, Tanpa Driver
+            [
+                'vehicle_id' => 6,
+                'user_id' => 1,
+                'driver_id' => 0, // Tanpa driver
+                'start_book_date' => '2025-01-20',
+                'end_book_date' => '2025-01-22',
+                'return_date' => '2025-01-22',
+                'status' => 7, // Canceled
+                'created_at' => now(),
+                'updated_at' => now()
             ],
             [
                 'vehicle_id' => 2,
@@ -32,7 +117,9 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-05-03',
                 'end_book_date' => '2023-05-04',
                 'return_date' => '2023-05-05',
-                'status' => 1
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ],
             [
                 'vehicle_id' => 3,
@@ -41,7 +128,9 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-04-03',
                 'end_book_date' => '2023-04-04',
                 'return_date' => '2023-04-05',
-                'status' => 2
+                'status' => 2,
+                'created_at' => now(),
+                'updated_at' => now()
             ],
             [
                 'vehicle_id' => 4,
@@ -50,7 +139,9 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-03-03',
                 'end_book_date' => '2023-03-04',
                 'return_date' => '2023-03-05',
-                'status' => 3
+                'status' => 3,
+                'created_at' => now(),
+                'updated_at' => now()
             ],
             [
                 'vehicle_id' => 5,
@@ -59,7 +150,9 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-02-03',
                 'end_book_date' => '2023-02-04',
                 'return_date' => '2023-02-05',
-                'status' => 4
+                'status' => 4,
+                'created_at' => now(),
+                'updated_at' => now()
             ],
             [
                 'vehicle_id' => 6,
@@ -68,7 +161,9 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-01-03',
                 'end_book_date' => '2023-01-04',
                 'return_date' => '2023-01-05',
-                'status' => 5
+                'status' => 5,
+                'created_at' => now(),
+                'updated_at' => now()
             ],
             [
                 'vehicle_id' => 7,
@@ -77,7 +172,9 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2022-12-03',
                 'end_book_date' => '2022-12-04',
                 'return_date' => '2022-12-05',
-                'status' => 6
+                'status' => 6,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }
