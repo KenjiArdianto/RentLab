@@ -1,0 +1,54 @@
+.accordion-button {
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+@media (max-width: 767px) {
+    .accordion-button {
+        font-size: 10px;
+    }
+}
+
+/* Styling for the search bar container */
+.search-input-container {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Styling for the search input field */
+.search-input {
+    width: 100%;
+    padding-right: 40px; /* Space for the search icon */
+    padding-left: 15px; /* Space for the left side */
+    border-radius: 30px;
+    border: 1px solid #ccc;
+}
+
+/* Styling for the search icon */
+.search-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* Styling for message when no result is found */
+.no-results-message {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #ff0000;
+}
+
+/* Custom styling for the container to position the search bar on the left */
+.search-bar-container {
+    display: flex;
+    justify-content: flex-start; /* Align left */
+}
+
+.accordion-item {
+    margin-bottom: 15px; /* Add some margin between accordion items */
+}
