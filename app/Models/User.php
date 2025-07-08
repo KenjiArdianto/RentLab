@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'email_verified_at',
     ];
 
     /**
@@ -44,30 +45,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    public function cart()
+    public function detail()
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasOne(UserDetail::class);
     }
-
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
-    }
-
-    public function userReview()
-    {
-        return $this->hasMany(UserReview::class, 'user_id');
-    }
-
-    public function reviewsModerated()
-    {
-        return $this->hasMany(UserReview::class, 'admin_id');
-    }
-
-    public function vehicleReview()
-    {
-        return $this->hasMany(VehicleReview::class);
-    }
-
 }
