@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
-    public function filter(Request $request, Builder $query) // Pastikan $query tidak boleh null
+    public function filter(Request $request, Builder $query)
     {
         if (!$request->filled('min_price')) {
             $request->merge(['min_price' => 0]);
@@ -17,14 +17,13 @@ class VehicleController extends Controller
         
         $validatedData = $request->validate([
             'Tipe_Kendaraan'  => 'nullable|string|in:Mobil,Motor',
-            'Jenis_Kendaraan' => 'nullable|array', // Seharusnya array karena dari checkbox
-            'Jenis_Transmisi' => 'nullable|array', // Seharusnya array
-            'Tempat'          => 'nullable|array', // Seharusnya array
+            'Jenis_Kendaraan' => 'nullable|array',
+            'Jenis_Transmisi' => 'nullable|array',
+            'Tempat'          => 'nullable|array',
             'min_price'       => 'required|numeric|gte:0',
             'max_price'       => 'nullable|numeric|gte:min_price'
         ]);
 
-        // Gunakan $request->whenFilled() agar lebih bersih
         $query
             ->when($request->filled('Tipe_Kendaraan'), function ($q) use ($request) {
                 return $q->where('type', $request->input('Tipe_Kendaraan'));
