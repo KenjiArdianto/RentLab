@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image');
-            $table->date('active_since');
+            $table->foreignId('location_id');
             $table->timestamps();
         });
     }

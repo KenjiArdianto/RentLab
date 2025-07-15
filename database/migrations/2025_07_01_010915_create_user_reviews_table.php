@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('user_review', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_id');
+            $table->foreignId('admin_id')->constrained('users');
             $table->foreignId('user_id');
-            $table->foreignId('driver_id');
-            $table->date('start_book_date');
-            $table->date('end_book_date');    
-            $table->date('return_date');
-            $table->foreignId('status');
+            $table->foreignId('transaction_id');
+            $table->string('comment');
+            $table->integer('rate');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('user_reviews');
     }
 };
