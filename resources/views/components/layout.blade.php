@@ -24,6 +24,9 @@
             cursor: pointer;
         }
     </style>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 
@@ -46,36 +49,34 @@
                     </div>
 
                     <div class="col">
-                        <form class="d-flex justify-content-start align-items-center mt-0 mb-0" role="search"> 
-
+                        
+                        <form action="{{ route('vehicle.catalog') }}" method="GET" class="d-flex justify-content-start align-items-center mt-0 mb-0" role="search">
                             <div class = "p-1 d-flex column justify-content-start align-items-center 
                             form-control border-primary ps-3 pe-3 w-100 rounded-4 search-container">
-
                                 <label for="search-input" class="search-icon-label">
                                     <div type = "search" aria-label="Search">
-                                        <img src="{{ asset('build/assets/icons8-search-50.png') }}" alt="" width="20" height="20" class="">
+                                        <img src="{{ asset('/navbar_assets/icons8-search-50.png') }}" alt="" width="20" height="20" class="">
                                     </div>
                                 </label>
 
                                 <div class = "container-fluid p-0">
-                                    <input class = "container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="Search" aria-label="Search">
+                                    <input id="search-input" name="search" class="container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="Cari kendaraan..." aria-label="Search" value="{{ request('search') }}">
                                 </div>
-                                
-                            </div>   
-
+                            </div>
+                            
                         </form>
                     </div>
 
                     <div class="col-auto">
                         <ul class="navbar-nav flex-row">
                             <a class="navbar-brand ms-2 me-5 p-0 d-flex align-items-center" href="#">
-                                <img src="{{ asset('build/assets/reshot-icon-cart-CU9PKG8Z5X.svg') }}" width="30" height="30" alt="">
+                                <img src="{{ asset('/navbar_assets/reshot-icon-cart-CU9PKG8Z5X.svg') }}" width="30" height="30" alt="">
                             </a>
                             <a class="navbar-brand mx-2 ps-2 d-flex align-items-center" href="#">
-                                <img src="{{ asset('build/assets/reshot-icon-orders-SA9HJC27ED.svg') }}" width="30" height="30" alt="">
+                                <img src="{{ asset('/navbar_assets/reshot-icon-orders-SA9HJC27ED.svg') }}" width="30" height="30" alt="">
                             </a>
                             <a class="navbar-brand p-0 ms-5 me-0 d-flex align-items-center" href="#">
-                                <img src="{{ asset('build/assets/reshot-icon-profile-QX6KDSLJC5.svg') }}" width="50" height="50" alt="">
+                                <img src="{{ asset('/navbar_assets/reshot-icon-profile-QX6KDSLJC5.svg') }}" width="50" height="50" alt="">
                             </a>
                         </ul>
                     </div>
@@ -85,9 +86,13 @@
     </header>
 
 
-    <main class = "container">
+    <main class = "container-fluid p-0 m-0">
         {{ $slot }}
     </main>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    {{-- Tambahan untuk Bahasa Indonesia --}}
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 </body>
 </html>

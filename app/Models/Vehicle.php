@@ -54,4 +54,17 @@ class Vehicle extends Model
     {
         return $this->hasMany(VehicleReview::class);
     }
+
+    protected $fillable = [
+        'name',
+        'price',
+        'year',
+        'image',
+        'engine_cc',
+        'transmission_type',
+        'type',
+        'vehicle_category',
+        'vehicle_location',
+    ];
+
 }
