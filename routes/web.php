@@ -22,8 +22,9 @@ Route::get('/admin/users', function () {
 
 Route::get('/admin/drivers',[AdminDriverController::class, 'index'])->name('admin.drivers');
 Route::get('/admin/drivers-',[AdminDriverController::class, 'search'])->name('admin.drivers.search');
-Route::delete('/admin/drivers/delete-selected', [AdminDriverController::class, 'destroySelected'])->name('admin.drivers.destroy');
-
+Route::post('/admin/drivers/stored', [AdminDriverController::class, 'store'])->name('admin.drivers.store');
+Route::post('/admin/drivers/edit-selected', [AdminDriverController::class, 'editSelected'])->name('admin.drivers.edit');
+Route::delete('/admin/drivers/delete-selected', [AdminDriverController::class, 'deleteSelected'])->name('admin.drivers.delete');
 // Route::get('/admin/drivers/{page_number}',[AdminDriverController::class, 'index'])->name('admin.drivers');
 
 
