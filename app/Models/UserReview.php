@@ -10,16 +10,6 @@ class UserReview extends Model
     /** @use HasFactory<\Database\Factories\UserReviewFactory> */
     use HasFactory;
 
-    protected $table = 'user_review';
-    
-    protected $fillable = [
-        'transaction_id',
-        'user_id',
-        'admin_id',
-        'rate',
-        'comment',
-    ];
-    
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);
@@ -34,4 +24,6 @@ class UserReview extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    protected $table = 'user_review';
 }

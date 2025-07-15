@@ -79,22 +79,33 @@ class TransactionSeeder extends Seeder
                 'vehicle_id' => 1,
                 'user_id' => 1,
                 'driver_id' => 3,
-                'start_book_date' => '2025-04-01',
-                'end_book_date' => '2025-04-05',
-                'return_date' => '2025-04-05',
-                'status' => 6, // Review By User
+                'start_book_date' => '2025-04-07',
+                'end_book_date' => '2025-04-14',
+                'return_date' => '2025-04-14',
+                'status' => 5, // Review By User
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             // Transaksi 6: Closed, Dengan Driver
             [
-                'vehicle_id' => 4,
+                'vehicle_id' => 10,
+                'user_id' => 1,
+                'driver_id' => 0,
+                'start_book_date' => '2025-07-01',
+                'end_book_date' => '2025-07-02',
+                'return_date' => '2025-07-02',
+                'status' => 5, 
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'vehicle_id' => 13,
                 'user_id' => 1,
                 'driver_id' => 1,
-                'start_book_date' => '2025-02-10',
-                'end_book_date' => '2025-02-12',
-                'return_date' => '2025-02-12',
-                'status' => 6, // Closed
+                'start_book_date' => '2025-07-06',
+                'end_book_date' => '2025-07-08',
+                'return_date' => '2025-07-02',
+                'status' => 5, 
                 'created_at' => now(),
                 'updated_at' => now()
             ],

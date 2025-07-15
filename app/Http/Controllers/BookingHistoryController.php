@@ -20,47 +20,67 @@ class BookingHistoryController extends Controller
      */
     public function index(Request $request): View
     {
-        // 1. Dapatkan ID pengguna yang sedang login untuk keamanan data
+        // Dapatkan ID pengguna yang sedang login untuk keamanan data
         # $userId = Auth::id();
         $userId = 1;
 
-        // 2. Definisikan status transaksi berdasarkan seeder
+        // Definisikan status transaksi berdasarkan seeder
+
         // On Payment(1), On Booking(2), Car Taken(3)
         $ongoingStatus = [1, 2, 3];
 
         // Review By Admin(4), Review By User(5), Closed(6), Canceled(7)
         $historyStatus = [4, 5, 6, 7];
 
-        // 3. Definisikan relasi yang akan dimuat (Eager Loading) untuk efisiensi
-        // Ini untuk menghindari masalah N+1 Query
+        // Definisikan relasi yang akan dimuat (Eager Loading) untuk efisiensi
         $relations = [
-            // Muat relasi vehicle dan pilih hanya kolom yang diperlukan
             'vehicle:id,vehicle_name_id,vehicle_type_id,vehicle_transmission_id,price,main_image',
-            // Dari vehicle, muat relasi turunannya
             'vehicle.vehicleName:id,name',
             'vehicle.vehicleType:id,type',
             'vehicle.vehicleImages:id,vehicle_id,image',
             'vehicle.vehicleTransmission:id,transmission',
-            // Muat relasi driver
             'driver:id,name',
             'transactionStatus:id,status',
-            'userReview'
+            'vehicleReview'
         ];
-        // 4. Ambil data transaksi yang sedang berjalan (ongoing)
-        $ongoingTransactions = Transaction::with($relations)
-                                          ->where('user_id', $userId)
-                                          ->whereIn('status', $ongoingStatus)
-                                          ->latest() // Urutkan dari yang terbaru
-                                          ->get();
 
-        // 5. Ambil data riwayat transaksi (history)
-        $historyTransactions = Transaction::with($relations)
-                                          ->where('user_id', $userId)
-                                          ->whereIn('status', $historyStatus)
-                                          ->latest() // Urutkan dari yang terbaru
-                                          ->get();
+        // Ambil input pencarian dari form
+        $searchKeyword = $request->input('search');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
 
-        // 6. Kirim kedua data ke view
+        // Buat query dasar yang akan digunakan untuk kedua tab
+        $baseQuery = Transaction::with($relations)->where('user_id', $userId)->latest();
+
+        // Terapkan filter PENCARIAN NAMA KENDARAAN (jika ada)
+        $baseQuery->when($searchKeyword, function ($query, $keyword) {
+            return $query->whereHas('vehicle.vehicleName', function ($subQuery) use ($keyword) {
+                $subQuery->where('name', 'like', "%{$keyword}%");
+            });
+        });
+
+        // Terapkan filter PENCARIAN TANGGAL (jika ada)
+        $baseQuery->when($dateFrom && $dateTo, function ($query) use ($dateFrom, $dateTo) {
+            // Cari transaksi yang periode booking-nya BERSINGGUNGAN dengan rentang yang dipilih. Artinya, transaksi yang mulai SEBELUM rentang berakhir DAN berakhir SETELAH rentang dimulai.
+            return $query->where(function ($q) use ($dateFrom, $dateTo) {
+                $q->where('start_book_date', '<=', $dateTo)
+                ->where('end_book_date', '>=', $dateFrom);
+            });
+        });
+
+        // Clone query dasar untuk masing-masing tab dan ambil datanya
+        $ongoingTransactions = (clone $baseQuery)
+            ->whereIn('status', $ongoingStatus)
+            ->latest()
+            ->paginate(10, ['*'], 'ongoingPage') // Gunakan nama halaman custom
+            ->appends($request->query());
+
+        $historyTransactions = (clone $baseQuery)
+            ->whereIn('status', $historyStatus)
+            ->latest()
+            ->paginate(10, ['*'], 'historyPage') // Gunakan nama halaman custom
+            ->appends($request->query());
+
         return view('booking-history', compact('ongoingTransactions', 'historyTransactions'));
     }
 

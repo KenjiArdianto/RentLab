@@ -77,12 +77,12 @@
 
         <table class="totals-table">
             <tr class="grand-total">
-                <td>Total Payment</td>
-                <td class="text-right">Rp{{ number_format($transaction->total_price, 0, ',', '.') }}</td>
+                <td class="text-end">Total Payment</td>
+                <td class="text-end" style="padding-left: 15px;">Rp{{ number_format($transaction->total_price, 0, ',', '.') }}</td>
             </tr>
 
             <tr>
-                <td colspan="2" class="vat-note">
+                <td colspan="2" class="vat-note-end">
                     All fees charged by RentLab (if any) are inclusive of VAT.
                 </td>
             </tr>

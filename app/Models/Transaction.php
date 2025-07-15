@@ -39,7 +39,7 @@ class Transaction extends Model
 
     public function vehicleReview()
     {
-        return $this->hasMany(VehicleReview::class);
+        return $this->hasOne(VehicleReview::class);
     }
 
     protected function VehiclePrice(): Attribute

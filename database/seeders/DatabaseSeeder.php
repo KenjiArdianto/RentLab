@@ -40,7 +40,8 @@ class DatabaseSeeder extends Seeder
 
             // CartSeeder::class,
             TransactionSeeder::class,
-
+            
+            UserReviewSeeder::class,
 
         ]);
     }
