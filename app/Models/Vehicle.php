@@ -10,22 +10,48 @@ class Vehicle extends Model
     /** @use HasFactory<\Database\Factories\VehicleFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'price',
-        'year',
-        'image',
-        'engine_cc',
-        'transmission_type',
-        'type',
-        'vehicle_category',
-        'vehicle_location',
-    ];
+    public function vehicleImages()
+    {
+        return $this->hasMany(VehicleImage::class);
+    }
 
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function vehicleName()
+    {
+        return $this->belongsTo(VehicleName::class);
+    }
+
+    public function vehicleType()
+    {
+        return $this->belongsTo(VehicleType::class);
+    }
+
+    public function vehicleTransmission()
+    {
+        return $this->belongsTo(VehicleTransmission::class);
+    }
+
+    public function vehicleCategories()
+    {
+        return $this->belongsToMany(VehicleCategory::class);
+    }
+
+    public function cart()
+    {
+        return $this->hasMany(Cart::class);
+    }
+    
     public function transactions()
     {
-        // Pastikan nama model Anda adalah Transaction
-        // Laravel akan otomatis mengasumsikan foreign key adalah vehicle_id
         return $this->hasMany(Transaction::class);
+    }
+
+    public function vehicleReview()
+    {
+        return $this->hasMany(VehicleReview::class);
     }
 }

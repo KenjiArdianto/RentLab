@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class DriverFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->name(),
+            'image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/300/300',
+            'location_id' => Location::inRandomOrder()->value('id') ?? Location::factory(),
         ];
     }
 }

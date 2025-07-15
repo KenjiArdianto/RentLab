@@ -2,7 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\VehicleType;
+use App\Models\VehicleName;
+use App\Models\VehicleTransmission;
+use App\Models\Location;
 use App\Models\Vehicle;
+use App\Models\VehicleImage;
+use App\Models\VehicleCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -34,23 +40,41 @@ class VehicleFactory extends Factory
 
     public function definition(): array
     {
-        $available_makes = array_keys($this->car_makes_and_models); // isinya array dari car_makes_and_models
-        $random_make = $this->faker->randomElement($available_makes); // ngambil angka acak di dalem scope available_makes 
+        $type = VehicleType::inRandomOrder()->value('id');
 
-        // 2. Dari merek yang terpilih, pilih modelnya secara acak
-        $models_for_make = $this->car_makes_and_models[$random_make]; // ngestore 1 array yg dipilih
-        $random_model = $this->faker->randomElement($models_for_make); // ngerandom nama mobil dari array yang dipilih
+        $name = match ($type) {
+            1 => VehicleName::whereBetween('id', [1,10])->inRandomOrder()->value('id'),
+            2 => VehicleName::whereBetween('id', [11,20])->inRandomOrder()->value('id'),
+        };
+
+        $transmission = match($type) {
+            1 => VehicleTransmission::whereBetween('id', [1,2])->inRandomOrder()->value('id'),
+            2 => VehicleTransmission::inRandomOrder()->value('id'),
+        };
+    
+        $engine_cc = match($type) {
+            1 => $this->faker->numberBetween(1000,5000),
+            2 => $this->faker->numberBetween(50,2500),
+        };
 
         return [
-            'name' => $random_make . ' ' . $random_model, // Menggabungkan merek dan model
-            'price' => $this->faker->numberBetween(1000000, 9000000),
-            'year' => $this->faker->year(),
-            'image' => 'vehicle_assets/meme.jpg',
-            'engine_cc' => $this->faker->numberBetween(1000,5000),
-            'transmission_type' => $this->faker->randomElement(['Matic', 'Manual']),
-            'type' => 'Mobil',
-            'vehicle_category' => $this->faker->randomElement(['SUV', 'MPV', 'City Car', 'Sedan', 'Pickup', 'Van / Minibus', 'Listrik']),
-            'vehicle_location' => $this->faker->randomElement(['Jakarta Barat', 'Jakarta Pusat', 'Jakarta Utara', 'Jakarta Selatan', 'Jakarta Timur'])
+            'vehicle_type_id' => $type,
+            'vehicle_name_id' => $name,
+            'vehicle_transmission_id' => $transmission,
+            'engine_cc' => $engine_cc,
+            'seats' => $this->faker->numberBetween(2,8),
+            'location_id' => Location::inRandomOrder()->value('id'),
+            'main_image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/700/400',
+            'price' => $this->faker->numberBetween(100000,500000),
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function ($vehicle) {
+            VehicleImage::factory(4)->create(['vehicle_id' => $vehicle->id]);
+            $category_ids = VehicleCategory::inRandomOrder()->limit(2)->pluck('id');
+            $vehicle->vehicleCategories()->attach($category_ids);
+        });
     }
 }

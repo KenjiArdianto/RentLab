@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('price');
-            $table->year('year');
-            $table->string('image');
+            $table->foreignId('vehicle_type_id');
+            $table->foreignId('vehicle_name_id');
+            $table->foreignId('vehicle_transmission_id');
             $table->integer('engine_cc');
-            $table->string('transmission_type');
-            $table->string('type');
-            $table->string('vehicle_category');
-            $table->string('vehicle_location');
+            $table->integer('seats');
+            $table->foreignId('location_id');
+            $table->string('main_image');
+            $table->integer('price');
             $table->timestamps();
         });
     }
