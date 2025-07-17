@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -24,7 +25,7 @@
             cursor: pointer;
         }
     </style>
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
@@ -49,9 +50,9 @@
                     </div>
 
                     <div class="col">
-                        
+
                         <form action="{{ route('vehicle.catalog') }}" method="GET" class="d-flex justify-content-start align-items-center mt-0 mb-0" role="search">
-                            <div class = "p-1 d-flex column justify-content-start align-items-center 
+                            <div class = "p-1 d-flex column justify-content-start align-items-center
                             form-control border-primary ps-3 pe-3 w-100 rounded-4 search-container">
                                 <label for="search-input" class="search-icon-label">
                                     <div type = "search" aria-label="Search">
@@ -63,7 +64,7 @@
                                     <input id="search-input" name="search" class="container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="Cari kendaraan..." aria-label="Search" value="{{ request('search') }}">
                                 </div>
                             </div>
-                            
+
                         </form>
                     </div>
 
@@ -94,5 +95,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     {{-- Tambahan untuk Bahasa Indonesia --}}
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    @stack('scripts')
 </body>
 </html>
