@@ -16,13 +16,26 @@
         }
         #heroCarousel .carousel-indicators [data-bs-target] {
             /* Reset bentuk default Bootstrap */
-            width: 6px !important;
-            height: 6px !important;
+            width: 10px !important;
+            height: 10px !important;
             padding: 0;
             border: 0 !important;
             border-radius: 50% !important; /* Kunci utama: Paksa jadi lingkaran */
 
             margin: 0.5vw;
+        }
+
+        @media (max-width: 991px) {
+            #heroCarousel .carousel-indicators [data-bs-target] {
+                width: 6px !important;
+                height: 6px !important;
+            }
+        }
+
+        @media (max-width: 991px) {
+            #heroCarousel .carousel-item::after {
+                pointer-events: none;
+            }
         }
     </style>
     {{-- Carousel Anda (Tidak ada perubahan di sini) --}}
@@ -30,7 +43,7 @@
         <div id="heroCarousel" class="carousel slide w-100" data-bs-ride="carousel" data-bs-touch="true">
 
             <div class="carousel-dark">
-                <div class="carousel-indicators">
+                <div class="carousel-indicators m-0">
                     @foreach ($advertisement as $adv)
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $loop->index }}" class="rounded-5 @if($loop->first) active @endif"></button>
                     @endforeach
