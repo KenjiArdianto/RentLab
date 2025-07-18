@@ -11,9 +11,8 @@
     
     <!-- Link ke file CSS eksternal -->
     <link rel="stylesheet" href="{{ asset('build/assets/CSS/faq.css') }}">
-</head>
-<body>
 
+<x-layout>
     <div class="container py-5">
         <h1 class="text-center mb-4">Frequently Asked Questions</h1>
 
@@ -500,5 +499,5 @@
             }
         });
     </script>
-</body>
+</x-layout>
 </html>
