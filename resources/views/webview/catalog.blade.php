@@ -1,24 +1,31 @@
 <x-layout>
-     <div class="container-fluid mt-4 pe-0">
-        <div class="d-flex justify-content-center">
+    {{-- Main content area with responsive row/column structure --}}
+    <div class="container mt-4">
+        <div class="row p-1">
+            {{-- Kolom 1: RESPONSIVE OFFCANVAS SIDEBAR FILTER --}}
+            <div class="col-xxl-3 bg-light p-2 offcanvas-xxl offcanvas-start" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarLabel">
+                {{-- Header for mobile offcanvas view --}}
+                <div class="offcanvas-header d-xxl-none">
+                    <h5 class="offcanvas-title" id="filterSidebarLabel">Filter Kendaraan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#filterSidebar" aria-label="Close"></button>
+                </div>
 
-            {{-- Kolom 1: SIDEBAR FILTER --}}
-            <div class="flex-shrink-0 p-3 bg-light" style="width: 22vw; overflow-y:visible; overflow-x:hidden;">
-                <div>
-                    {{-- PASTIKAN ACTION MENUJU KE ROUTE KATALOG --}}
+                {{-- Body of the offcanvas, containing the form --}}
+                <div class="offcanvas-body">
+                    {{-- The action and reset links now point to 'vehicle.display' --}}
+                    {{-- State is now handled with old() first, then request() --}}
                     <form action="{{ route('vehicle.catalog') }}" method="GET" id="filterForm">
-
                         @php
-                            // Logika ini mengambil state filter dari URL, default ke 'Car'
-                            $activeType = request('Tipe_Kendaraan', 'Car');
-                            $activeTransmissions = request('Jenis_Transmisi', []);
-                            $activeCategories = request('Jenis_Kendaraan', []);
+                            $activeType = old('Tipe_Kendaraan', request('Tipe_Kendaraan', 'Car'));
+                            $activeTransmissions = old('Jenis_Transmisi', request('Jenis_Transmisi', []));
+                            $activeCategories = old('Jenis_Kendaraan', request('Jenis_Kendaraan', []));
                         @endphp
 
-                        <h5 class="d-flex justify-content-center">Filter Kendaraan</h5>
-                        <hr>
+                        {{-- Title for desktop view --}}
+                        <h5 class="d-none d-xxl-block text-center">Filter Kendaraan</h5>
+                        <hr class="d-none d-xxl-block m-2">
 
-                        {{-- Jika ada pencarian, nilainya akan tetap dibawa saat memfilter --}}
+                        {{-- Hidden input for search query persistence --}}
                         @if(request()->has('search'))
                             <input type="hidden" name="search" value="{{ request('search') }}">
                         @endif
@@ -32,14 +39,13 @@
                             <label class="btn btn-outline-primary" for="opsiMotor">Motor</label>
                         </div>
 
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-center">
-                                <div id="kalender-inline"></div>
-                            </div>
+                        {{-- Flatpickr calendar --}}
+                        <div class="d-flex justify-content-center">
+                            <div id="kalender-inline" class="mb-3"></div>
                         </div>
 
-                        <input type="hidden" name="start_date" id="start_date_hidden" value="{{ request('start_date') }}">
-                        <input type="hidden" name="end_date" id="end_date_hidden" value="{{ request('end_date') }}">
+                        <input type="hidden" name="start_date" id="start_date_hidden" value="{{ old('start_date', request('start_date')) }}">
+                        <input type="hidden" name="end_date" id="end_date_hidden" value="{{ old('end_date', request('end_date')) }}">
 
                         <hr>
 
@@ -85,32 +91,15 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-- Letakkan kode ini setelah blok filter transmisi --}}
                         <hr>
 
+                        {{-- Filter Jangkauan Harga --}}
                         <p class="p-2 pb-1 mb-2 fs-5">Jangkauan Harga</p>
-
                         <div class="ps-2 pe-2 d-flex pb-1 mb-1 align-items-center justify-content-center">
-                            <input
-                                type="text"
-                                class="form-control @error('min_price') is-invalid @enderror"
-                                name="min_price"
-                                id="min_price"
-                                placeholder="Min"
-                                value="{{ request('min_price', 0) }}">
-
+                            <input type="text" class="form-control @error('min_price') is-invalid @enderror" name="min_price" id="min_price" placeholder="Min" value="{{ old('min_price', request('min_price', 0)) }}">
                             <img src="{{ asset('page_assets/arrow.png') }}" alt="->" class="m-2" height="20px">
-
-                            <input
-                                type="text"
-                                class="form-control @error('max_price') is-invalid @enderror"
-                                name="max_price"
-                                id="max_price"
-                                placeholder="Max"
-                                value="{{ request('max_price') }}">
+                            <input type="text" class="form-control @error('max_price') is-invalid @enderror" name="max_price" id="max_price" placeholder="Max" value="{{ old('max_price', request('max_price')) }}">
                         </div>
-
                         <div class="ps-2 pe-2 mb-3">
                             @error('min_price') <div class="text-danger small">{{ $message }}</div> @enderror
                             @error('max_price') <div class="text-danger small">{{ $message }}</div> @enderror
@@ -126,10 +115,19 @@
             </div>
 
             {{-- Kolom 2: KONTEN UTAMA --}}
-            <div class="flex-grow-1 p-3">
-                <div class="row g-4">
+            <div class="col-xxl-9">
+                {{-- Button to show filter sidebar on mobile --}}
+                <div class="d-grid mb-3 d-xxl-none">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar" aria-controls="filterSidebar">
+                        <i class="bi bi-filter"></i> Tampilkan Filter
+                    </button>
+                </div>
+
+                {{-- Grid for vehicle cards --}}
+                <div class="row g-2">
                     @forelse ($vehicle as $vehicle_item)
-                        <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-1">
+                        {{-- Updated column classes for better responsive grid --}}
+                        <div class="col-6 col-md-4 col-lg-3">
                             <x-card href="{{ route('vehicle.detail', $vehicle_item->id) }}" :vehicle_item="$vehicle_item" />
                         </div>
                     @empty
@@ -141,46 +139,47 @@
                     @endforelse
                 </div>
 
-                {{-- Pagination --}}
-                <div class="mt-4 d-flex justify-content-center">
-                    {{ $vehicle->withQueryString()->links() }}
+                {{-- Pagination with result count --}}
+                <div class="mt-4">
+                    <p class="text-center text-muted small">
+                        Showing {{ $vehicle->firstItem() }} to {{ $vehicle->lastItem() }} of {{ $vehicle->total() }} results
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        {{-- Using withQueryString to preserve filters during pagination --}}
+                        {{ $vehicle->withQueryString()->links() }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- SCRIPT YANG BENAR UNTUK LOGIKA FILTER INTERAKTIF --}}
+    {{-- SCRIPT UNTUK LOGIKA FILTER INTERAKTIF (No changes needed) --}}
     @push('scripts')
     <script>
         /**
-         * FUNGSI BARU: Mereset SEMUA filter (checkbox, harga, dan tanggal).
-         * Menerima instance Flatpickr agar bisa mereset kalender.
+         * Resets all filters (checkboxes, price, and date).
+         * Accepts a Flatpickr instance to clear the calendar.
          */
         function resetAllFilters(flatpickrInstance) {
-            // Reset semua checkbox
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-            // Reset input harga ke kondisi default
             const minPriceInput = document.getElementById('min_price');
             const maxPriceInput = document.getElementById('max_price');
-            if (minPriceInput) minPriceInput.value = '0'; // Kembalikan ke default
-            if (maxPriceInput) maxPriceInput.value = '';  // Kosongkan
+            if (minPriceInput) minPriceInput.value = '0';
+            if (maxPriceInput) maxPriceInput.value = '';
 
-            // Reset input tanggal yang tersembunyi
             const startDateInput = document.getElementById('start_date_hidden');
             const endDateInput = document.getElementById('end_date_hidden');
             if(startDateInput) startDateInput.value = '';
             if(endDateInput) endDateInput.value = '';
 
-            // Reset tampilan kalender Flatpickr jika ada
             if (flatpickrInstance) {
                 flatpickrInstance.clear();
             }
         }
 
         /**
-         * Mengatur tampilan form (show/hide) berdasarkan tipe kendaraan.
-         * (Fungsi ini tidak berubah)
+         * Toggles form sections based on vehicle type ('Car' or 'Motor').
          */
         function tampilkanForm(tipe) {
             const wrapperManual = document.getElementById('wrapper-manual');
@@ -205,32 +204,27 @@
             }
         }
 
-        // --- EVENT LISTENER UTAMA ---
+        // --- MAIN EVENT LISTENER ---
         document.addEventListener('DOMContentLoaded', function () {
             const filterForm = document.getElementById('filterForm');
             if (!filterForm) return;
 
-            // Ambil elemen yang kita butuhkan
             const radios = filterForm.querySelectorAll('input[name="Tipe_Kendaraan"]');
             const startDateInput = document.getElementById('start_date_hidden');
             const endDateInput = document.getElementById('end_date_hidden');
-
-            // Deklarasikan variabel instance di sini agar bisa diakses oleh semua
             let calendarInstance = null;
 
-            // Inisialisasi Tampilan Awal
-            const tipeAktifSaatIni = '{{ request("Tipe_Kendaraan", "Car") }}';
+            // Initial Display Setup
+            const tipeAktifSaatIni = '{{ old("Tipe_Kendaraan", request("Tipe_Kendaraan", "Car")) }}';
             tampilkanForm(tipeAktifSaatIni);
 
-            // Inisialisasi Flatpickr
+            // Initialize Flatpickr
             if (document.getElementById('kalender-inline')) {
-                // Cek apakah input tanggal ada dan memiliki nilai
                 let tanggalDefault = [];
                 if (startDateInput && endDateInput && startDateInput.value && endDateInput.value) {
                     tanggalDefault = [startDateInput.value, endDateInput.value];
                 }
 
-                // Simpan instance ke variabel yang sudah kita deklarasikan
                 calendarInstance = flatpickr("#kalender-inline", {
                     inline: true,
                     mode: "range",
@@ -239,23 +233,16 @@
                     locale: "id",
                     defaultDate: tanggalDefault,
                     onChange: function(selectedDates) {
-                        // Hanya proses jika pengguna sudah memilih rentang tanggal yang lengkap
                         if (selectedDates.length === 2) {
-
-                            // FUNGSI BARU yang aman dari timezone
                             const formatDate = (date) => {
                                 const year = date.getFullYear();
-                                const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() 0-indexed
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
                                 const day = String(date.getDate()).padStart(2, '0');
                                 return `${year}-${month}-${day}`;
                             };
-
-                            // Gunakan fungsi format yang baru
                             startDateInput.value = formatDate(selectedDates[0]);
                             endDateInput.value = formatDate(selectedDates[1]);
-
                         } else {
-                            // Kosongkan jika pilihan tidak lengkap
                             startDateInput.value = '';
                             endDateInput.value = '';
                         }
@@ -263,10 +250,10 @@
                 });
             }
 
-            // Pasang Event Listener HANYA untuk Radio Button (SATU KALI)
+            // Add change listener to radio buttons
             radios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    // Saat pindah tipe, reset semuanya termasuk kalender
+                    // When switching types, reset everything and submit
                     resetAllFilters(calendarInstance);
                     tampilkanForm(this.value);
                     filterForm.submit();

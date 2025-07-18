@@ -112,7 +112,7 @@ class VehicleController extends Controller
         $this->filter($request, $vehicleQuery);
         // dd($vehicleQuery->toSql());
 
-        $vehicle = $vehicleQuery->orderBy('id')->paginate(12)->withQueryString();
+        $vehicle = $vehicleQuery->orderBy('id')->paginate(16)->withQueryString();
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
 
         return view(
@@ -129,6 +129,11 @@ class VehicleController extends Controller
 
     public function catalog(Request $request)
     {
+        if (!$request->has('Tipe_Kendaraan')) {
+            $request->merge(['Tipe_Kendaraan' => 'Car']);
+        }
+        // ============================= FIX ENDS HERE =============================
+
         $vehicleQuery = Vehicle::query();
 
         if ($request->filled('search')) {
@@ -138,13 +143,14 @@ class VehicleController extends Controller
             });
         }
 
+        // Sekarang, saat filter() dipanggil, Tipe_Kendaraan sudah ada di dalam request,
+        // sehingga filter tipe kendaraan akan diterapkan dengan benar.
         $this->filter($request, $vehicleQuery);
 
-        $vehicle = $vehicleQuery->orderBy('id')->paginate(12)->withQueryString();
+        $vehicle = $vehicleQuery->orderBy('id')->paginate(16)->withQueryString();
 
         return view('webview.catalog', [
             "vehicle" => $vehicle,
-            // FIX 3: Ambil daftar kategori dari fungsi terpusat
             "carCategories" => $this->getCarCategories(),
             "motorcycleCategories" => $this->getMotorcycleCategories(),
         ]);

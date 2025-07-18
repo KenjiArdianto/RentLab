@@ -14,15 +14,15 @@ class AdvertisementSeeder extends Seeder
     public function run(): void
     {
         Advertisement::factory()->create([
-            'path' => '/advertisement/1.png',
+            'path' => 'https://picsum.photos/seed/picsum/1500/600',
             'isactive' => true,
         ]);
         Advertisement::factory()->create([
-            'path' => '/advertisement/2.png',
+            'path' => 'https://picsum.photos/seed/picsum/1500/600',
             'isactive' => true,
         ]);
         Advertisement::factory()->create([
-            'path' => '/advertisement/3.png',
+            'path' => 'https://picsum.photos/seed/picsum/1500/600',
             'isactive' => true,
         ]);
     }
