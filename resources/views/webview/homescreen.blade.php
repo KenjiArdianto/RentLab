@@ -102,7 +102,7 @@
 
                 {{-- Body of the offcanvas, containing the form --}}
                 <div class="offcanvas-body">
-                    <form action="{{ route('vehicle.catalog') }}" method="GET" id="filterForm">
+                    <form action="{{ route('vehicle.display') }}" method="GET" id="filterForm">
                         @php
                             $activeType = old('Tipe_Kendaraan', request('Tipe_Kendaraan', 'Car'));
                             $activeTransmissions = old('Jenis_Transmisi', request('Jenis_Transmisi', []));
@@ -195,7 +195,7 @@
 
                         {{-- Tombol Aksi --}}
                         <div class="container-fluid d-flex p-0 mt-3">
-                            <a href="{{ route('vehicle.catalog') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
+                            <a href="{{ route('vehicle.display') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
                             <button type="submit" class="container-fluid btn btn-primary m-2">Filter</button>
                         </div>
                     </form>
