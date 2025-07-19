@@ -126,7 +126,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container py-4">
+    <main class="">
         <!-- The content from your Blade templates will be injected here -->
         {{ $slot }}
     </main>
