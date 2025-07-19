@@ -59,10 +59,16 @@
 
     <header class="sticky-top bg-light shadow-sm">
         <!-- Top bar for language selection -->
-        <nav class="navbar mt-0 mb-0 me-lg-5 p-0 justify-content-end d-none d-lg-flex">
+        <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-none d-lg-flex">
             <div class="container-fluid justify-content-end">
-                <a class="navbar-brand d-flex align-items-center gap-1 p-0 mt-1 m-0" href="#">
-                    <img src="https://placehold.co/12x12/cccccc/000000?text=G" width="12" height="12" alt="Language Icon">
+                <a class="navbar-brand d-flex align-items-center gap-0 p-0 px-4 mt-1 m-0" href="#">
+                    <img src="https://placehold.co/12x12/cccccc/000000?text=F" width="12" height="12" alt="Language Icon">
+                    <div class="ms-1 navbar-brand d-flex align-items-center p-0">
+                        <p class="m-0 p-0 fw-bold" style="font-size: 9px;">FAQ</p>
+                    </div>
+                </a>
+                <a class="navbar-brand d-flex align-items-center gap-0 p-0 px-4 mt-1 m-0" href="#">
+                    <img src="https://placehold.co/12x12/cccccc/000000?text=B" width="12" height="12" alt="Language Icon">
                     <div class="ms-1 navbar-brand d-flex align-items-center p-0">
                         <p class="m-0 p-0 fw-bold" style="font-size: 9px;">Bahasa Indonesia</p>
                     </div>
