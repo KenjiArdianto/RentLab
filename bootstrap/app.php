@@ -11,8 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
-    })
+        // Daftarkan pengecualian CSRF di sini
+        $middleware->validateCsrfTokens(except: [
+            'xendit/webhook', // <-- Ini URI webhook Anda
+        ]);
+    }) // <-- BLOK INI YANG PERLU ANDA TAMBAHKAN/PASTIKAN ADA
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
