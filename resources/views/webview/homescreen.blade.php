@@ -9,6 +9,7 @@
             height: 40%;
             background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
             z-index: 1;
+            pointer-events: none; /* Memperbaiki masalah swipe */
         }
         #heroCarousel .carousel-indicators {
             bottom: 20px;
@@ -21,8 +22,7 @@
             padding: 0;
             border: 0 !important;
             border-radius: 50% !important; /* Kunci utama: Paksa jadi lingkaran */
-
-            margin: 0.5vw;
+            margin: 0 5px;
         }
 
         @media (max-width: 991px) {
@@ -31,23 +31,16 @@
                 height: 6px !important;
             }
         }
-
-        @media (max-width: 991px) {
-            #heroCarousel .carousel-item::after {
-                pointer-events: none;
-            }
-        }
     </style>
-    {{-- Carousel Anda (Tidak ada perubahan di sini) --}}
-    <div class="container-fluid px-0">
-        <div id="heroCarousel" class="carousel slide w-100" data-bs-ride="carousel" data-bs-touch="true">
 
-            <div class="carousel-dark">
-                <div class="carousel-indicators m-0">
-                    @foreach ($advertisement as $adv)
-                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $loop->index }}" class="rounded-5 @if($loop->first) active @endif"></button>
-                    @endforeach
-                </div>
+    {{-- Carousel Section --}}
+    <div class="container-fluid px-0">
+        <div id="heroCarousel" class="carousel slide carousel-dark w-100" data-bs-ride="carousel" data-bs-touch="true">
+
+            <div class="carousel-indicators">
+                @foreach ($advertisement as $adv)
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $loop->index }}" class="@if($loop->first) active @endif"></button>
+                @endforeach
             </div>
 
             <div class="carousel-inner">
@@ -67,116 +60,143 @@
         </div>
     </div>
 
-    {{-- =================================================================== --}}
-    {{-- PERUBAHAN UTAMA DI SINI: container-fluid diubah menjadi container --}}
-    {{-- =================================================================== --}}
-    <div class="container mt-4">
+    {{-- Main content area with responsive row/column structure --}}
+    <div class="container mt-1 mt-xxl-4">
         <div class="row p-1">
+
+            {{-- =================================================================== --}}
+            {{-- KODE HEADER BARU DITERAPKAN DI SINI                             --}}
+            {{-- =================================================================== --}}
+            <div class="d-flex justify-content-between align-items-center mb-1 d-xxl-none">
+
+                {{-- Kiri: Placeholder tak terlihat untuk menyeimbangkan tombol di kanan --}}
+                <div style="width: 35px;"></div>
+
+                {{-- Tengah: Judul "Product" --}}
+                <h5 class="p-0 m-0">Product</h5>
+
+                {{-- Kanan: Tombol Filter --}}
+                <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center p-0"
+                        style="width: 35px; height: 35px;"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#filterSidebar"
+                        aria-controls="filterSidebar">
+                    <img src="/page_assets/filter.svg" alt="Filter" style="width:18px; height:18px;">
+                </button>
+
+            </div>
+            <hr class="mt-1 mb-2 d-xxl-none">
+            {{-- =================================================================== --}}
+            {{-- AKHIR DARI PENERAPAN KODE                                           --}}
+            {{-- =================================================================== --}}
+
+
             {{-- Kolom 1: SIDEBAR FILTER --}}
-            <div class="col-xxl-3 bg-light p-2 offcanvas-xxl offcanvas-start d-flex justify-content-center" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarLabel">
+            <div class="col-xxl-3 bg-light p-2 offcanvas-xxl offcanvas-start" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarLabel">
+                {{-- Header for mobile offcanvas view --}}
                 <div class="offcanvas-header d-xxl-none">
                     <h5 class="offcanvas-title" id="filterSidebarLabel">Filter Kendaraan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#filterSidebar" aria-label="Close"></button>
                 </div>
 
+                {{-- Body of the offcanvas, containing the form --}}
                 <div class="offcanvas-body">
-                    <form action="{{ route('vehicle.display') }}" method="GET" id="filterForm">
-                        <div >
-                            {{-- ... Seluruh isi form filter Anda ... --}}
-                            @php
-                                $activeType = old('Tipe_Kendaraan', request('Tipe_Kendaraan', 'Car'));
-                                $activeTransmissions = old('Jenis_Transmisi', request('Jenis_Transmisi', []));
-                                $activeCategories = old('Jenis_Kendaraan', request('Jenis_Kendaraan', []));
-                            @endphp
+                    <form action="{{ route('vehicle.catalog') }}" method="GET" id="filterForm">
+                        @php
+                            $activeType = old('Tipe_Kendaraan', request('Tipe_Kendaraan', 'Car'));
+                            $activeTransmissions = old('Jenis_Transmisi', request('Jenis_Transmisi', []));
+                            $activeCategories = old('Jenis_Kendaraan', request('Jenis_Kendaraan', []));
+                        @endphp
 
-                            {{-- Judul ini bisa untuk desktop, karena di mobile sudah ada di header --}}
-                            <h5 class="d-none d-xxl-block text-center">Filter Kendaraan</h5>
-                            <hr class="d-none d-xxl-block m-2">
+                        {{-- Title for desktop view --}}
+                        <h5 class="d-none d-xxl-block text-center">Filter Kendaraan</h5>
+                        <hr class="d-none d-xxl-block m-2">
 
-                            @if(request()->has('search'))
-                                <input type="hidden" name="search" value="{{ request('search') }}">
-                            @endif
+                        {{-- Hidden input for search query persistence --}}
+                        @if(request()->has('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
 
-                            {{-- ( ... sisa form Anda secara lengkap ... ) --}}
-                            <div class="btn-group w-100 mb-3" role="group">
-                                <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMobil" value="Car" @if($activeType == 'Car') checked @endif>
-                                <label class="btn btn-outline-primary" for="opsiMobil">Mobil</label>
+                        {{-- Filter Tipe Kendaraan (Mobil/Motor) --}}
+                        <div class="btn-group w-100 mb-3" role="group">
+                            <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMobil" value="Car" @if($activeType == 'Car') checked @endif>
+                            <label class="btn btn-outline-primary" for="opsiMobil">Mobil</label>
 
-                                <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMotor" value="Motor" @if($activeType == 'Motor') checked @endif>
-                                <label class="btn btn-outline-primary" for="opsiMotor">Motor</label>
-                            </div>
+                            <input type="radio" class="btn-check" name="Tipe_Kendaraan" id="opsiMotor" value="Motor" @if($activeType == 'Motor') checked @endif>
+                            <label class="btn btn-outline-primary" for="opsiMotor">Motor</label>
+                        </div>
 
-                            <div class="d-flex justify-content-center">
-                                <div id="kalender-inline" class="mb-3"></div>
-                            </div>
+                        {{-- Flatpickr calendar --}}
+                        <div class="d-flex justify-content-center">
+                            <div id="kalender-inline" class="mb-3"></div>
+                        </div>
 
-                            <input type="hidden" name="start_date" id="start_date_hidden" value="{{ old('start_date', request('start_date')) }}">
-                            <input type="hidden" name="end_date" id="end_date_hidden" value="{{ old('end_date', request('end_date')) }}">
+                        <input type="hidden" name="start_date" id="start_date_hidden" value="{{ old('start_date', request('start_date')) }}">
+                        <input type="hidden" name="end_date" id="end_date_hidden" value="{{ old('end_date', request('end_date')) }}">
 
-                            <br>
+                        <hr>
 
-                            <div id="wrapper-kategori-mobil">
-                                @foreach($carCategories as $jenis)
-                                    @php $id = 'check-mobil-' . Str::slug($jenis); @endphp
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="{{ $jenis }}" id="{{ $id }}" @if(in_array($jenis, $activeCategories)) checked @endif>
-                                        <label class="form-check-label" for="{{ $id }}">{{ $jenis }}</label>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div id="wrapper-kategori-motor" style="display: none;">
-                                @foreach($motorcycleCategories as $jenis)
-                                    @php $id = 'check-motor-' . Str::slug($jenis); @endphp
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" id="{{ $id }}" value="{{ $jenis }}" @if(in_array($jenis, $activeCategories)) checked @endif>
-                                        <label class="form-check-label" for="{{ $id }}">{{ $jenis }}</label>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <hr>
-
-                            <div class="row mb-3">
-                                <div id="wrapper-manual" class="col-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkManual" value="Manual" @if(in_array('Manual', $activeTransmissions)) checked @endif>
-                                        <label class="form-check-label" for="checkManual">Manual</label>
-                                    </div>
+                        {{-- Filter Jenis Kendaraan (Dinamis) --}}
+                        <div id="wrapper-kategori-mobil">
+                            @foreach($carCategories as $jenis)
+                                @php $id = 'check-mobil-' . Str::slug($jenis); @endphp
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" value="{{ $jenis }}" id="{{ $id }}" @if(in_array($jenis, $activeCategories)) checked @endif>
+                                    <label class="form-check-label" for="{{ $id }}">{{ $jenis }}</label>
                                 </div>
-                                <div id="wrapper-matic" class="col-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkAutomatic" value="Automatic" @if(in_array('Automatic', $activeTransmissions)) checked @endif>
-                                        <label class="form-check-label" for="checkAutomatic">Automatic</label>
-                                    </div>
+                            @endforeach
+                        </div>
+                        <div id="wrapper-kategori-motor" style="display: none;">
+                            @foreach($motorcycleCategories as $jenis)
+                                @php $id = 'check-motor-' . Str::slug($jenis); @endphp
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Kendaraan[]" id="{{ $id }}" value="{{ $jenis }}" @if(in_array($jenis, $activeCategories)) checked @endif>
+                                    <label class="form-check-label" for="{{ $id }}">{{ $jenis }}</label>
                                 </div>
-                                <div id="wrapper-kopling" class="col-4" style="display: none;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkKopling" value="Kopling" @if(in_array('Kopling', $activeTransmissions)) checked @endif>
-                                        <label class="form-check-label" for="checkKopling">Kopling</label>
-                                    </div>
+                            @endforeach
+                        </div>
+                        <hr>
+
+                        {{-- Filter Transmisi (Dinamis) --}}
+                        <div class="row mb-3">
+                            <div id="wrapper-manual" class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkManual" value="Manual" @if(in_array('Manual', $activeTransmissions)) checked @endif>
+                                    <label class="form-check-label" for="checkManual">Manual</label>
                                 </div>
                             </div>
-
-                            <hr>
-
-                            <p class="p-2 pb-1 mb-2 fs-5">Jangkauan Harga</p>
-
-                            <div class="ps-2 pe-2 d-flex pb-1 mb-1 align-items-center justify-content-center">
-                                <input type="text" class="form-control @error('min_price') is-invalid @enderror" name="min_price" id="min_price" placeholder="Min" value="{{ old('min_price', request('min_price', 0)) }}">
-                                <img src="{{ asset('page_assets/arrow.png') }}" alt="->" class="m-2" height="20px">
-                                <input type="text" class="form-control @error('max_price') is-invalid @enderror" name="max_price" id="max_price" placeholder="Max" value="{{ old('max_price', request('max_price')) }}">
+                            <div id="wrapper-matic" class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkAutomatic" value="Automatic" @if(in_array('Automatic', $activeTransmissions)) checked @endif>
+                                    <label class="form-check-label" for="checkAutomatic">Automatic</label>
+                                </div>
                             </div>
-
-                            <div class="ps-2 pe-2 mb-3">
-                                @error('min_price') <div class="text-danger small">{{ $message }}</div> @enderror
-                                @error('max_price') <div class="text-danger small">{{ $message }}</div> @enderror
+                            <div id="wrapper-kopling" class="col-4" style="display: none;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Jenis_Transmisi[]" id="checkKopling" value="Kopling" @if(in_array('Kopling', $activeTransmissions)) checked @endif>
+                                    <label class="form-check-label" for="checkKopling">Kopling</label>
+                                </div>
                             </div>
+                        </div>
+                        <hr>
 
-                            <div class="container-fluid d-flex p-0">
-                                <a href="{{ route('vehicle.display') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
-                                <button type="submit" class="container-fluid btn btn-primary m-2">Filter</button>
-                            </div>
+                        {{-- Filter Jangkauan Harga --}}
+                        <p class="p-2 pb-1 mb-2 fs-5">Jangkauan Harga</p>
+                        <div class="ps-2 pe-2 d-flex pb-1 mb-1 align-items-center justify-content-center">
+                            <input type="text" class="form-control @error('min_price') is-invalid @enderror" name="min_price" id="min_price" placeholder="Min" value="{{ old('min_price', request('min_price', 0)) }}">
+                            <img src="{{ asset('page_assets/arrow.png') }}" alt="->" class="m-2" height="20px">
+                            <input type="text" class="form-control @error('max_price') is-invalid @enderror" name="max_price" id="max_price" placeholder="Max" value="{{ old('max_price', request('max_price')) }}">
+                        </div>
+                        <div class="ps-2 pe-2 mb-3">
+                            @error('min_price') <div class="text-danger small">{{ $message }}</div> @enderror
+                            @error('max_price') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Tombol Aksi --}}
+                        <div class="container-fluid d-flex p-0 mt-3">
+                            <a href="{{ route('vehicle.catalog') }}" class="container-fluid btn btn-secondary m-2">Reset</a>
+                            <button type="submit" class="container-fluid btn btn-primary m-2">Filter</button>
                         </div>
                     </form>
                 </div>
@@ -184,74 +204,68 @@
 
             {{-- Kolom 2: KONTEN UTAMA --}}
             <div class="col-xxl-9">
-                <div class="d-grid mb-3 d-xxl-none">
-                    <button class="btn btn-primary m-0 p-1 rounded-4" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar" aria-controls="filterSidebar">
-                        <i class="bi bi-filter"></i>
-                        <p class="m-0" style="font-size: 0.75rem;">
-                            Tampilkan Filter
-                        </p>
-                    </button>
-                </div>
 
+                {{-- Grid for vehicle cards --}}
                 <div class="row g-2">
                     @forelse ($vehicle as $vehicle_item)
+                        {{-- Updated column classes for better responsive grid --}}
                         <div class="col-6 col-md-4 col-lg-3">
                             <x-card href="{{ route('vehicle.detail', $vehicle_item->id) }}" :vehicle_item="$vehicle_item" />
                         </div>
                     @empty
                         <div class="col-12">
                             <div class="alert alert-warning text-center">
-                                Tidak ada kendaraan yang sesuai dengan filter Anda.
+                                Tidak ada kendaraan yang sesuai dengan filter atau pencarian Anda.
                             </div>
                         </div>
                     @endforelse
                 </div>
 
+                {{-- Pagination with result count --}}
                 <div class="mt-4">
                     <p class="text-center text-muted small">
                         Showing {{ $vehicle->firstItem() }} to {{ $vehicle->lastItem() }} of {{ $vehicle->total() }} results
                     </p>
                     <div class="d-flex justify-content-center">
-                        {{ $vehicle->links() }}
+                        {{-- Using withQueryString to preserve filters during pagination --}}
+                        {{ $vehicle->withQueryString()->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    </div>
+    {{-- FIX: Menambahkan library Flatpickr sebelum script digunakan --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 
     @push('scripts')
     <script>
         /**
-         * FUNGSI BARU: Mereset SEMUA filter (checkbox, harga, dan tanggal).
-         * Menerima instance Flatpickr agar bisa mereset kalender.
+         * Resets all filters (checkboxes, price, and date).
+         * Accepts a Flatpickr instance to clear the calendar.
          */
         function resetAllFilters(flatpickrInstance) {
-            // Reset semua checkbox
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-            // Reset input harga ke kondisi default
             const minPriceInput = document.getElementById('min_price');
             const maxPriceInput = document.getElementById('max_price');
-            if (minPriceInput) minPriceInput.value = '0'; // Kembalikan ke default
-            if (maxPriceInput) maxPriceInput.value = '';  // Kosongkan
+            if (minPriceInput) minPriceInput.value = '0';
+            if (maxPriceInput) maxPriceInput.value = '';
 
-            // Reset input tanggal yang tersembunyi
             const startDateInput = document.getElementById('start_date_hidden');
             const endDateInput = document.getElementById('end_date_hidden');
             if(startDateInput) startDateInput.value = '';
             if(endDateInput) endDateInput.value = '';
 
-            // Reset tampilan kalender Flatpickr jika ada
             if (flatpickrInstance) {
                 flatpickrInstance.clear();
             }
         }
 
         /**
-         * Mengatur tampilan form (show/hide) berdasarkan tipe kendaraan.
-         * (Fungsi ini tidak berubah)
+         * Toggles form sections based on vehicle type ('Car' or 'Motor').
          */
         function tampilkanForm(tipe) {
             const wrapperManual = document.getElementById('wrapper-manual');
@@ -276,32 +290,27 @@
             }
         }
 
-        // --- EVENT LISTENER UTAMA ---
+        // --- MAIN EVENT LISTENER ---
         document.addEventListener('DOMContentLoaded', function () {
             const filterForm = document.getElementById('filterForm');
             if (!filterForm) return;
 
-            // Ambil elemen yang kita butuhkan
             const radios = filterForm.querySelectorAll('input[name="Tipe_Kendaraan"]');
             const startDateInput = document.getElementById('start_date_hidden');
             const endDateInput = document.getElementById('end_date_hidden');
-
-            // Deklarasikan variabel instance di sini agar bisa diakses oleh semua
             let calendarInstance = null;
 
-            // Inisialisasi Tampilan Awal
-            const tipeAktifSaatIni = '{{ request("Tipe_Kendaraan", "Car") }}';
+            // Initial Display Setup
+            const tipeAktifSaatIni = '{{ old("Tipe_Kendaraan", request("Tipe_Kendaraan", "Car")) }}';
             tampilkanForm(tipeAktifSaatIni);
 
-            // Inisialisasi Flatpickr
+            // Initialize Flatpickr
             if (document.getElementById('kalender-inline')) {
-                // Cek apakah input tanggal ada dan memiliki nilai
                 let tanggalDefault = [];
                 if (startDateInput && endDateInput && startDateInput.value && endDateInput.value) {
                     tanggalDefault = [startDateInput.value, endDateInput.value];
                 }
 
-                // Simpan instance ke variabel yang sudah kita deklarasikan
                 calendarInstance = flatpickr("#kalender-inline", {
                     inline: true,
                     mode: "range",
@@ -310,7 +319,6 @@
                     locale: "id",
                     defaultDate: tanggalDefault,
                     onChange: function(selectedDates) {
-                        // Hanya proses jika pengguna sudah memilih rentang tanggal yang lengkap
                         if (selectedDates.length === 2) {
                             const formatDate = (date) => {
                                 const year = date.getFullYear();
@@ -328,10 +336,10 @@
                 });
             }
 
-            // Pasang Event Listener HANYA untuk Radio Button (SATU KALI)
+            // Add change listener to radio buttons
             radios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    // Saat pindah tipe, reset semuanya termasuk kalender
+                    // When switching types, reset everything and submit
                     resetAllFilters(calendarInstance);
                     tampilkanForm(this.value);
                     filterForm.submit();

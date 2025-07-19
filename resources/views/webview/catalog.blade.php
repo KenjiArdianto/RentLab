@@ -1,8 +1,38 @@
 <x-layout>
     {{-- Main content area with responsive row/column structure --}}
-    <div class="container mt-4">
+    <div class="container mt-2">
         <div class="row p-1">
-            {{-- Kolom 1: RESPONSIVE OFFCANVAS SIDEBAR FILTER --}}
+
+            {{-- =================================================================== --}}
+            {{-- FIX: Header baru untuk menyejajarkan judul dan tombol filter      --}}
+            {{-- Ini hanya akan muncul di layar kecil (di bawah xxl)              --}}
+            {{-- =================================================================== --}}
+            <div class="d-flex justify-content-between align-items-center mb-1 d-xxl-none">
+
+                {{-- Kiri: Placeholder tak terlihat untuk menyeimbangkan tombol di kanan --}}
+                <div style="width: 35px;"></div>
+
+                {{-- Tengah: Judul "Product" --}}
+                <h5 class="p-0 m-0">Product</h5>
+
+                {{-- Kanan: Tombol Filter --}}
+                <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center p-0"
+                        style="width: 35px; height: 35px;"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#filterSidebar"
+                        aria-controls="filterSidebar">
+                    <img src="/page_assets/filter.svg" alt="Filter" style="width:18px; height:18px;">
+                </button>
+
+            </div>
+            <hr class="mt-1 mb-2 d-xxl-none">
+            {{-- =================================================================== --}}
+            {{-- AKHIR DARI FIX                                                      --}}
+            {{-- =================================================================== --}}
+
+
+            {{-- Kolom 1: SIDEBAR FILTER --}}
             <div class="col-xxl-3 bg-light p-2 offcanvas-xxl offcanvas-start" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarLabel">
                 {{-- Header for mobile offcanvas view --}}
                 <div class="offcanvas-header d-xxl-none">
@@ -116,12 +146,6 @@
 
             {{-- Kolom 2: KONTEN UTAMA --}}
             <div class="col-xxl-9">
-                {{-- Button to show filter sidebar on mobile --}}
-                <div class="d-grid mb-3 d-xxl-none">
-                    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar" aria-controls="filterSidebar">
-                        <i class="bi bi-filter"></i> Tampilkan Filter
-                    </button>
-                </div>
 
                 {{-- Grid for vehicle cards --}}
                 <div class="row g-2">
@@ -153,7 +177,11 @@
         </div>
     </div>
 
-    {{-- SCRIPT UNTUK LOGIKA FILTER INTERAKTIF (No changes needed) --}}
+    {{-- FIX: Menambahkan library Flatpickr sebelum script digunakan --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
     @push('scripts')
     <script>
         /**
