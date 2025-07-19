@@ -13,16 +13,24 @@
     <link rel="stylesheet" href="{{ asset('build/assets/CSS/faq.css') }}">
 
 <x-layout>
-    <div class="container py-5">
+    <div class="container pt-4 pb-5">
         <h1 class="text-center mb-4">Frequently Asked Questions</h1>
 
-        <!-- Search Bar with Icon -->
-        <div class="search-input-container">
-            <input id="faqSearch" class="form-control search-input" type="text" placeholder="Search for your question...">
-            <i class="bi bi-search search-icon"></i>
-        </div>
+        <form class="d-flex justify-content-start align-items-center mb-4" role="search">
+            <div class="p-1 d-flex flex-row justify-content-start align-items-center form-control border-primary ps-3 pe-3 w-100 rounded-4 search-container">
+                
+                <label for="faqSearch" class="search-icon-label">
+                    <img src="{{ asset('build/assets/icons8-search-50.png') }}" alt="" width="20" height="20">
+                </label>
 
-        <!-- No results message -->
+                <div class="container-fluid p-0">
+                    {{-- PENTING: ID "faqSearch" ditambahkan di sini agar filter JS tetap berfungsi --}}
+                    <input id="faqSearch" class="container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="Search for your question..." aria-label="Search">
+                </div>
+                
+            </div>
+        </form>
+
         <div id="noResults" class="no-results-message">
             No results found. Try a different or more general keyword.
         </div>
