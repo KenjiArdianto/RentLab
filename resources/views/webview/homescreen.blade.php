@@ -235,6 +235,8 @@
         </div>
     </div>
 
+    <div class="m-lg-0" style="margin:8vh"></div>
+
     {{-- FIX: Menambahkan library Flatpickr sebelum script digunakan --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
