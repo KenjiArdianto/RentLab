@@ -35,6 +35,7 @@ Route::get('/admin/transactions-',[AdminTransactionController::class, 'search'])
 
 
 Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
+Route::post('/admin/vehicles/{vehicle}', [AdminVehicleController::class, 'update'])->name('admin.vehicles.update');
 
 Route::get('/admin/reviews', function () {
     return view('admin.reviews');

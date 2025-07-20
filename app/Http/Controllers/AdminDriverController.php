@@ -53,9 +53,9 @@ class AdminDriverController extends Controller
         }
 
         if (!$hasValidFilters) {
-            $drivers = Driver::with('location')->paginate(31);
+            $drivers = Driver::with('location')->paginate(31)->appends(['search' => $search]);;
         } else {
-            $drivers = $query->with('location')->paginate(31);
+            $drivers = $query->with('location')->paginate(31)->appends(['search' => $search]);;
         }
 
         if ($drivers->isEmpty()) {

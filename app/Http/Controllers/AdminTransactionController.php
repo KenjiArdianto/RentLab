@@ -127,7 +127,7 @@ class AdminTransactionController extends Controller
         
         // dd($request->all());
 
-        $transactions = $query->paginate(100);
+        $transactions = $query->paginate(100)->appends(['search' => $search]);;
         return view('admin.transactions', compact('transactions'));
     }
 

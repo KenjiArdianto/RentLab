@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use App\Models\Vehicle;
+use App\Models\VehicleCategory;
+use App\Models\VehicleType;
+use App\Models\VehicleName;
+use App\Models\VehicleTransmission;
 use Illuminate\Http\Request;
 
 class AdminVehicleController extends Controller
@@ -13,9 +18,17 @@ class AdminVehicleController extends Controller
     public function index()
     {
         //
-        $v = Vehicle::with('vehicleCategories')->where('id', 1)->get();
-        // dd($v);
-        return view('admin.vehicles', compact('v'));
+        $vehicles = Vehicle::query()
+            ->with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'vehicleCategories', 'location', 'vehicleReview', 'transactions', 'vehicleImages'])
+            ->paginate(15);
+
+        $vehicleTypes = VehicleType::all();
+        $vehicleNames = VehicleName::all();
+        $vehicleTransmissions = VehicleTransmission::all();
+        $locations = Location::all();
+        $categories = VehicleCategory::all();
+        // dd($categories->all());
+        return view('admin.vehicles', compact('vehicles', 'vehicleTypes', 'vehicleNames', 'vehicleTransmissions', 'locations', 'categories'));
     }
 
     /**
@@ -56,6 +69,8 @@ class AdminVehicleController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        dd($request->all());
+
     }
 
     /**

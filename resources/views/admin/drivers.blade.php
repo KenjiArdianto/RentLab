@@ -28,7 +28,7 @@
                         <div class="container-flex" style="width: 23vw; height: 4vh">
                         
                         </div>
-                        <div class="card text-center d-flex align-items-center justify-content-center" style="width: 23vw; height: 60vh; font-size: 48px; cursor: pointer; cursor: pointer; border: 1.5px dashed black;!important;" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <div class="card text-center d-flex align-items-center justify-content-center" style="width: 23vw; height: 65vh; font-size: 48px; cursor: pointer; cursor: pointer; border: 1.5px dashed black;!important;" data-bs-toggle="modal" data-bs-target="#addModal">
                         +
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                             <div class="container-flex text-center" style="width: 23vw; height: 4vh" >
                                 <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $driver->id }}" id="checkDefault" style="border: 1px solid black;!important; box-shadow: 0 0 3px rgba(0,0,0,0.3);!important">
                             </div>
-                            <div class="card" style="width: 23vw; height: 60vh; cursor: pointer; border: 1px solid black;!important;" data-bs-toggle="modal" data-bs-target="#editModal{{ $driver->id }}">
+                            <div class="card" style="width: 23vw; height: 65vh; cursor: pointer; border: 1px solid black;!important;" data-bs-toggle="modal" data-bs-target="#editModal{{ $driver->id }}">
                                 {{-- <img src="{{ asset('storage/' . $driver->image) }}" alt="Driver Image" class="card-img-top"> --}}
                                 <img src="{{ asset($driver->image) }}" alt="Driver Image" class="card-img-top">
                                 <div class="card-body">
