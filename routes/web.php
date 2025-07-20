@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDriverController;
+use App\Http\Controllers\AdminTransactionController;
 use App\Http\Controllers\AdminVehicleController;
 
 Route::get('/', function () {
@@ -28,9 +29,10 @@ Route::delete('/admin/drivers/delete-selected', [AdminDriverController::class, '
 // Route::get('/admin/drivers/{page_number}',[AdminDriverController::class, 'index'])->name('admin.drivers');
 
 
-Route::get('/admin/transactions', function () {
-    return view('admin.transactions');
-})->name('admin.transactions');
+Route::get('/admin/transactions',[AdminTransactionController::class, 'index'])->name('admin.transactions');
+Route::post('/admin/transactions/{transaction}', [AdminTransactionController::class, 'update'])->name('admin.transactions.update');
+Route::get('/admin/transactions-',[AdminTransactionController::class, 'search'])->name('admin.transactions.search');
+
 
 Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
 

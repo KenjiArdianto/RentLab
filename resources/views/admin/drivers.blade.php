@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container-fluid justify-content-between align-items-center">
+    <div class="container-fluid justify-content-between align-items-center mb-4">
         <form action="{{ route('admin.drivers.search') }}" method="GET">
             <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: driver_id=1,name=John" aria-label="Search">
             
@@ -14,7 +14,7 @@
         @method('DELETE')
 
         {{-- Button for delete multiple --}}
-        <div class="mt-4 d-flex justify-content-center">
+        <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-danger" name="action_type" value="deleteselected_0">Delete Selected</button>
         </div>
 

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('start_book_date');
             $table->date('end_book_date');    
             $table->date('return_date');
-            $table->foreignId('status');
+            $table->foreignId('transaction_status_id');
             $table->timestamps();
         });
     }

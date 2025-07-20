@@ -21,46 +21,49 @@ class AdminDriverController extends Controller
     }
 
     public function search(Request $request)
-{
-    $locations = Location::all();
-    $search = $request->query('search');
-    $hasValidFilters = false;
+    {
+        $locations = Location::all();
+        $search = $request->query('search');
+        $hasValidFilters = false;
 
-    $query = Driver::join('locations', 'drivers.location_id', '=', 'locations.id')
-                   ->select('drivers.*', 'locations.location as location_location'); // avoid column conflicts
+        $query = Driver::join('locations', 'drivers.location_id', '=', 'locations.id')
+                    ->select('drivers.*', 'locations.location as location_location'); // avoid column conflicts
 
-    $allowedFields = ['name', 'driver_id', 'location_id'];
+        $allowedFields = ['name', 'driver_id', 'location_id'];
 
-    if ($search) {
-        $pairs = explode(',', $search);
+        if ($search) {
+            $pairs = explode(',', $search);
 
-        foreach ($pairs as $pair) {
-            if (!str_contains($pair, '=')) continue;
+            foreach ($pairs as $pair) {
+                if (!str_contains($pair, '=')) continue;
 
-            [$key, $value] = array_map('trim', explode('=', $pair, 2));
+                [$key, $value] = array_map('trim', explode('=', $pair, 2));
 
-            if ($key === 'location' && $value !== '') {
-                $query->where('locations.location', 'like', "%{$value}%");
-                $hasValidFilters = true;
-            } elseif (in_array($key, $allowedFields) && $value !== '') {
-                $query->where("drivers.$key", 'like', "%{$value}%");
-                $hasValidFilters = true;
+                if ($key === 'location' && $value !== '') {
+                    $query->where('locations.location', 'like', "%{$value}%");
+                    $hasValidFilters = true;
+                } elseif (in_array($key, $allowedFields) && $value !== '') {
+                    if ($key === 'driver_id') {
+                        $key = 'id';
+                    }
+                    $query->where("drivers.$key", 'like', "%{$value}%");
+                    $hasValidFilters = true;
+                }
             }
         }
-    }
 
-    if (!$hasValidFilters) {
-        $drivers = Driver::with('location')->paginate(31);
-    } else {
-        $drivers = $query->with('location')->paginate(31);
-    }
+        if (!$hasValidFilters) {
+            $drivers = Driver::with('location')->paginate(31);
+        } else {
+            $drivers = $query->with('location')->paginate(31);
+        }
 
-    if ($drivers->isEmpty()) {
-        return redirect()->route('admin.drivers')->with('error', 'No drivers found.');
-    }
+        if ($drivers->isEmpty()) {
+            return redirect()->route('admin.drivers')->with('error', 'No drivers found.');
+        }
 
-    return view('admin.drivers', compact('drivers', 'locations'));
-}
+        return view('admin.drivers', compact('drivers', 'locations'));
+    }
 
 
     /**
@@ -181,8 +184,12 @@ class AdminDriverController extends Controller
     {
         $id_list = $request->input('selected', []);
 
-            Driver::whereIn('id', $id_list)->delete();
+        Driver::whereIn('id', $id_list)->delete();
 
-            return back()->with('success', 'Selected drivers deleted.');
+        if (!$id_list) {
+            return back();
+        }
+
+        return back()->with('success', 'Selected drivers deleted.');
     }
 }

@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             // DriverSeeder::class,
             // VehicleSeeder::class,
             // CartSeeder::class,
-            // TransactionSeeder::class,
+            TransactionSeeder::class,
             // RatingSeeder::class,
             // LogSeeder::class,
             VehicleNameSeeder::class,
