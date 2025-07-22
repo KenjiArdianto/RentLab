@@ -10,6 +10,8 @@ class UserReview extends Model
     /** @use HasFactory<\Database\Factories\UserReviewFactory> */
     use HasFactory;
 
+    
+
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);

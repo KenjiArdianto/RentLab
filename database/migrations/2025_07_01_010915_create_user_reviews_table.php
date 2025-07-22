@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_review', function (Blueprint $table) {
+        Schema::create('user_reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('admin_id')->constrained('users');
             $table->foreignId('user_id');

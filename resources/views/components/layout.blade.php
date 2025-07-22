@@ -4,8 +4,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RentLab</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    
 </head>
 <body>
+
 
     <header class="sticky-top bg-light navbar-spacing">
         <nav class="navbar mt-0 mb-0 me-5 p-0 justify-content-end">
@@ -15,7 +20,7 @@
                     <p class="m-0 p-0 bold" style = "font-size: 9px;">Bahasa Indonesia</p>
                 </div>
             </a>
-        </nav>
+        </nav>  
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light p-0">
             <div class="container-fluid ps-5">
@@ -56,6 +61,40 @@
     <main class = "container">
         {{ $slot }}
     </main>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    
+
+    {{-- <div class="container" style="display:grid ; grid-template-columns: 1fr 3fr 1fr; gap: 15px">
+        <div style="display:flex; flex-direction: column">
+            <div class="carousel-item active">
+                        <img src="{{ $idVehicle->main_image }}" class="d-block  w-100" alt="tes">
+                    </div>
+                    
+                    @foreach ($getVehicleimagesById as $imageById)
+                        <div class="carousel-item">
+                            <img src="{{ $imageById->image }}" class="d-block w-100" alt="Main Product Image 2">
+                        </div>
+                    @endforeach
+        </div>
+
+        <div>
+            <h1>col2</h1>   
+        </div>
+
+        <div style="display:flex; flex-direction: column">
+            <h1>col3</h1>
+            <h1>col1</h1>
+            <h1>cola</h1>
+            <h1>colb</h1>
+        </div>
+    </div> --}}
 
 </body>
 </html>
+
+
+
+

@@ -1,0 +1,67 @@
+.card-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .cart-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex; /* Use flexbox for alignment of text and delete button */
+            justify-content: space-between; /* Space out content and button */
+            align-items: center; /* Vertically align items */
+        }
+        .cart-item .btn-sm {
+            flex-shrink: 0; /* Prevent button from shrinking */
+        }
+
+        /* CUSTOM CSS FOR DATEPICKER STYLING */
+
+        /* Style for muted/disabled dates (already saved ranges) */
+        .datepicker table tr td.disabled,
+        .datepicker table tr td.disabled:hover {
+            color: #b0b0b0 !important; /* Lighter text color */
+            background-color: #e9ecef !important; /* Light grey background */
+            cursor: not-allowed;
+            opacity: 0.7; /* Slightly dim it */
+        }
+
+        /* Style for CURRENTLY selected start and end dates (blue color) */
+        /* These classes are applied by bootstrap-datepicker for the active selection */
+        .datepicker table tr td.active,
+        .datepicker table tr td.active:hover,
+        .datepicker table tr td.active.disabled,
+        .datepicker table tr td.active.disabled:hover {
+            background-color: #0d6efd !important; /* Bootstrap primary blue */
+            color: #fff !important; /* White text for contrast */
+        }
+
+        /* Style for dates within the CURRENTLY selected range (light blue/highlight) */
+        .datepicker table tr td.range,
+        .datepicker table tr td.range:hover,
+        .datepicker table tr td.range.disabled,
+        .datepicker table tr td.range.disabled:hover {
+            background-color: #e0f2f7 !important; /* Light blue */
+            color: #495057 !important; /* Darker text for readability */
+        }
+        /* Ensure that selected range dates don't get muted by the .disabled style */
+        .datepicker table tr td.range.active {
+            background-color: #0d6efd !important; /* Keep active range ends blue */
+            color: #fff !important;
+        }
+
+        /* Center the datepicker within its container */
+        #dateRangePicker {
+            display: inline-block; /* Allows auto margins to center */
+            margin: 0 auto;
+        }
+
+        /* Adjust modal body padding for better spacing */
+        .modal-body {
+            padding-bottom: 0.5rem; /* Reduce bottom padding to bring footer closer */
+        }
