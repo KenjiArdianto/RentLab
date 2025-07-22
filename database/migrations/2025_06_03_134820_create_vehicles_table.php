@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('vehicle_transmission_id');
             $table->integer('engine_cc');
             $table->integer('seats');
+            $table->year('year');
             $table->foreignId('location_id');
             $table->string('main_image');
             $table->integer('price');
