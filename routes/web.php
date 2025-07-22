@@ -22,8 +22,7 @@ Route::get('/admin/users', function () {
 // })->name('admin.drivers');
 
 Route::get('/admin/drivers',[AdminDriverController::class, 'index'])->name('admin.drivers');
-Route::get('/admin/drivers-',[AdminDriverController::class, 'search'])->name('admin.drivers.search');
-Route::post('/admin/drivers/stored', [AdminDriverController::class, 'store'])->name('admin.drivers.store');
+Route::post('/admin/drivers/store', [AdminDriverController::class, 'store'])->name('admin.drivers.store');
 Route::post('/admin/drivers/edit-selected', [AdminDriverController::class, 'editSelected'])->name('admin.drivers.edit');
 Route::delete('/admin/drivers/delete-selected', [AdminDriverController::class, 'deleteSelected'])->name('admin.drivers.delete');
 // Route::get('/admin/drivers/{page_number}',[AdminDriverController::class, 'index'])->name('admin.drivers');
@@ -31,11 +30,16 @@ Route::delete('/admin/drivers/delete-selected', [AdminDriverController::class, '
 
 Route::get('/admin/transactions',[AdminTransactionController::class, 'index'])->name('admin.transactions');
 Route::post('/admin/transactions/{transaction}', [AdminTransactionController::class, 'update'])->name('admin.transactions.update');
-Route::get('/admin/transactions-',[AdminTransactionController::class, 'search'])->name('admin.transactions.search');
 
 
 Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
-Route::post('/admin/vehicles/{vehicle}', [AdminVehicleController::class, 'update'])->name('admin.vehicles.update');
+Route::post('/admin/vehicles/store', [AdminVehicleController::class, 'store'])->name('admin.vehicles.store');
+Route::post('/admin/vehicles/{vehicle}/update', [AdminVehicleController::class, 'update'])->name('admin.vehicles.update');
+Route::post('/admin/vehicles/{vehicle}/update-category', [AdminVehicleController::class, 'updateCategory'])->name('admin.vehicles.updateCategory');
+Route::post('/admin/vehicles/{vehicle}/delete-category', [AdminVehicleController::class, 'deleteCategory'])->name('admin.vehicles.deleteCategory');
+Route::get('/admin/vehicles/{vehicle}/reviews', [AdminVehicleController::class, 'showReviews'])->name('admin.vehicles.reviews');
+Route::get('/admin/vehicles/{vehicle}/transactions', [AdminVehicleController::class, 'showTransactions'])->name('admin.vehicles.transactions');
+
 
 Route::get('/admin/reviews', function () {
     return view('admin.reviews');

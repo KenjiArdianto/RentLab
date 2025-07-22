@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="container-fluid justify-content-between align-items-center mb-4">
-        <form action="{{ route('admin.drivers.search') }}" method="GET">
+        <form action="{{ route('admin.drivers') }}" method="GET">
             <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: driver_id=1,name=John" aria-label="Search">
             
         </form>
@@ -148,7 +148,7 @@
                             </div>
                             <table class="table table-borderless mb-0">
                                 <tr>
-                                    <input class="form-control" type="file" id="image" name="image" accept="image/*">
+                                    <input class="form-control" type="file" id="image" name="image" accept=".jpg,.jpeg,.png">
                                 </tr>
                                 <tr>
                                     <th class="text-start">Driver ID</th>

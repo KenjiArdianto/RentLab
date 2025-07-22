@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="container-fluid justify-content-between align-items-center mb-4">
-        <form action="{{ route('admin.transactions') }}" method="GET">
+        <form action="{{ route('admin.transactions.search') }}" method="GET">
             <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: transaction_id=1,start=2025-01-31,status=review_by_user" aria-label="Search">
             
         </form>
@@ -66,7 +66,7 @@
                     <td>{{ $t->end_book_date }}</td>
                     <td>{{ $t->return_date }}</td>
                     <td>
-                        <span class="badge px-3 py-2 {{ $badgeClass }}" style="width: 10vw;">{{ $t->transactionStatus->status }}</span>
+                        <span class="badge px-3 py-2 {{ $badgeClass }}" style="width: 7vw;">{{ $t->transactionStatus->status }}</span>
                     </td>
                 </tr>
 
@@ -222,4 +222,4 @@
 
 
 
-@endsection
+@endsectiona

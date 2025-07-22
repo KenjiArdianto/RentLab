@@ -13,14 +13,8 @@ class AdminDriverController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $drivers = Driver::with('location')->paginate(31);
-        $locations = Location::all();
-        return view('admin.drivers', compact('drivers', 'locations'));
-    }
 
-    public function search(Request $request)
+    public function index(Request $request)
     {
         $locations = Location::all();
         $search = $request->query('search');

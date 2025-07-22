@@ -3,28 +3,154 @@
 @section('content')
 
     <div class="container-fluid justify-content-between align-items-center mb-4">
-        <form action="{{ route('admin.drivers.search') }}" method="GET">
+        <form action="{{ route('admin.vehicles') }}" method="GET">
             <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: driver_id=1,name=John" aria-label="Search">
             
         </form>
     </div>  
 
+    <div class="text-center">
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+            Add Vehicle
+        </button>
+    </div>  
+
+
+    {{-- Add Vehicle Modal --}}
+    <div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVehicleModalLabel">Add Vehicle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form action="{{ route('admin.vehicles.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <dl class="row mb-0">
+                            {{-- Vehicle Name --}}
+                            <dt class="col-sm-3">Name</dt>
+                            <dd class="col-sm-9">
+                                <select name="vehicle_name_id" class="form-select" required>
+                                    <option value="" disabled selected>-- Choose Vehicle Name --</option>
+                                    @foreach($vehicleNames as $name)
+                                        <option value="{{ $name->id }}">{{ $name->name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Select the vehicle name from the list.</small>
+                            </dd>
+
+                            {{-- Type --}}
+                            <dt class="col-sm-3">Type</dt>
+                            <dd class="col-sm-9">
+                                <select name="vehicle_type_id" class="form-select" required>
+                                    <option value="" disabled selected>-- Choose Vehicle Type --</option>
+                                    @foreach($vehicleTypes as $type)
+                                        <option value="{{ $type->id }}">{{ $type->type }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Select the type of the vehicle (e.g., SUV, Sedan).</small>
+                            </dd>
+
+                            {{-- Transmission --}}
+                            <dt class="col-sm-3">Transmission</dt>
+                            <dd class="col-sm-9">
+                                <select name="vehicle_transmission_id" class="form-select" required>
+                                    <option value="" disabled selected>-- Choose Transmission --</option>
+                                    @foreach($vehicleTransmissions as $trans)
+                                        <option value="{{ $trans->id }}">{{ $trans->transmission }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Choose between automatic or manual transmission.</small>
+                            </dd>
+
+                            {{-- Engine CC --}}
+                            <dt class="col-sm-3">Engine CC</dt>
+                            <dd class="col-sm-9">
+                                <input type="number" name="engine_cc" class="form-control" placeholder="e.g., 1500" value="{{ old('engine_cc') }}" required>
+                                <small class="text-muted">Enter the engine capacity in CC (e.g., 1500).</small>
+                            </dd>
+                            
+                            {{-- Seats --}}
+                            <dt class="col-sm-3">Seats</dt>
+                            <dd class="col-sm-9">
+                                <input type="number" name="seats" class="form-control" placeholder="e.g., 5" value="{{ old('seats') }}" required>
+                                <small class="text-muted">Enter the number of passenger seats.</small>
+                            </dd>
+
+                            {{-- Price --}}
+                            <dt class="col-sm-3">Price</dt>
+                            <dd class="col-sm-9">
+                                <input type="number" name="price" class="form-control" placeholder="e.g., 250000" value="{{ old('price') }}" required>
+                                <small class="text-muted">Enter the price in your local currency.</small>
+                            </dd>
+
+                            {{-- Location --}}
+                            <dt class="col-sm-3">Location</dt>
+                            <dd class="col-sm-9">
+                                <select name="location_id" class="form-select" required>
+                                    <option value="" disabled selected>-- Choose Location --</option>
+                                    @foreach($locations as $loc)
+                                        <option value="{{ $loc->id }}">{{ $loc->location }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Select the location where the vehicle is available.</small>
+                            </dd>
+
+                            {{-- Main Image --}}
+                            <dt class="col-sm-3">Main Image</dt>
+                            <dd class="col-sm-9">
+                                <input class="form-control" type="file" name="main_image" accept=".jpg,.jpeg,.png" required>
+                                <small class="text-muted">Upload the main display image of the vehicle. Only .jpg, .jpeg, .png allowed.</small>
+                            </dd>
+
+                            {{-- Vehicle Images --}}
+                            <dt class="col-sm-3">Vehicle Images</dt>
+                            <dd class="col-sm-9">
+                                @for($i = 1; $i <= 4; $i++)
+                                    <div class="mb-2">
+                                        <div class="text">Image {{ $i }}</div>
+                                        <input class="form-control" type="file" name="image{{ $i }}" accept=".jpg,.jpeg,.png">
+                                        <small class="text-muted">Additional image {{ $i }} (optional). Only .jpg, .jpeg, .png allowed.</small>
+                                    </div>
+                                @endfor
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    
+
     <div class="container-flex m-4">
         <table class="table table-bordered table-hover align-middle text-center mx-auto" style="cursor: pointer;">
             <thead class="table-light">
                 <tr>
-                    <th>ID</th>
-                    <th>Main Image</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Transmission</th>
-                    <th>Engine CC</th>
-                    <th>Seats</th>
-                    <th>Price</th>
-                    <th>Location</th>
-                    <th>Categories</th>
-                    <th>Reviews</th>
-                    <th>Transactions</th>
+                    <th class="text-nowrap">ID</th>
+                    <th class="text-nowrap">Main Image</th>
+                    <th class="text-nowrap">Name</th>
+                    <th class="text-nowrap">Type</th>
+                    <th class="text-nowrap">Transmission</th>
+                    <th class="text-nowrap">Engine CC</th>
+                    <th class="text-nowrap">Seats</th>
+                    <th class="text-nowrap">Year</th>
+                    <th class="text-nowrap">Price</th>
+                    <th class="text-nowrap">Location</th>
+                    <th class="text-nowrap">Categories</th>
+                    <th class="text-nowrap">Reviews</th>
+                    <th class="text-nowrap">Transactions</th>
+                    <th class="text-nowrap">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,9 +160,14 @@
                     $reviewsCount = $v->vehicleReview->count();
                     $transactionsCount = $v->transactions->count();
                     $badgeClass = $reviewsCount > 10 ? 'text-bg-success' : 'text-bg-secondary';
+                    $images = $v->vehicleImages->take(4); 
+                    $image1 = $images->get(0) ?? null;
+                    $image2 = $images->get(1) ?? null;
+                    $image3 = $images->get(2) ?? null;
+                    $image4 = $images->get(3) ?? null;
                 @endphp
 
-                <tr data-bs-toggle="modal" data-bs-target="#editVehicleModal{{ $v->id }}">
+                <tr data-bs-toggle="modal">
                     <td>{{ $v->id }}</td>
                     <td><img src="{{ asset($v->main_image) }}" alt="Vehicle Main Image" style="height: 8h; width: 14vw;"></td>
                     <td><strong>{{ $v->vehicleName->name ?? 'N/A' }}</strong></td>
@@ -44,14 +175,32 @@
                     <td>{{ $v->vehicleTransmission->transmission ?? 'N/A' }}</td>
                     <td>{{ $v->engine_cc ?? 'N/A'}}</td>
                     <td>{{ $v->seats ?? 'N/A' }}</td>
+                    <td>2022</td>
                     <td>{{ $v->price ?? 'N/A' }}</td>
                     <td>{{ $v->location->location ?? 'N/A' }}</td>
                     <td>{{ $vehicleCategories ?: 'None' }}</td>
                     <td>{{ number_format($v->vehicleReview->avg('rate'), 1) ?? number_format(0, 1) }} ({{ $v->vehicleReview->count() }})</td>
                     <td>{{ $transactionsCount }}</td>
-                </tr>
+                    <td class="text-center">
+                        <div class="d-flex flex-column gap-1">
+                            <button class="btn btn-primary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editVehicleModal{{ $v->id }}">
+                                Edit Vehicle
+                            </button>
+                            <button class="btn btn-warning btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $v->id }}">
+                                Edit Categories
+                            </button>
+                            <a  href="{{ route('admin.vehicles.reviews', $v->id) }}" class="btn btn-info btn-sm text-nowrap">
+                                View Reviews
+                            </a>
+                            <a  href="{{ route('admin.transactions') }}?search={{ rawurlencode('vehicle_id=' . $v->id) }}" class="btn btn-secondary btn-sm text-nowrap">
+                                View Transactions
+                            </a>
+                        </div>
+                    </td>
 
-                {{-- Modal --}}
+
+
+                {{-- Edit Vehicle Modal --}}
                 <div class="modal fade" id="editVehicleModal{{ $v->id }}" tabindex="-1" aria-labelledby="editVehicleModalLabel{{ $v->id }}" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
@@ -61,7 +210,7 @@
                             </div>
 
                             {{-- Form for updating vehicle --}}
-                            <form action="{{ route('admin.vehicles.update', $v->id) }}" method="POST">
+                            <form action="{{ route('admin.vehicles.update', $v->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="modal-body">
                                     <dl class="row mb-0">
@@ -98,6 +247,26 @@
                                             </select>
                                         </dd>
 
+                                        <dt class="col-sm-3">Engine CC</dt>
+                                        <dd class="col-sm-9">
+                                            <input type="number" name="engine_cc" class="form-control" value="{{ old('engine_cc', $v->engine_cc ?? 0) }}">
+                                        </dd>
+                                        
+                                        <dt class="col-sm-3">Seats</dt>
+                                        <dd class="col-sm-9">
+                                            <input type="number" name="seats" class="form-control" value="{{ old('seats', $v->seats ?? 0) }}">
+                                        </dd>
+
+                                        {{-- <dt class="col-sm-3">Year</dt>
+                                        <dd class="col-sm-9">
+                                            <input type="number" name="price" class="form-control" value="{{ old('seats', $v->seats ?? 0) }}">
+                                        </dd> --}}
+
+                                        <dt class="col-sm-3">Price</dt>
+                                        <dd class="col-sm-9">
+                                            <input type="number" name="price" class="form-control" value="{{ old('price', $v->price ?? 0) }}">
+                                        </dd>
+
                                         <dt class="col-sm-3">Location</dt>
                                         <dd class="col-sm-9">
                                             <select name="location_id" class="form-select" style="max-height: 50vh; overflow-y: auto;">
@@ -109,101 +278,187 @@
                                             </select>
                                         </dd>
 
-                                        <dt class="col-sm-3">Price</dt>
-                                        <dd class="col-sm-9">
-                                            <input type="number" name="price" class="form-control" value="{{ old('price', $v->price ?? 0) }}">
-                                        </dd>
-
                                         <dt class="col-sm-3">Categories</dt>
                                         <dd class="col-sm-9">
-                                            <div id="categories-container-{{ $v->id }}">
-                                                @foreach($v->vehicleCategories as $cat)
-                                                    <div class="category-row mb-2 d-flex gap-2">
-                                                        <select name="categories[]" class="form-select">
-                                                            @foreach($categories as $c)
-                                                                <option value="{{ $c->id }}" @selected($cat->id == $c->id)>
-                                                                    {{ $c->category }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                        <button type="button" class="btn btn-danger btn-sm remove-category">x</button>
-                                                    </div>
-                                                @endforeach
-                                                
-                                            </div>
-                                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
-                                                    onclick="addCategoryRow{{ $v->id }}()">+ Add Category</button>
-                                            
-
+                                            {{ $vehicleCategories }}
                                         </dd>
-
-
-
-                                        <dt class="col-sm-3">Description</dt>
-                                        <dd class="col-sm-9">
-                                            <textarea name="description" class="form-control" rows="3" maxlength="500" 
-                                                oninput="updateCharCount(this, 'descCounter-{{ $v->id }}')"
-                                                placeholder="Write description here...">{{ old('description', $v->description ?? '') }}</textarea>
-                                            <small class="text-muted">
-                                                <span id="descCounter-{{ $v->id }}">0</span>/500 characters
-                                            </small>
-                                        </dd>
-
+                                        
                                         <dt class="col-sm-3">Main Image</dt>
                                         <dd class="col-sm-9">
                                             <img src="{{ asset($v->main_image) }}" 
-                                                alt="Vehicle Image" 
+                                                alt="Vehicle Main Image" 
+                                                class="img-thumbnail mb-2" 
                                                 style="max-width: 150px; border-radius: 8px;">
+
+                                            <input class="form-control" type="file" id="main_image" name="main_image" accept=".jpg,.jpeg,.png">
+                                            
+                                            <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
                                         </dd>
+
+                                        <dt class="col-sm-3">Vehicle Images</dt>
+                                        <dd class="col-sm-9">
+                                            <div class="text">Image 1</div>
+                                            @if ($image1 != null)
+                                                <input type="hidden" name="image1_id" value="{{ $image1->id }}">
+                                                <img src="{{ asset($image1->image) }}" 
+                                                alt="Vehicle Image 1" 
+                                                class="img-thumbnail mb-2" 
+                                                style="max-width: 150px; border-radius: 8px;">
+                                            @endif
+                                            <input class="form-control" type="file" id="image1" name="image1" accept=".jpg,.jpeg,.png">
+                                            <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
+                                            <div class="text">Image 2</div>
+                                            @if ($image2 != null)
+                                                <input type="hidden" name="image2_id" value="{{ $image2->id }}">
+                                                <img src="{{ asset($image2->image) }}" 
+                                                alt="Vehicle Image 2" 
+                                                class="img-thumbnail mb-2" 
+                                                style="max-width: 150px; border-radius: 8px;">
+                                            @endif
+                                            <input class="form-control" type="file" id="image2" name="image2" accept=".jpg,.jpeg,.png">
+                                            <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
+                                            <div class="text">Image 3</div>
+                                            @if ($image3 != null)
+                                                <input type="hidden" name="image3_id" value="{{ $image3->id }}">
+                                                <img src="{{ asset($image3->image) }}" 
+                                                alt="Vehicle Image 3" 
+                                                class="img-thumbnail mb-2" 
+                                                style="max-width: 150px; border-radius: 8px;">
+                                            @endif
+                                            <input class="form-control" type="file" id="image3" name="image3" accept=".jpg,.jpeg,.png">
+                                            <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
+                                            <div class="text">Image 4</div>
+                                            @if ($image4 != null)
+                                                <input type="hidden" name="image4_id" value="{{ $image4->id }}">
+                                                <img src="{{ asset($image4->image) }}" 
+                                                alt="Vehicle Image 4" 
+                                                class="img-thumbnail mb-2" 
+                                                style="max-width: 150px; border-radius: 8px;">
+                                                
+                                            @endif
+                                            <input class="form-control" type="file" id="image4" name="image4" accept=".jpg,.jpeg,.png">
+                                            <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
+                                        </dd>
+                                        
                                     </dl>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Apply</button>
                                 </div>
-
-                                <script>
-                                    // Function to add a new category dropdown
-                                    function addCategoryRow{{ $v->id }}() {
-                                        const container = document.getElementById('categories-container-{{ $v->id }}');
-
-                                        // Create a new row for category dropdown
-                                        const newRow = document.createElement('div');
-                                        newRow.classList.add('category-row', 'mb-2', 'd-flex', 'gap-2');
-
-                                        // Dropdown + remove button
-                                        newRow.innerHTML = `
-                                            <select name="categories[]" class="form-select">
-                                                @foreach($categories as $c)
-                                                    <option value="{{ $c->id }}">{{ $c->category }}</option>
-                                                @endforeach
-                                            </select>
-                                            <button type="button" class="btn btn-danger btn-sm remove-category">x</button>
-                                        `;
-
-                                        // Append the new row to the container
-                                        container.appendChild(newRow);
-                                    }
-
-                                    // Event delegation for remove buttons
-                                    document.addEventListener('click', function (e) {
-                                        if (e.target.classList.contains('remove-category')) {
-                                            e.preventDefault();
-                                            e.target.closest('.category-row').remove(); // Remove the parent row
-                                        }
-                                    });
-                                </script>
                             </form>
                         </div>
                     </div>
                 </div>
+
+                {{-- Edit Categories Modal --}}
+                <div class="modal fade" id="editCategoryModal{{ $v->id }}" tabindex="-1" aria-labelledby="editCategoryModalLabel{{ $v->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editCategoryModalLabel{{ $v->id }}">Vehicle Categories - #{{ $v->id }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Current Categories</label>
+                                    <ul class="list-group">
+                                        @forelse($v->vehicleCategories as $cat)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>{{ $cat->category }}</span>
+                                                <form action="{{ route('admin.vehicles.deleteCategory', $v->id) }}" method="POST" class="ms-2">
+                                                    @csrf
+                                                    <input type="hidden" name="category_id" value="{{ $cat->id }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove this category">&times;</button>
+                                                </form>
+                                            </li>
+                                        @empty
+                                            <li class="list-group-item text-muted fst-italic">No categories.</li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+
+                                <hr>
+
+                                <div class="mb-0">
+                                    <label for="newCategorySelect-{{ $v->id }}" class="form-label fw-bold">Add Category</label>
+                                    <form action="{{ route('admin.vehicles.updateCategory', $v->id) }}" method="POST" class="row g-2 align-items-center">
+                                        @csrf
+                                        <div class="col-9">
+                                            <select id="newCategorySelect-{{ $v->id }}" name="category_id" class="form-select" required>
+                                                <option value="" selected disabled>Choose...</option>
+                                                @foreach($categories as $c)
+                                                    @if(!$v->vehicleCategories->contains('id', $c->id))
+                                                        <option value="{{ $c->id }}">{{ $c->category }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-3 d-grid">
+                                            <button type="submit" class="btn btn-outline-primary">Add</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
 
             @endforeach
             </tbody>
         </table>
     </div>
 
-    
+    {{-- Success Modal (shows only if session has "success") --}}
+    @if(session('success') || session('error'))
+        <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header text-white py-2 {{ session('success') ? 'bg-success' : 'bg-danger' }}">
+                        <h6 class="modal-title d-flex align-items-center" id="feedbackModalLabel">
+                            {{ session('success') ? 'Success' : 'Error' }}
+                        </h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">{{ session('success') ? session('success') : session('error') }}</p>
+                    </div>
+                    <div class="modal-footer py-2">
+                        <button type="button" class="btn btn-sm {{ session('success') ? 'btn-success' : 'btn-danger' }}" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Auto‑show script --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const modalEl = document.getElementById('feedbackModal');
+                if (modalEl) {
+                    const feedbackModal = new bootstrap.Modal(modalEl);
+                    feedbackModal.show();
+
+                    // Optional: auto-hide after 4 seconds
+                    setTimeout(() => {
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        feedbackModal.hide();
+                        // (Backdrop will be removed by Bootstrap)
+                    }, 4000);
+                }
+            });
+        </script>
+    @endif
 
 
     <div class="container">

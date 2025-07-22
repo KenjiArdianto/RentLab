@@ -11,19 +11,8 @@ class AdminTransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-        $transactions = Transaction::with(['user','driver','vehicle','transactionStatus'])
-        ->latest()
-        ->paginate(100);
 
-        // dd($transactions->all());
-        return view('admin.transactions', compact('transactions'));
-
-    }
-
-    public function search(Request $request)
+    public function index(Request $request)
     {
         $search = $request->query('search');
         $hasValidFilters = false;
@@ -175,9 +164,7 @@ class AdminTransactionController extends Controller
         // dd($transaction);
 
         if ($request->status === $transaction->transaction_status_id) {
-                return redirect()
-                ->route('admin.transactions')
-                ->with('error', "Status Not Changed");
+                return back()->with('error', "Status Not Changed");
         }
         else if ($request->comment) {
             // dd($request->all());
@@ -192,17 +179,13 @@ class AdminTransactionController extends Controller
                 'comment' => $request->comment,
                 'rate' => $request->rating
             ]);
-            return redirect()
-                ->route('admin.transactions')
-                ->with('success', "Transaction #{$transaction->id} review submitted successfully.");
+            return back()->with('success', "Transaction #$transaction->id review submitted successfully.");
         }
         else {
             $transaction->transaction_status_id = $request->status;
             $transaction->save();
 
-            return redirect()
-                ->route('admin.transactions')
-                ->with('success', "Transaction #{$transaction->id} status updated successfully.");
+            return back()->with('success', "Transaction #$transaction->id status updated successfully.");
         }
     }
 
