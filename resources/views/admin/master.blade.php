@@ -16,56 +16,10 @@
             <ul class="navbar-nav flex-row position-absolute top-50 start-50 translate-middle">
                 <li class="nav-item mx-2 btn-lg">
                     <a 
-                    href="{{route('admin.logs')}}" 
+                    href="{{route('admin.index')}}" 
                     role="button"
-                    class="btn {{ request()->routeIs('admin.logs*') ? 'btn-primary' : 'btn-outline-primary'}}" 
-                    aria-current="{{ request()->routeIs('admin.logs*') ? 'page' : ''}}">
-                    Logs
-                    </a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a 
-                    href="{{route('admin.users')}}" 
-                    role="button"
-                    class="btn {{ request()->routeIs('admin.users*') ? 'btn-primary' : 'btn-outline-primary'}}" 
-                    aria-current="{{ request()->routeIs('admin.users*') ? 'page' : ''}}">
-                    Users
-                    </a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a 
-                    href="{{route('admin.drivers')}}" 
-                    role="button"
-                    class="btn {{ request()->routeIs('admin.drivers*') ? 'btn-primary' : 'btn-outline-primary'}}" 
-                    aria-current="{{ request()->routeIs('admin.drivers*') ? 'page' : ''}}">
-                    Drivers
-                    </a>
-                </li>   
-                <li class="nav-item mx-2">
-                    <a 
-                    href="{{route('admin.transactions')}}" 
-                    role="button"
-                    class="btn {{ request()->routeIs('admin.transactions*') ? 'btn-primary' : 'btn-outline-primary'}}" 
-                    aria-current="{{ request()->routeIs('admin.transactions*') ? 'page' : ''}}">
-                    Transactions
-                    </a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a 
-                    href="{{route('admin.vehicles')}}" 
-                    role="button"
-                    class="btn {{ request()->routeIs('admin.vehicles*') ? 'btn-primary' : 'btn-outline-primary'}}" 
-                    aria-current="{{ request()->routeIs('admin.vehicles*') ? 'page' : ''}}">
-                    Vehicles
-                    </a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a 
-                    href="{{route('admin.reviews')}}" 
-                    role="button"
-                    class="btn {{ request()->routeIs('admin.reviews*') ? 'btn-primary' : 'btn-outline-primary'}}" 
-                    aria-current="{{ request()->routeIs('admin.reviews*') ? 'page' : ''}}">
-                    Reviews
+                    class="btn btn-primary" >
+                    Home
                     </a>
                 </li>
             </ul>

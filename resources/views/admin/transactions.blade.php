@@ -10,7 +10,7 @@
     </div> 
     
     <div class="container-flex m-4">
-        <table class="table table-bordered table-hover align-middle text-center mx-auto" style="cursor: pointer;">
+        <table class="table table-striped table-bordered table-hover align-middle text-center mx-auto" style="cursor: pointer;">
             <thead class="table-light">
                 <tr>
                     <th>ID</th>
@@ -75,7 +75,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel{{ $t->id }}">Transaction Detail</h5>
+                                <h5 class="modal-title" id="editModalLabel{{ $t->id }}">Transaction Detail - #{{ $t->id }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
@@ -124,9 +124,9 @@
                                             <textarea name="comment"
                                                     class="form-control" 
                                                     rows="3" 
-                                                    maxlength="500" 
+                                                    maxlength="250" 
                                                     oninput="updateCharCount(this, 'reviewCounter-{{ $t->id }}')"
-                                                    placeholder="Write your review here (max 500 characters)...">{{ old('review', $t->review ?? '') }}</textarea>
+                                                    placeholder="Write your review here (max 250 characters)..."></textarea>
                                             <small class="text-muted">
                                                 <span id="reviewCounter-{{ $t->id }}">0</span>/500 characters
                                             </small>
@@ -157,46 +157,6 @@
         </table>
     </div>
 
-    {{-- Success Modal (shows only if session has "success") --}}
-    @if(session('success') || session('error'))
-        <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header text-white py-2 {{ session('success') ? 'bg-success' : 'bg-danger' }}">
-                        <h6 class="modal-title d-flex align-items-center" id="feedbackModalLabel">
-                            {{ session('success') ? 'Success' : 'Error' }}
-                        </h6>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="mb-0">{{ session('success') ? session('success') : session('error') }}</p>
-                    </div>
-                    <div class="modal-footer py-2">
-                        <button type="button" class="btn btn-sm {{ session('success') ? 'btn-success' : 'btn-danger' }}" data-bs-dismiss="modal">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Auto‑show script --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const modalEl = document.getElementById('feedbackModal');
-                if (modalEl) {
-                    const feedbackModal = new bootstrap.Modal(modalEl);
-                    feedbackModal.show();
-
-                    // Optional: auto-hide after 4 seconds
-                    setTimeout(() => {
-                        const backdrop = document.querySelector('.modal-backdrop');
-                        feedbackModal.hide();
-                        // (Backdrop will be removed by Bootstrap)
-                    }, 4000);
-                }
-            });
-        </script>
-    @endif
 
     <div class="container">
         {{ $transactions->onEachSide(5)->links('pagination::bootstrap-5') }}
@@ -219,7 +179,7 @@
     });
     </script>
 
-
+    <x-admin.feedback-modal/>
 
 
 @endsection

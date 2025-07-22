@@ -181,7 +181,7 @@ class AdminDriverController extends Controller
         Driver::whereIn('id', $id_list)->delete();
 
         if (!$id_list) {
-            return back();
+            return back()->with('error', 'No drivers selected.');
         }
 
         return back()->with('success', 'Selected drivers deleted.');

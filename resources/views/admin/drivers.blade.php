@@ -199,38 +199,9 @@
         </form>
     @endforeach
     
-    {{-- Modal for feedback after operation --}}
-    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="feedbackModalLabel">{{ session('error') ? 'Error' : (session('success') ? 'Success' : '') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    @if (session('success'))
-                        {{ session('success') }}
-                    @else
-                        @if (session('error'))
-                            {{ session('error') }}
-                        @endif
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    @if (session('success') || session('error'))
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
-                feedbackModal.show();
-            });
-        </script>
-    @endif
-    
     <div class="container">
         {{ $drivers->onEachSide(5)->links('pagination::bootstrap-5') }}
     </div>
 
+    <x-admin.feedback-modal/>
 @endsection

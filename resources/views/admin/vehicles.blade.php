@@ -4,7 +4,7 @@
 
     <div class="container-fluid justify-content-between align-items-center mb-4">
         <form action="{{ route('admin.vehicles') }}" method="GET">
-            <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: driver_id=1,name=John" aria-label="Search">
+            <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: vehicle_id=1,rating=4,transactions=10" aria-label="Search">
             
         </form>
     </div>  
@@ -134,7 +134,7 @@
     
 
     <div class="container-flex m-4">
-        <table class="table table-bordered table-hover align-middle text-center mx-auto" style="cursor: pointer;">
+        <table class="table table-bordered table-hover align-middle text-center mx-auto table-striped">
             <thead class="table-light">
                 <tr>
                     <th class="text-nowrap">ID</th>
@@ -148,7 +148,7 @@
                     <th class="text-nowrap">Price</th>
                     <th class="text-nowrap">Location</th>
                     <th class="text-nowrap">Categories</th>
-                    <th class="text-nowrap">Reviews</th>
+                    <th class="text-nowrap">Rating</th>
                     <th class="text-nowrap">Transactions</th>
                     <th class="text-nowrap">Actions</th>
                 </tr>
@@ -175,7 +175,7 @@
                     <td>{{ $v->vehicleTransmission->transmission ?? 'N/A' }}</td>
                     <td>{{ $v->engine_cc ?? 'N/A'}}</td>
                     <td>{{ $v->seats ?? 'N/A' }}</td>
-                    <td>2022</td>
+                    <td>{{ $v->year ?? 'N/A' }}</td>
                     <td>{{ $v->price ?? 'N/A' }}</td>
                     <td>{{ $v->location->location ?? 'N/A' }}</td>
                     <td>{{ $vehicleCategories ?: 'None' }}</td>
@@ -257,10 +257,10 @@
                                             <input type="number" name="seats" class="form-control" value="{{ old('seats', $v->seats ?? 0) }}">
                                         </dd>
 
-                                        {{-- <dt class="col-sm-3">Year</dt>
+                                        <dt class="col-sm-3">Year</dt>
                                         <dd class="col-sm-9">
-                                            <input type="number" name="price" class="form-control" value="{{ old('seats', $v->seats ?? 0) }}">
-                                        </dd> --}}
+                                            <input type="number" name="year" class="form-control" value="{{ old('year', $v->year ?? 0) }}">
+                                        </dd>
 
                                         <dt class="col-sm-3">Price</dt>
                                         <dd class="col-sm-9">
@@ -419,51 +419,10 @@
         </table>
     </div>
 
-    {{-- Success Modal (shows only if session has "success") --}}
-    @if(session('success') || session('error'))
-        <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header text-white py-2 {{ session('success') ? 'bg-success' : 'bg-danger' }}">
-                        <h6 class="modal-title d-flex align-items-center" id="feedbackModalLabel">
-                            {{ session('success') ? 'Success' : 'Error' }}
-                        </h6>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="mb-0">{{ session('success') ? session('success') : session('error') }}</p>
-                    </div>
-                    <div class="modal-footer py-2">
-                        <button type="button" class="btn btn-sm {{ session('success') ? 'btn-success' : 'btn-danger' }}" data-bs-dismiss="modal">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Auto‑show script --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const modalEl = document.getElementById('feedbackModal');
-                if (modalEl) {
-                    const feedbackModal = new bootstrap.Modal(modalEl);
-                    feedbackModal.show();
-
-                    // Optional: auto-hide after 4 seconds
-                    setTimeout(() => {
-                        const backdrop = document.querySelector('.modal-backdrop');
-                        feedbackModal.hide();
-                        // (Backdrop will be removed by Bootstrap)
-                    }, 4000);
-                }
-            });
-        </script>
-    @endif
-
-
     <div class="container">
         {{ $vehicles->onEachSide(5)->links('pagination::bootstrap-5') }}
     </div>
 
+    <x-admin.feedback-modal/>
     
 @endsection

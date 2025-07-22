@@ -8,6 +8,7 @@ use App\Models\VehicleCategory;
 use App\Models\VehicleType;
 use App\Models\VehicleName;
 use App\Models\VehicleTransmission;
+use App\Models\VehicleReview;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
@@ -45,20 +46,56 @@ class AdminVehicleController extends Controller
                 }
                 // handle type
                 else if ($key === 'type') {
-                    $query->where('vehicle_name_id', $value);
+                    $query->whereHas('vehicleType', function ($q) use ($value) {
+                        $q->where('type', $value);
+                    });
                 }
-                // handle name
-                else if ($key === 'name') {
-                    $query->where('vehicle_name_id', $value);
+                // handle transmission
+                else if ($key === 'transmission') {
+                    $query->whereHas('vehicleTransmission', function ($q) use ($value) {
+                        $q->where('transmission', $value);
+                    });
                 }
-                // handle name
-                else if ($key === 'name') {
-                    $query->where('vehicle_name_id', $value);
+                // handle engine_cc
+                else if ($key === 'engine_cc') {
+                    $query->where('engine_cc', $value);
                 }
-                // handle name
-                else if ($key === 'name') {
-                    $query->where('vehicle_name_id', $value);
+                // handle seats
+                else if ($key === 'seats') {
+                    $query->where('seats', $value);
                 }
+                // handle year
+                else if ($key === 'year') {
+                    $query->where('year', $value);
+                }
+                // handle price
+                else if ($key === 'price') {
+                    $query->where('price', $value);
+                }
+                // handle location
+                else if ($key === 'location') {
+                    $query->whereHas('location', function ($q) use ($value) {
+                        $q->where('location', $value);
+                    });
+                }
+                // handle rating
+                else if ($key === 'rating') {
+                    $query->whereHas('vehicleReview', function ($q) use ($value) {
+                        $q->selectRaw('vehicle_id, AVG(rate) as avg_rating')
+                        ->groupBy('vehicle_id')
+                        ->havingRaw('CEIL(avg_rating) = ?', [(int)$value]);
+                    });
+                }
+                // handle transactions
+                else if ($key === 'transactions') {
+                    $query->whereHas('transactions', function ($q) {
+                        $q->select('vehicle_id')
+                        ->groupBy('vehicle_id');
+                    })
+                    ->withCount('transactions')
+                    ->having('transactions_count', '=', (int)$value);
+                }
+
             }
         }
 
@@ -163,20 +200,6 @@ class AdminVehicleController extends Controller
     {
         //
     }
-
-    public function showReviews(Vehicle $vehicle)
-    {
-        //
-        
-        return view('admin.vehicles.reviews');
-    }
-
-    public function showTransactions(Vehicle $vehicle)
-    {
-        //
-        return view('admin.vehicles.transactions');
-    }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -358,8 +381,13 @@ class AdminVehicleController extends Controller
         //
         // dd($request->all());
 
+        if (VehicleCategory::where('category', $request->category)->exists()) {
+            // The category already exists
+            return back()->with('error', 'Vehicle already has this category.');
+        }
+
         $vehicle->vehicleCategories()->attach($request->category_id);
-        return back()->with('success', "Vehicle #($vehicle->id) category added.");
+        return back()->with('success', "Vehicle #$vehicle->id category added.");
     }
 
     public function deleteCategory(Request $request, Vehicle $vehicle)
