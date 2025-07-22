@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 
-class CartPageController extends Controller
+class CartController extends Controller
 {
     /**
      * Display a listing of the resource.

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
-class vehicleController extends Controller
+class VehicleController extends Controller
 {
     /**
      * Display a listing of the resource.
