@@ -65,7 +65,7 @@
                                 </div>
                             @endif
 
-                            <form id="rentalForm" action="#" method="GET"> {{-- ubah di sini ya kalo mau searchnya beda nama routenya -> {{ route('vehicle.display') }} --}}
+                            <form id="rentalForm" action="{{ route('vehicle.display') }}" method="GET"> {{-- ubah di sini ya kalo mau searchnya beda nama routenya -> {{ route('vehicle.display') }} --}}
                                 <div class="date_inputs">
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
