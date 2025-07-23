@@ -17,9 +17,10 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('driver_id');
             $table->date('start_book_date');
-            $table->date('end_book_date');    
+            $table->date('end_book_date');
             $table->date('return_date');
             $table->foreignId('status');
+            $table->string('external_id')->unique();
             $table->timestamps();
         });
     }

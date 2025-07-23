@@ -33,13 +33,13 @@ class DatabaseSeeder extends Seeder
             VehicleTransmissionSeeder::class,
             TransactionStatusSeeder::class,
             LocationSeeder::class,
-            
+
             DriverSeeder::class,
             VehicleSeeder::class,
             // UserSeeder::class,
 
             // CartSeeder::class,
-            // TransactionSeeder::class,
+            TransactionSeeder::class,
 
 
         ]);

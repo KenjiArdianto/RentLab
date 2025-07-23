@@ -17,6 +17,7 @@ class TransactionSeeder extends Seeder
 
         Transaction::insert([
             [
+                'external_id' => 'RENTAL-SEED-1',
                 'vehicle_id' => 1,
                 'user_id' => 1,
                 'driver_id' => 1,
@@ -26,6 +27,7 @@ class TransactionSeeder extends Seeder
                 'status' => 0
             ],
             [
+                'external_id' => 'RENTAL-SEED-2',
                 'vehicle_id' => 2,
                 'user_id' => 2,
                 'driver_id' => 2,
@@ -35,6 +37,7 @@ class TransactionSeeder extends Seeder
                 'status' => 1
             ],
             [
+                'external_id' => 'RENTAL-SEED-3',
                 'vehicle_id' => 3,
                 'user_id' => 3,
                 'driver_id' => 3,
@@ -44,6 +47,7 @@ class TransactionSeeder extends Seeder
                 'status' => 2
             ],
             [
+                'external_id' => 'RENTAL-SEED-4',
                 'vehicle_id' => 4,
                 'user_id' => 4,
                 'driver_id' => 4,
@@ -53,6 +57,7 @@ class TransactionSeeder extends Seeder
                 'status' => 3
             ],
             [
+                'external_id' => 'RENTAL-SEED-5',
                 'vehicle_id' => 5,
                 'user_id' => 5,
                 'driver_id' => 5,
@@ -62,6 +67,7 @@ class TransactionSeeder extends Seeder
                 'status' => 4
             ],
             [
+                'external_id' => 'RENTAL-SEED-6',
                 'vehicle_id' => 6,
                 'user_id' => 6,
                 'driver_id' => 6,
@@ -71,6 +77,7 @@ class TransactionSeeder extends Seeder
                 'status' => 5
             ],
             [
+                'external_id' => 'RENTAL-SEED-7',
                 'vehicle_id' => 7,
                 'user_id' => 7,
                 'driver_id' => 7,
