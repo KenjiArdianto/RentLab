@@ -57,7 +57,7 @@ class VehicleController extends Controller
             $bufferEndDate = $userEndDate->copy()->addDay();
 
             // 3. Jalankan query dengan rentang buffer
-            $query->whereHas('transactions', function ($subQuery) use ($bufferStartDate, $bufferEndDate) {
+            $query->whereDoesntHave('transactions', function ($subQuery) use ($bufferStartDate, $bufferEndDate) {
                 $subQuery
                     // Hanya cari transaksi yang aktif (status 1, 2, atau 3)
                     ->whereIn('status', [1, 2, 3])
