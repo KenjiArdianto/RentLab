@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
 
         // 1. Dapatkan instance Faker dari service container Laravel
         $faker = app(FakerGenerator::class);
@@ -42,17 +42,17 @@ class DatabaseSeeder extends Seeder
             VehicleCategorySeeder::class,
             VehicleTransmissionSeeder::class,
             LocationSeeder::class,
-            
+
+            UserSeeder::class,
             DriverSeeder::class,
             VehicleSeeder::class,
             TransactionStatusSeeder::class,
             TransactionSeeder::class,
             // UserSeeder::class,
 
-            // CartSeeder::class,
-            // TransactionSeeder::class,
-
-
+            UserReviewSeeder::class,
+            CartSeeder::class,
+            TransactionSeeder::class,
         ]);
     }
 }

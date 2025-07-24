@@ -71,7 +71,7 @@ class TransactionSeeder extends Seeder
                 'transaction_status_id' => 6
             ],
             [
-                'vehicle_id' => 7,
+                'vehicle_id' => 1,
                 'user_id' => 7,
                 'driver_id' => 7,
                 'start_book_date' => '2025-07-26',

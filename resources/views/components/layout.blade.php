@@ -57,6 +57,7 @@
 </head>
 <body>
 
+
     <header class="sticky-top bg-light shadow-sm">
         <!-- Top bar for language selection -->
         <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-none d-lg-flex">
@@ -113,7 +114,7 @@
                     <ul class="navbar-nav flex-row align-items-center">
                         <!-- Cart Icon (Visible on all sizes) -->
                         <li class="nav-item">
-                            <a class="nav-link p-2 px-4" href="#" title="Keranjang">
+                            <a class="nav-link p-2 px-4" href="{{ route('cart') }}" title="Keranjang">
                                 <i class="bi bi-cart fs-4"></i>
                             </a>
                         </li>

@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\DetailPageController;
 use App\Http\Controllers\VehicleController;
+use App\Models\Vehicle;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 // use Illuminate\Support\Facades\Route;
@@ -9,10 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\UserDetailController;
 use App\Http\Middleware\EnsureUserHasDetails;
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
 Auth::routes();
@@ -34,4 +33,16 @@ Route::post('/complete-user-detail',[UserDetailController::class,'store'])->name
 
 Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
 Route::get('/catalog', [VehicleController::class, 'catalog'])->name('vehicle.catalog');
-Route::get('/detail/{vehicle}', [VehicleController::class, 'detail'])->name('vehicle.detail');
+
+Route::get('/vehicle/{id}', [VehicleController::class,'show'])->name("vehicle.detail"); 
+
+
+Route::get('/cart', [CartController::class,'index'])->name('cart'); 
+
+
+Route::delete('/cart/{id}/destroy', [CartController::class,'destroy'])->name("cart.destroy"); 
+
+
+// input
+Route::post('/cart/store', [CartController::class,'store'])->name('cart.store'); 
+
