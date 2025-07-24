@@ -24,25 +24,21 @@ class DatabaseSeeder extends Seeder
             // DriverSeeder::class,
             // VehicleSeeder::class,
             // CartSeeder::class,
-            // TransactionSeeder::class,
             // RatingSeeder::class,
             // LogSeeder::class,
             VehicleNameSeeder::class,
             VehicleTypeSeeder::class,
             VehicleCategorySeeder::class,
             VehicleTransmissionSeeder::class,
-            TransactionStatusSeeder::class,
             LocationSeeder::class,
-            
             DriverSeeder::class,
             VehicleSeeder::class,
-            UserSeeder::class,
-            UserReviewSeeder::class,
+            TransactionStatusSeeder::class,
+            TransactionSeeder::class,
+            // UserSeeder::class,
 
             CartSeeder::class,
             TransactionSeeder::class,
-
-
         ]);
     }
 }

@@ -10,7 +10,13 @@ class UserReview extends Model
     /** @use HasFactory<\Database\Factories\UserReviewFactory> */
     use HasFactory;
 
-    
+    protected $fillable = [
+        'admin_id',
+        'user_id',
+        'transaction_id',
+        'comment',
+        'rate'
+    ];
 
     public function transaction()
     {
