@@ -13,6 +13,7 @@ class Cart extends Model
         "vehicle_id",
         'start_date',
         "end_date",
+        'user_id'
     ];
 
     public function user()

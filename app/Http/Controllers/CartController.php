@@ -12,9 +12,7 @@ class CartController extends Controller
      */
     public function index()
     {
-        //
-        // $listCart = Cart::all();
-        // return view("CartPage", compact('listCart'));
+        
 
         // TUNGGU ADA LOGIN ID BARU BIS PAKE sementara nembak dulu
         $listCart = Cart::where("user_id", 1)->get(); 
@@ -38,7 +36,7 @@ class CartController extends Controller
     public function store(Request $request){
     $vehicleId = $request->input('vehicle_id');
     $dateRanges = $request->input('date_ranges');
-    // $dummyId = $request->input('user_id');
+    $dummyId = $request->input('user_id', 1);
 
     foreach ($dateRanges as $range) {
         Cart::create([
@@ -46,11 +44,11 @@ class CartController extends Controller
             'start_date' => $range['start_date'],
             'end_date' => $range['end_date'],
         //    'user_id' => auth()->id(),
-        //    'user_id' => $dummyId,
+           'user_id' => $dummyId,
         ]);
     }
 
-    return redirect("/Cartpage");
+    return back();
 }
 
     /**
@@ -82,20 +80,12 @@ class CartController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        //
+        
+        // $cartitems=Cart::where('id',$id)->get();
+        // if($cartitems->user_id != Auth::id()){
+        //     return back()->withError();
+        // }
         Cart::destroy($id);
-        $vehicleId = $request->input('vehicle_id');
-        // return redirect("/DetailPage/{$vehicleId}");
         return back();
-        
     }
-    // public function hapus(Request $request, string $id)
-    // {
-    //     //
-    //     Cart::destroy($id);
-    //     return redirect("/CartPage");
-        
-    // }
-
-
 }
