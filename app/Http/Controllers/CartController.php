@@ -85,16 +85,17 @@ class CartController extends Controller
         //
         Cart::destroy($id);
         $vehicleId = $request->input('vehicle_id');
-        return redirect("/DetailPage/{$vehicleId}");
+        // return redirect("/DetailPage/{$vehicleId}");
+        return back();
         
     }
-    public function hapus(Request $request, string $id)
-    {
-        //
-        Cart::destroy($id);
-        return redirect("/CartPage");
+    // public function hapus(Request $request, string $id)
+    // {
+    //     //
+    //     Cart::destroy($id);
+    //     return redirect("/CartPage");
         
-    }
+    // }
 
 
 }

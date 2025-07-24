@@ -27,7 +27,8 @@
                 </div>
             </div>
 
-            <form class="col-2 m-0 d-flex align-items-center justify-content-center" action="/CartPage/{{ $param->id }}"
+            {{-- <form class="col-2 m-0 d-flex align-items-center justify-content-center" action="/CartPage/{{ $param->id }}" --}}
+            <form class="col-2 m-0 d-flex align-items-center justify-content-center" action="{{route('cart.destroy', ['id'=>$param->id])}}"
                 method="POST">
                 @csrf
                 @method('DELETE')

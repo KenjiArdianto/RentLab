@@ -134,8 +134,7 @@
 
                 <div class="modal fade" id="datePickerModal" tabindex="-1" aria-labelledby="datePickerModalLabel"
                     aria-hidden="true">
-                    {{-- Ubah ukuran modal menjadi modal-lg atau atur width custom --}}
-                    {{-- Kita akan gunakan modal-dialog-custom-width untuk kontrol lebih baik --}}
+                    
                     <div class="modal-dialog modal-dialog-centered modal-dialog-custom-width">
                         <div class="modal-content" style="width:700px">
                             <div class="modal-header">
@@ -143,7 +142,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            {{-- Ganti g-3 dengan g-2 untuk jarak antar kolom yang lebih kecil --}}
+                           
                             <div class="modal-body row g-2">
                                 <div class="col-12 col-md-6 text-center d-flex pe-0 justify-content-center">
                                     <div id="dateRangePicker"></div>
@@ -164,11 +163,12 @@
 
                                                 <div class="m-2">
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <form action="/vehiDel/{{$getVehicleByIdsINCart->id}}"
+                                                        {{-- <form action="/vehiDel/{{$getVehicleByIdsINCart->id}}" --}}
+                                                        <form action="{{route('cart.destroy', ['id'=>$getVehicleByIdsINCart->id])}}"
                                                             method="POST">
                                                             <input type="hidden" name="vehicle_id"
                                                                 value="{{ $getVehicleByIdsINCart->vehicle_id}}">
-                                                            @csrf
+                                                            @csrf   
                                                             @method('DELETE')
                                                             <div class="container bg-danger p-2 rounded-1"
                                                                 style="width:32px">
@@ -203,7 +203,7 @@
 
     <div class="container mb-3 mt-2 d-flex justify-content-between align-items-start px-0 add-to-cart-section">
         <hr class="flex-grow-1 ms-0 me-3 mb-0">
-        <form class="mb-0" id="addToCartForm" method="POST" action="/cartInput">
+        <form class="mb-0" id="addToCartForm" method="POST" action="{{route('cart.store')}}">
             @csrf
             <input type="hidden" name="vehicle_id" value="{{ $idVehicle->id }}">
             <div id="hiddenDateInputs"></div>
@@ -241,9 +241,9 @@
         crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    {{-- Flatpickr JS --}}
+    
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    {{-- Moment.js untuk formatting tanggal lebih mudah (opsional tapi disarankan) --}}
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script>
@@ -254,21 +254,21 @@
         $(document).ready(function () {
             const MAX_DATE_RANGES = 3;
             let selectedDateRanges = [];
-            let flatpickrInstance; // Variabel untuk menyimpan instance Flatpickr
+            let flatpickrInstance; 
             const dateInput = $('#dateInput');
             const cartDisplay = $('#cartDisplay');
             const datePickerModalInstance = new bootstrap.Modal(document.getElementById('datePickerModal'));
 
-            // Inisialisasi Flatpickr
+           
             flatpickrInstance = flatpickr("#dateRangePicker", {
-                mode: "range", // Mode rentang tanggal
-                inline: true, // Tampilkan inline di modal
-                dateFormat: "Y-m-d", // Format tanggal
-                minDate: "today", // Tidak bisa memilih tanggal yang sudah lewat
-                enable: [ // Ini akan berisi tanggal yang tidak disabled
+                mode: "range", 
+                inline: true, 
+                dateFormat: "Y-m-d", 
+                minDate: "today", 
+                enable: [ 
                     {
-                        from: "today", // Dari hari ini
-                        to: "2100-01-01" // Sampai tanggal jauh di masa depan
+                        from: "today", 
+                        to: "2100-01-01" 
                     }
                 ],
                 onDayCreate: function (dObj, dStr, fp, dayElem) {
@@ -276,13 +276,13 @@
                     const today = new Date();
                     const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-                    // Disable tanggal yang sudah lewat dan terapkan gaya kustom
+                    
                     if (date < normalizedToday) {
-                        dayElem.classList.add('past-date-disabled'); // Custom class for styling
+                        dayElem.classList.add('past-date-disabled'); 
                         dayElem.setAttribute('title', 'Tanggal sudah lewat');
                     }
 
-                    // Disable tanggal yang sudah ada di selectedDateRanges
+                    
                     for (const range of selectedDateRanges) {
                         const rangeStart = new Date(range.startDate.getFullYear(), range.startDate.getMonth(), range.startDate.getDate());
                         const rangeEnd = new Date(range.endDate.getFullYear(), range.endDate.getMonth(), range.endDate.getDate());

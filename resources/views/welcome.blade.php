@@ -6,7 +6,8 @@
 
     @foreach ($listItem as $items)
 
-    <a href="/DetailPage/{{$items->id}}">
+    {{-- <a href="/DetailPage/{{$items->id}}"> --}}
+    <a href="{{route('vehicle.detail', ['id'=>$items->id])}}">
         <div class="card">
             <div class="card-body">
                 <h1>{{$items->id}}</h1>

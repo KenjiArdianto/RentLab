@@ -6,21 +6,29 @@ use App\Http\Controllers\VehicleController;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Route;
 
-route::get('/', [VehicleController::class,'index']);
+Route::get('/', [VehicleController::class,'index']);
 
-route::get('/DetailPage/{id}', [VehicleController::class,'show']);
+Route::get('/vehicle/{id}', [VehicleController::class,'show'])->name("vehicle.detail"); //DON
+// Route::get('/DetailPage/{id}', [VehicleController::class,'show'])->name("vehicle"); 
 
-route::get('/CartPage', [CartController::class,'index']);
+Route::get('/cart', [CartController::class,'index'])->name('cart'); //DON
+// Route::get('/CartPage', [CartController::class,'index'])->name('cart');
 
-route::delete('/CartPage/{id}', [CartController::class,'hapus']);
-
-// route::get('/DetailPage/{id}', [CartController::class,'viewVehicleById']);
+Route::delete('/cart/{id}/destroy', [CartController::class,'destroy'])->name("cart.destroy"); //DON
+// Route::delete('/CartPage/{id}', [CartController::class,'hapus']);
 
 // input
-route::get('/cartInput', [CartController::class,'create']);
-route::post('/cartInput', [CartController::class,'store']);
+Route::post('/cart/store', [CartController::class,'store'])->name('cart.store'); //DON
+// Route::post('/cartInput', [CartController::class,'store']);
 
 
-route::delete('/vehiDel/{id}', [CartController::class,'destroy']);
+// Route::delete('/vehiDel/{id}', [CartController::class,'destroy']);  HAPUS
 
 
+
+
+
+
+
+
+// Route::get('/cartInput', [CartController::class,'create']);//HPAUS
