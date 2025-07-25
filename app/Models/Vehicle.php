@@ -11,6 +11,17 @@ class Vehicle extends Model
     /** @use HasFactory<\Database\Factories\VehicleFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'vehicle_type_id',
+        'vehicle_name_id',
+        'vehicle_transmission_id',
+        'location_id',
+        'engine_cc',
+        'seats',
+        'price',
+        'main_image'
+    ];
+
     public function vehicleImages()
     {
         return $this->hasMany(VehicleImage::class);

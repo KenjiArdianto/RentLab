@@ -10,6 +10,11 @@ class VehicleReview extends Model
     /** @use HasFactory<\Database\Factories\VehicleReviewFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'comment', 
+        'rate'
+    ];
+
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);
