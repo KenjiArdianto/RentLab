@@ -32,7 +32,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-05-03',
                 'end_book_date' => '2023-05-04',
                 'return_date' => '2023-05-05',
-                'transaction_status_id' => 2
+                'status' => 1
             ],
             [
                 'vehicle_id' => 3,
@@ -41,7 +41,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-04-03',
                 'end_book_date' => '2023-04-04',
                 'return_date' => '2023-04-05',
-                'transaction_status_id' => 3
+                'status' => 2
             ],
             [
                 'vehicle_id' => 4,
@@ -50,7 +50,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-03-03',
                 'end_book_date' => '2023-03-04',
                 'return_date' => '2023-03-05',
-                'transaction_status_id' => 4
+                'status' => 3
             ],
             [
                 'vehicle_id' => 5,
@@ -59,7 +59,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-02-03',
                 'end_book_date' => '2023-02-04',
                 'return_date' => '2023-02-05',
-                'transaction_status_id' => 5
+                'status' => 4
             ],
             [
                 'vehicle_id' => 6,
@@ -68,7 +68,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-01-03',
                 'end_book_date' => '2023-01-04',
                 'return_date' => '2023-01-05',
-                'transaction_status_id' => 6
+                'status' => 5
             ],
             [
                 'vehicle_id' => 7,
@@ -77,7 +77,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2022-12-03',
                 'end_book_date' => '2022-12-04',
                 'return_date' => '2022-12-05',
-                'transaction_status_id' => 7
+                'status' => 6
             ]
         ]);
     }

@@ -38,8 +38,9 @@ class DatabaseSeeder extends Seeder
             // UserSeeder::class,
 
             // CartSeeder::class,
-            // TransactionSeeder::class,
-
+            TransactionSeeder::class,
+            
+            UserReviewSeeder::class,
 
         ]);
     }

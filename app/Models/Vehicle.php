@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Vehicle extends Model
 {
@@ -64,5 +65,12 @@ class Vehicle extends Model
     public function vehicleReview()
     {
         return $this->hasMany(VehicleReview::class);
+    }
+
+    protected function firstImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->vehicleImages->first()?->image,
+        );
     }
 }

@@ -29,4 +29,13 @@ class VehicleReview extends Model
     {
         return $this->belongsTo(Vehicle::class);
     }
+    protected $fillable = [
+        'transaction_id',
+        'user_id',
+        'vehicle_id',
+        'rate',
+        'comment',
+    ];
+
+    protected $table = 'vehicle_review';
 }

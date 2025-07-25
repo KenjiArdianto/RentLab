@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Transaction extends Model
 {
@@ -32,11 +34,48 @@ class Transaction extends Model
 
     public function userReview()
     {
-        return $this->hasMany(UserReview::class);
+        return $this->hasOne(UserReview::class);
     }
 
     public function vehicleReview()
     {
-        return $this->hasMany(VehicleReview::class);
+        return $this->hasOne(VehicleReview::class);
+    }
+
+    protected function VehiclePrice(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (!$this->vehicle || !$this->vehicle->price) {
+                    return 0;
+                }
+
+                $start = Carbon::parse($this->start_book_date);
+                $end = Carbon::parse($this->end_book_date);
+                
+                // Menggunakan perhitungan hari sesuai kode asli Anda
+                $days = $start->diffInDays($end);
+
+                // Hitung harga dasar sewa kendaraan
+                $vehiclePrice = $days * $this->vehicle->price;
+                
+                // Jika tidak, kembalikan harga kendaraan saja
+                return $vehiclePrice;
+            }
+        );
+    }
+
+    protected function driverFee(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->driver_id ? 50000 : 0
+        );
+    }
+
+    protected function totalPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->vehicle_price + $this->driver_fee
+        );
     }
 }

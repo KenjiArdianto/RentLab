@@ -32,4 +32,6 @@ class UserReview extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    protected $table = 'user_review';
 }
