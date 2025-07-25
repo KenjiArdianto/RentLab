@@ -12,7 +12,7 @@ class AdminIndexController extends Controller
     public function index()
     {
         // $logCount              = \App\Models\Log::count();
-        // $userCount             = \App\Models\User::count();
+        $userCount             = \App\Models\User::count();
         $driverCount           = \App\Models\Driver::count();
         $transactionCount      = \App\Models\Transaction::count();
         $vehicleCount          = \App\Models\Vehicle::count();
@@ -30,13 +30,13 @@ class AdminIndexController extends Controller
         //     'label' => 'Logs',
         //     'color' => 'primary'
         // ],
-        // [
-        //     'title' => 'Users',
-        //     'count' => $userCount,
-        //     'route' => route('admin.users'),
-        //     'label' => 'Users',
-        //     'color' => 'secondary'
-        // ],
+        [
+            'title' => 'Users',
+            'count' => $userCount,
+            'route' => route('admin.users'),
+            'label' => 'Users',
+            'color' => 'secondary'
+        ],
         [
             'title' => 'Drivers',
             'count' => $driverCount,

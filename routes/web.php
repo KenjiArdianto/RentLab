@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminVehicleNameController;
 use App\Http\Controllers\AdminVehicleCategoryController;
 use App\Http\Controllers\AdminVehicleTransmissionController;
 use App\Http\Controllers\AdminLocationController;
+use App\Http\Controllers\AdminUserController;
 
 Route::get('/admin',[AdminIndexController::class, 'index'])->name('admin.index');
 
@@ -18,9 +19,8 @@ Route::get('/admin/logs', function () {
     return view('admin.logs');
 })->name('admin.logs');
 
-Route::get('/admin/users', function () {
-    return view('admin.users');
-})->name('admin.users');
+Route::get('/admin/users}',[AdminUserController::class, 'index'])->name('admin.users');
+Route::post('/admin/users/suspend',[AdminUserController::class, 'suspend'])->name('admin.users.suspend');
 
 // Route::get('/admin/drivers', function () {
 //     return view('admin.drivers');

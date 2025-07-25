@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('idcardNumber')->nullable();
             $table->date('dateOfBirth')->nullable();
             $table->string('idcardPicture')->nullable();
+            $table->string('profilePicture')->nullable();
         });
     }
 
