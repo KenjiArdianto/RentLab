@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('end_book_date');
             $table->date('return_date');
             $table->foreignId('status');
-            $table->string('external_id')->unique();
+            $table->string('external_id')->nullable();
             $table->timestamps();
         });
     }

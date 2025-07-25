@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
@@ -15,85 +16,101 @@ use Xendit\Invoice\CreateInvoiceRequest;
 
 class PembayaranController extends Controller
 {
-    public function createInvoice(Request $request)
+    public function createCheckoutInvoice(Request $request)
     {
-        try {
-            // LANGKAH 1: Ambil data transaksi yang sudah ada untuk dites
-            $transaction = Transaction::find(2); // Ambil transaksi dengan ID 2
+        // Asumsi $request->cart_ids adalah array dari ID item keranjang yang dipilih
+        // $request->cart_ids = [1, 2, 3];
+        // $selectedCartIds = $request->input('cart_ids');
+        $selectedCartIds = [1,2,3];
+        $userIdForTesting = 1;
 
-            // Pastikan transaksi ditemukan
-            if (!$transaction) {
-                return "Error: Transaksi dengan ID 2 tidak ditemukan.";
+        if (empty($selectedCartIds)) {
+            return back()->with('error', 'Tidak ada item keranjang yang dipilih.');
+        }
+
+        $totalAmount = 0;
+        $transactionsToCreate = [];
+        // $commonExternalId = 'RENTAL-' . time() . '-' . $request->user()->id; // ID unik untuk seluruh checkout ini
+
+        $commonExternalId = 'RENTAL-' . time() . '-' . str()->random();
+
+        try {
+            // Loop melalui setiap ID keranjang yang dipilih
+            foreach ($selectedCartIds as $cartId) {
+                $cartItem = Cart::with('vehicle')->findOrFail($cartId); // Ambil item keranjang beserta detail mobil
+                // dd($cartItem);
+                if (!$cartItem->vehicle) {
+                    Log::error("Vehicle not found for cart item ID: {$cartId}");
+                    continue; // Lewati item jika kendaraan tidak ditemukan
+                }
+
+                $vehicle = $cartItem->vehicle;
+                $startDate = new \DateTime($cartItem->start_date);
+                $endDate = new \DateTime($cartItem->end_date);
+                $duration = $startDate->diff($endDate)->days;
+                if ($duration == 0) $duration = 1; // Asumsi minimal 1 hari sewa
+
+                $subtotal = $vehicle->price * $duration; // Hitung subtotal untuk item ini
+                $totalAmount += $subtotal; // Tambahkan ke total keseluruhan
+
+                $transactionsToCreate[] = [
+                    'vehicle_id'      => $vehicle->id,
+                    // 'user_id'         => $request->user()->id,
+                    'user_id'         => $userIdForTesting,
+                    'driver_id'       => 1, // Sesuaikan jika ada driver yang dipilih di keranjang
+                    'start_book_date' => $cartItem->start_date,
+                    'end_book_date'   => $cartItem->end_date,
+                    'return_date'     => $cartItem->end_date,
+                    'status'          => 1, // Status pending
+                    'external_id'     => $commonExternalId, // Semua item dalam checkout ini pakai external_id yang sama
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ];
+                // $userIdForTesting += 1;
             }
 
-            // Ambil data mobil yang berelasi dengan transaksi ini
-            $vehicle = Vehicle::find($transaction->vehicle_id);
+            // Pastikan total amount tidak nol
+            if ($totalAmount <= 0) {
+                return back()->with('error', 'Total pembayaran tidak valid.');
+            }
 
-            // dd($vehicle->price);
+            // dd($transactionsToCreate);
 
-            // LANGKAH 2: Langsung buat invoice Xendit dari data yang sudah ada
+            // Simpan semua transaksi ke database
+            // Ini akan membuat banyak baris di tabel `transactions`
+            Transaction::insert($transactionsToCreate);
+
+            // Buat invoice Xendit
             Configuration::setXenditKey(config('services.xendit.secret_key'));
             $apiInstance = new InvoiceApi();
 
             $createInvoiceRequest = new CreateInvoiceRequest([
-                'external_id' => $transaction->external_id, // Gunakan external_id yang sudah ada
-                'amount'      => $vehicle->price,
+                'external_id' => $commonExternalId, // ID unik untuk seluruh checkout
+                'amount'      => $totalAmount,      // Jumlah total pembayaran
                 'currency'    => 'IDR',
-                'description' => 'Pembayaran untuk Vehicle ID: ' . $vehicle->id,
+                'description' => 'Pembayaran Sewa Banyak Mobil (Order: ' . $commonExternalId . ')',
                 'success_redirect_url' => route('payment.success'),
-                'payer_email' => 'test@example.com', // Gunakan email statis untuk tes
-                // 'invoice_duration' => 2,
+                // 'payer_email' => $request->user()->email, // Asumsi user punya email
             ]);
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
 
-            // dd($transaction->status);
-            // LANGKAH 3: Redirect ke halaman pembayaran
+            // Opsional: Hapus item dari keranjang setelah berhasil dibuat transaksinya
+            Cart::whereIn('id', $selectedCartIds)->delete();
+
             return redirect($result->getInvoiceUrl());
 
         } catch (\Exception $e) {
-            return "Terjadi kesalahan: " . $e->getMessage();
+            Log::error('Error creating multi-transaction invoice:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error', 'Terjadi kesalahan saat memproses checkout: ' . $e->getMessage());
         }
     }
-    // public function createInvoice(Request $request)
-    // {
-    //     $vehicle = Vehicle::findOrFail($request->vehicle_id);
 
-    //     try {
-    //         $externalId = 'RENTAL-' . time() . '-' . $request->user()->id();
-
-    //         // Panggil tanpa namespace lengkap karena sudah di-import
-    //         $transaction = Transaction::create([
-    //             'external_id'     => $externalId,
-    //             'vehicle_id'      => $vehicle->id,
-    //             'user_id'         => $request->user()->id(),
-    //             'start_book_date' => $request->start_book_date,
-    //             'end_book_date'   => $request->end_book_date,
-    //             'status'          => 1,
-    //         ]);
-
-    //         Configuration::setXenditKey(config('services.xendit.secret_key'));
-
-    //         // Panggil tanpa namespace lengkap
-    //         $apiInstance = new InvoiceApi();
-    //         $createInvoiceRequest = new CreateInvoiceRequest([
-    //             'external_id' => $transaction->external_id,
-    //             'amount'      => $vehicle->price,
-    //             'currency'    => 'IDR',
-    //             'description' => 'Pembayaran sewa untuk Vehicle ID: ' . $vehicle->id,
-    //             'success_redirect_url' => route('payment.success'),
-    //             'payer_email' => $request->user()->email,
-    //         ]);
-
-    //         $result = $apiInstance->createInvoice($createInvoiceRequest);
-
-    //         return redirect($result->getInvoiceUrl());
-
-    //     } catch (\Exception $e) {
-    //         // Tangani error dari Xendit atau error umum lainnya
-    //         return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    //     }
-    // }
 
     public function handleWebhook(Request $request)
     {
@@ -101,32 +118,46 @@ class PembayaranController extends Controller
         Log::info('Webhook Payload Diterima:', $request->all());
 
         $externalId = $request->input('external_id');
-        $statusPembayaran = $request->input('status'); // Xendit menggunakan 'status' untuk pembayaran
+        $statusPembayaran = $request->input('status');
 
         Log::info("Webhook diproses. External ID: {$externalId}, Status Xendit: {$statusPembayaran}");
 
-        $transaction = Transaction::where('external_id', $externalId)->first();
-
-        if (!$transaction) {
+        // --- PERUBAHAN PENTING DI SINI ---
+        // Gunakan ->get() untuk mendapatkan semua transaksi dengan external_id yang sama
+        $transactions = Transaction::where('external_id', $externalId)->get();
+        // dd($transactions);
+        // Cek apakah ada transaksi yang ditemukan
+        if ($transactions->isEmpty()) {
             Log::warning("Transaksi dengan external_id: {$externalId} TIDAK DITEMUKAN di database.");
-        } else {
-            Log::info("Transaksi DITEMUKAN. ID Transaksi: {$transaction->id}, Status Saat Ini di DB: {$transaction->status}");
-
-            if ($statusPembayaran === 'PAID') { // Gunakan perbandingan ketat untuk 'PAID'
-                $transaction->status = 2;
-                $transaction->save();
-                Log::info("Transaksi {$externalId} BERHASIL DIUPDATE menjadi LUNAS (status 2).");
-                // dd($transaction->status);
-            } elseif ($statusPembayaran === 'CANCELLED' || $statusPembayaran === 'EXPIRED') {
-                $transaction->status = 0; // Atau status lain untuk batal/kadaluarsa
-                $transaction->save();
-                Log::info("Transaksi {$externalId} DIBATALKAN/KADALUARSA (status 0). Status Xendit: {$statusPembayaran}");
-            } else {
-                Log::info("Status Xendit '{$statusPembayaran}' diterima untuk {$externalId}, tidak ada perubahan status transaksi.");
-            }
+            return response()->json(['status' => 'error', 'message' => 'Transactions not found'], 404);
+        } else{
+            Log::info("Transaksi dengan external_id: {$externalId} DITEMUKAN di database");
         }
 
-        // dd($transaction->status);
+        // Lakukan perulangan untuk mengupdate setiap transaksi yang ditemukan
+        foreach ($transactions as $transaction) { // <-- LOOPING DI SINI
+            Log::info("Transaksi DITEMUKAN. ID Transaksi: {$transaction->id}, External ID: {$externalId}, Status Saat Ini di DB: {$transaction->status}");
+
+            if ($statusPembayaran === 'PAID') {
+                if ($transaction->status != 2) { // Hanya update jika status belum lunas
+                    $transaction->status = 2; // Lunas
+                    $transaction->save();
+                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) BERHASIL DIUPDATE menjadi LUNAS (status 2).");
+                } else {
+                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) sudah lunas, tidak perlu update lagi.");
+                }
+            } elseif ($statusPembayaran === 'CANCELLED' || $statusPembayaran === 'EXPIRED') {
+                if ($transaction->status != 0) { // Hanya update jika status belum batal/kadaluarsa
+                    $transaction->status = 0; // Batal/Kadaluarsa
+                    $transaction->save();
+                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) DIBATALKAN/KADALUARSA (status 0). Status Xendit: {$statusPembayaran}");
+                } else {
+                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) sudah batal/kadaluarsa, tidak perlu update lagi.");
+                }
+            } else {
+                Log::info("Status Xendit '{$statusPembayaran}' diterima untuk {$externalId} (Transaksi {$transaction->id}), tidak ada perubahan status.");
+            }
+        } // <-- AKHIR LOOPING
 
         return response()->json(['status' => 'success']);
     }

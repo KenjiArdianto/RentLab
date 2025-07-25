@@ -20,19 +20,19 @@ class CartSeeder extends Seeder
                 'user_id' => 1,
                 'vehicle_id' => 1,
                 'start_date' => '2023-06-03',
-                'end_date' => '2023-06-04',
+                'end_date' => '2023-06-06',
             ],
             [
                 'user_id' => 2,
                 'vehicle_id' => 2,
                 'start_date' => '2023-05-03',
-                'end_date' => '2023-05-04',
+                'end_date' => '2023-05-06',
             ],
             [
                 'user_id' => 3,
                 'vehicle_id' => 3,
                 'start_date' => '2023-04-03',
-                'end_date' => '2023-04-04',
+                'end_date' => '2023-04-06',
             ]
         ]);
     }

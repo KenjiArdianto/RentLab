@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // DriverSeeder::class,
             // VehicleSeeder::class,
-            // CartSeeder::class,
+            CartSeeder::class,
             // TransactionSeeder::class,
             // RatingSeeder::class,
             // LogSeeder::class,

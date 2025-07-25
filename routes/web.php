@@ -8,7 +8,7 @@ Route::get('/', function () {
 });
 
 // Route untuk menerima notifikasi dari Xendit
-Route::get('/bayar', [PembayaranController::class, 'createInvoice']);
+Route::post('/bayar', [PembayaranController::class, 'createCheckoutInvoice']);
 Route::post('/xendit/webhook', [PembayaranController::class, 'handleWebhook']);
 // Tambahkan route ini di routes/web.php
 
