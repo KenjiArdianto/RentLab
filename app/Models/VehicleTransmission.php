@@ -10,6 +10,10 @@ class VehicleTransmission extends Model
     /** @use HasFactory<\Database\Factories\VehicleTransmissionFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'transmission'
+    ];
+    
     public function vehicles()
     {
         return $this->hasMany(Vehicle::class);

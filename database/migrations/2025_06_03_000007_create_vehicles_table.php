@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_type_id');
-            $table->foreignId('vehicle_name_id');
-            $table->foreignId('vehicle_transmission_id');
+            $table->foreignId('vehicle_type_id')->nullable()->constrained('vehicle_types')->onDelete('set null');
+            $table->foreignId('vehicle_name_id')->nullable()->constrained('vehicle_names')->onDelete('set null');
+            $table->foreignId('vehicle_transmission_id')->nullable()->constrained('vehicle_transmissions')->onDelete('set null');
             $table->integer('engine_cc');
             $table->integer('seats');
-            $table->foreignId('location_id');
+            $table->year('year');
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
             $table->string('main_image');
             $table->integer('price');
             $table->timestamps();
