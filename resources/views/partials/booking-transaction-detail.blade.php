@@ -22,7 +22,7 @@
                         </div>
                         <div class="mb-3">
                             <strong>{{ __('navigation.modal.vehicle') }}:</strong>
-                            <p class="text-muted mb-0">{{ $transaction->vehicle?->vehicleName?->name }}</p>
+                            <p class="text-muted mb-0">{{ $transaction->vehicle?->vehicleName?->name }} ({{ $transaction->vehicle?->year }})</p>
                         </div>
                         <div class="mb-3">
                             <strong>{{ __('navigation.modal.booking_dates') }}:</strong>

@@ -25,7 +25,7 @@ class BookingHistoryController extends Controller
         $ongoingStatus = [1, 2, 3];
         $historyStatus = [4, 5, 6, 7];
         $relations = [
-            'vehicle:id,vehicle_name_id,vehicle_type_id,vehicle_transmission_id,price,main_image',
+            'vehicle:id,vehicle_name_id,vehicle_type_id,vehicle_transmission_id,price,main_image,year',
             'vehicle.vehicleName:id,name',
             'vehicle.vehicleType:id,type',
             'vehicle.vehicleImages:id,vehicle_id,image',

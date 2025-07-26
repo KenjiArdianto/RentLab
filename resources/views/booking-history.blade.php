@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="col-md-5">
                                     <p class="text-muted mb-1 small">{{ \Carbon\Carbon::parse($transaction->start_book_date)->format('d M Y') }} - {{ \Carbon\Carbon::parse($transaction->end_book_date)->format('d M Y') }}</p>
-                                    <h5 class="card-title mb-1">{{ $transaction->vehicle?->vehicleName?->name ?? 'N/A' }}</h5>
+                                    <h5 class="card-title mb-1">{{ $transaction->vehicle?->vehicleName?->name ?? 'N/A' }} ({{ $transaction->vehicle?->year }})</h5>
                                     <p class="card-text">{{ $transaction->vehicle?->vehicleType?->type ?? '-' }} / {{ $transaction->vehicle?->vehicleTransmission?->transmission ?? '-' }}</p>
                                 </div>
                                 <div class="col-md-5 text-md-end">

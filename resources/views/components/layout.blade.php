@@ -1,8 +1,3 @@
-@php
-    $currLang = session()->get('lang', 'en');
-    app()->setLocale($currLang);
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,17 +67,7 @@
                 <a class="navbar-brand d-flex align-items-center gap-0 p-0 px-4 mt-1 m-0" href="#">
                     <img src="https://placehold.co/12x12/cccccc/000000?text=B" width="12" height="12" alt="Language Icon">
                     <div class="ms-1 navbar-brand d-flex align-items-center p-0">
-                        {{-- <p class="m-0 p-0 fw-bold" style="font-size: 9px;">Bahasa Indonesia</p> --}}
-                        <form action="/lang" method="post">
-                            @csrf
-
-                            <select name="lang" id="lang" onchange="this.form.submit()">
-                                <option value="en" @if(app()->getLocale() === 'en')
-                                selected @endif>English</option>
-                                <option value="id"@if(app()->getLocale() === 'id')
-                                selected @endif>Bahasa Indonesia</option>
-                            </select>
-                        </form>
+                        <p class="m-0 p-0 fw-bold" style="font-size: 9px;">Bahasa Indonesia</p>
                     </div>
                 </a>
             </div>
@@ -103,7 +88,7 @@
                             <div class="p-1 d-flex flex-row justify-content-start align-items-center form-control border-primary ps-3 pe-3 w-100 rounded-pill search-container">
                                 <label for="search-input-desktop" class="search-icon-label"><i class="bi bi-search"></i></label>
                                 <div class="container-fluid p-0">
-                                    <input id="search-input-desktop" class="container-fluid border-0 search-input-inner pe-0 ps-3 bg-transparent" type="search" placeholder="{{ __('navigation.search') }}" aria-label="Search">
+                                    <input id="search-input-desktop" class="container-fluid border-0 search-input-inner pe-0 ps-3 bg-transparent" type="search" placeholder="Cari produk atau layanan..." aria-label="Search">
                                 </div>
                             </div>
                         </form>
@@ -125,18 +110,18 @@
                     <ul class="navbar-nav flex-row align-items-center">
                         <!-- Cart Icon (Visible on all sizes) -->
                         <li class="nav-item">
-                            <a class="nav-link p-2 px-4" href="#" title="{{ __('navigation.basket') }}">
+                            <a class="nav-link p-2 px-4" href="#" title="Keranjang">
                                 <i class="bi bi-cart fs-4"></i>
                             </a>
                         </li>
                         <!-- Desktop-only Icons -->
                         <li class="nav-item d-none d-lg-inline-block">
-                            <a class="nav-link p-2 px-4" href="#" title="{{ __('navigation.transaction') }}">
+                            <a class="nav-link p-2 px-4" href="#" title="Transaksi">
                                 <i class="bi bi-receipt fs-4"></i>
                             </a>
                         </li>
                         <li class="nav-item d-none d-lg-inline-block">
-                            <a class="nav-link p-2 px-4" href="#" title="{{ __('navigation.account') }}">
+                            <a class="nav-link p-2 px-4" href="#" title="Akun">
                                 <i class="bi bi-person-circle fs-4"></i>
                             </a>
                         </li>
@@ -159,19 +144,19 @@
                 <li class="nav-item">
                     <a class="nav-link d-flex flex-column align-items-center active" href="/home" title="Home">
                         <i class="bi bi-house-door-fill"></i>
-                        <span>{{ __('navigation.home') }}</span>
+                        <span>Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link d-flex flex-column align-items-center" href="#" title="Transaksi">
                         <i class="bi bi-receipt"></i>
-                        <span>{{ __('navigation.transaction') }}</span>
+                        <span>Transaksi</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link d-flex flex-column align-items-center" href="#" title="Akun">
                         <i class="bi bi-person"></i>
-                        <span>{{ __('navigation.account') }}</span>
+                        <span>Akun</span>
                     </a>
                 </li>
             </ul>

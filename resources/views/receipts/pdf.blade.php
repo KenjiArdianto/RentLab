@@ -61,7 +61,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ $transaction->vehicle?->vehicleName?->name }}</td>
+                    <td>{{ $transaction->vehicle?->vehicleName?->name }} ({{ $transaction->vehicle?->year }})</td>
                     <td>{{ $transaction->vehicle?->vehicleType?->type }} / {{ $transaction->vehicle?->vehicleTransmission?->transmission }}</td>
                     <td class="text-right">Rp{{ number_format($transaction->vehicle_price, 0, ',', '.') }}</td>
                     <td class="text">1</td>
