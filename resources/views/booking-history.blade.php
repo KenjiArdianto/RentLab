@@ -27,8 +27,8 @@
             <nav class="nav nav-pills nav-fill mb-4" id="transaction-toggle" 
                  style="--slider-left: {{ $sliderLeft }}; --slider-width: {{ $sliderWidth }};">
                 
-                <a class="nav-link {{ !$isHistoryActive ? 'active' : '' }}" href="#ongoing-content" data-bs-toggle="tab" data-tab="ongoing">{{ __('navigation.on_going') }}</a>
-                <a class="nav-link {{ $isHistoryActive ? 'active' : '' }}" href="#history-content" data-bs-toggle="tab" data-tab="history">{{ __('navigation.history') }}</a>
+                <a class="nav-link {{ !$isHistoryActive ? 'active' : '' }}" href="#ongoing-content" data-bs-toggle="tab" data-tab="ongoing">{{ __('booking-history.on_going') }}</a>
+                <a class="nav-link {{ $isHistoryActive ? 'active' : '' }}" href="#history-content" data-bs-toggle="tab" data-tab="history">{{ __('booking-history.history') }}</a>
             </nav>
             
             <form action="{{ route('booking.history') }}" method="GET">
@@ -36,16 +36,16 @@
                 <div class="d-flex align-items-center p-1 form-control border-primary rounded-4">
                     <div class="row g-2 align-items-center w-100">
                         <div class="col-md-5">
-                            <input type="text" name="search" class="form-control" placeholder="{{ __('navigation.search_vehicle') }}" value="{{ request('search') }}">
+                            <input type="text" name="search" class="form-control" placeholder="{{ __('booking-history.search_vehicle') }}" value="{{ request('search') }}">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="date_from" class="form-control date-picker" placeholder="{{ __('navigation.date_placeholder') }}" value="{{ request('date_from') }}">
+                            <input type="text" name="date_from" class="form-control date-picker" placeholder="{{ __('booking-history.date_placeholder') }}" value="{{ request('date_from') }}">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="date_to" class="form-control date-picker" placeholder="{{ __('navigation.date_placeholder') }}" value="{{ request('date_to') }}">
+                            <input type="text" name="date_to" class="form-control date-picker" placeholder="{{ __('booking-history.date_placeholder') }}" value="{{ request('date_to') }}">
                         </div>
                         <div class="col-md-1">
-                            <button type="submit" class="btn btn-primary w-100">{{ __('navigation.search_btn') }}</button>
+                            <button type="submit" class="btn btn-primary w-100">{{ __('booking-history.search_btn') }}</button>
                         </div>
                     </div>
                 </div>
@@ -70,21 +70,21 @@
                                 <div class="col-md-5 text-md-end">
                                     @php
                                         $statusConfig = [
-                                            1 => ['text' => __('navigation.status.on_payment'), 'bg' => 'text-bg-warning'],
-                                            2 => ['text' => __('navigation.status.on_booking'), 'bg' => 'text-bg-info'],
-                                            3 => ['text' => __('navigation.status.vehicle_taken'), 'bg' => 'text-bg-primary'],
+                                            1 => ['text' => __('booking-history.status.on_payment'), 'bg' => 'text-bg-warning'],
+                                            2 => ['text' => __('booking-history.status.on_booking'), 'bg' => 'text-bg-info'],
+                                            3 => ['text' => __('booking-history.status.vehicle_taken'), 'bg' => 'text-bg-primary'],
                                         ];
                                         $currentStatus = $statusConfig[$transaction->transaction_status_id] ?? ['text' => 'Unknown', 'bg' => 'text-bg-dark'];
                                     @endphp
                                     <span class="badge rounded-pill {{ $currentStatus['bg'] }} mb-2">{{ $currentStatus['text'] }}</span>
-                                    <p class="text-muted mb-1 small">{{ __('navigation.label.total_price') }}</p>
+                                    <p class="text-muted mb-1 small">{{ __('booking-history.label.total_price') }}</p>
                                     <h5 class="mb-3">Rp {{ number_format($transaction->total_price ?? 0, 0, ',', '.') }}</h5>
                                     <div>
                                         <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#detailModal{{ $transaction->id }}">
-                                            {{ __('navigation.button.view_detail') }}
+                                            {{ __('booking-history.button.view_detail') }}
                                         </button>
                                         <a href="{{ route('receipt.download', $transaction) }}" class="btn btn-primary btn-sm rounded-pill px-3 ms-2">
-                                            {{ __('navigation.button.download_receipt') }}
+                                            {{ __('booking-history.button.download_receipt') }}
                                         </a>
                                     </div>  
                                 </div>
@@ -118,31 +118,31 @@
                                     <div class="mb-2">
                                         @if(in_array($transaction->transaction_status_id, [4, 5]))
                                             @if($transaction->userReview->isEmpty())
-                                                <span class="badge rounded-pill text-bg-secondary">{{ __('navigation.status.admin_review_pending') }}</span>
+                                                <span class="badge rounded-pill text-bg-secondary">{{ __('booking-history.status.admin_review_pending') }}</span>
                                             @endif
                                             @if(!$transaction->vehicleReview)
-                                                <span class="badge rounded-pill text-bg-warning text-dark">{{ __('navigation.status.awaiting_review') }}</span>
+                                                <span class="badge rounded-pill text-bg-warning text-dark">{{ __('booking-history.status.awaiting_review') }}</span>
                                             @endif
                                         @elseif($transaction->transaction_status_id == 6)
-                                            <span class="badge rounded-pill text-bg-success">{{ __('navigation.status.reviewed_closed') }}</span>
+                                            <span class="badge rounded-pill text-bg-success">{{ __('booking-history.status.reviewed_closed') }}</span>
                                         @elseif($transaction->transaction_status_id == 7)
-                                            <span class="badge rounded-pill text-bg-danger">{{ __('navigation.status.canceled') }}</span>
+                                            <span class="badge rounded-pill text-bg-danger">{{ __('booking-history.status.canceled') }}</span>
                                         @endif
                                     </div>
                                     
                                     @if($transaction->transaction_status_id != 7) 
-                                        <p class="text-muted mb-1 small mt-1">{{ __('navigation.label.total_price') }}</p>
+                                        <p class="text-muted mb-1 small mt-1">{{ __('booking-history.label.total_price') }}</p>
                                         <h5 class="mb-3">Rp {{ number_format($transaction->total_price ?? 0, 0, ',', '.') }}</h5>
                                         <div>
                                             <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#detailModal{{ $transaction->id }}">
                                                 @if (!$transaction->vehicleReview && in_array($transaction->transaction_status_id, [4, 5]))
-                                                    {{ __('navigation.button.leave_review') }}
+                                                    {{ __('booking-history.button.leave_review') }}
                                                 @else
-                                                    {{ __('navigation.button.view_detail') }}
+                                                    {{ __('booking-history.button.view_detail') }}
                                                 @endif
                                             </button>
                                             <a href="{{ route('receipt.download', $transaction) }}" class="btn btn-primary btn-sm rounded-pill px-3 ms-2">
-                                                {{ __('navigation.button.download_receipt') }}
+                                                {{ __('booking-history.button.download_receipt') }}
                                             </a>
                                         </div>
                                     @endif
@@ -166,7 +166,7 @@
         document.addEventListener('DOMContentLoaded', function () {
 
             flatpickr(".date-picker", {
-                dateFormat: "{{ __('navigation.date_format_flatpickr') }}", // Mengatur format tanggal menjadi dd/mm/yyyy
+                dateFormat: "{{ __('booking-history.date_format_flatpickr') }}", // Mengatur format tanggal menjadi dd/mm/yyyy
             });
             
             @if ($errors->any() && session('open_modal'))
