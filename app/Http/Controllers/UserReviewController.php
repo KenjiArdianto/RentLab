@@ -10,26 +10,19 @@ use Illuminate\Support\Facades\Validator;
 
 class UserReviewController extends Controller
 {
-    /**
-     * Menyimpan review baru untuk kendaraan.
-     */
     public function store(Request $request, Transaction $transaction)
     {
-        // Keamanan: Pastikan hanya pemilik transaksi yang bisa mereview
         // if ($transaction->user_id !== Auth::id()) {
-        //      // Jika request adalah AJAX, kirim respon error JSON
         //     if ($request->wantsJson()) {
         //         return response()->json(['message' => 'Unauthorized action.'], 403);
         //     }
         //     abort(403);
         // }
 
-        // Keamanan: Pastikan transaksi hanya bisa direview sekali
-        if ($transaction->vehicleReview()->exists()) {
-            return back()->with('error', 'This transaction has already been reviewed.');
+        if ($transaction->vehicleReview) {
+            return back()->with('error', __('navigation.error.already_reviewed'));
         }
 
-        // Validasi Input Form
         $validator = Validator::make($request->all(), [
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|min:10|max:1000',
@@ -37,18 +30,16 @@ class UserReviewController extends Controller
 
         if ($validator->fails()) {
             if ($request->wantsJson()) {
-                return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 422);
             }
-
-            return back()
-                ->withErrors($validator)
-                ->withInput($request->except('comment')) // <-- KUNCI PERBAIKANNYA
-                ->with('open_modal', $transaction->id);
+            return redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('open_modal', $transaction->id);
         }
 
         $validatedData = $validator->validated();
 
-        // Simpan review ke tabel `vehicle_reviews`
         VehicleReview::create([
             'transaction_id' => $transaction->id,
             'user_id' => $transaction->user_id,
@@ -61,11 +52,12 @@ class UserReviewController extends Controller
             return response()->json(['success' => true, 'message' => 'Thank you for your review!']);
         }
 
-        if ($transaction->UserReview()->exists()) {
-            // Jika ya, tutup transaksinya
-            $transaction->status = 6; // Status: Closed
-            $transaction->save();
-        }
+        $transaction->refresh();
+
+        if ($transaction->userReview->isNotEmpty() && $transaction->vehicleReview) {
+        $transaction->transaction_status_id = 6;
+        $transaction->save();
+    }
         
         return redirect()->route('booking.history')->with('success', 'Thank you for your review!');
     }

@@ -1,18 +1,15 @@
-/* Wadah utama untuk toggle slider */
 #transaction-toggle {
     position: relative;
-    display: flex; /* Membuat item di dalamnya sejajar dan rapi */
-    background-color: transparent; /* Tidak ada warna latar pada wadah */
-    border-radius: 50rem;      /* Sudut membulat (pill shape) */
-    border: 1px solid #ced4da; /* Border abu-abu seperti yang diminta */
-    padding: 2px; /* Memberi sedikit ruang antara border dan slider */
+    display: flex; 
+    background-color: transparent; 
+    border-radius: 50rem;
+    border: 1px solid #ced4da;
+    padding: 2px;
 }
 
-/* Tampilan link/tombol di dalamnya (On-going & History) */
 #transaction-toggle .nav-link {
     position: relative;
     z-index: 1; 
-    /* Warna teks tidak aktif (abu-abu) */
     color: #6c757d;           
     border-radius: 50rem;
     transition: color 0.4s ease-in-out; 
@@ -24,66 +21,58 @@
     padding-bottom: 0.5rem;
 }
 
-/* Tampilan teks saat link/tombol aktif */
+#transaction-toggle.no-transition::before {
+    transition: none;
+}
+
 #transaction-toggle .nav-link.active {
-    color: #ffffff; /* Warna teks aktif (putih) */
+    color: #ffffff;
     font-weight: bold;
 }
 
-/* Slider biru yang bergerak di belakang teks */
 #transaction-toggle::before {
     content: '';
     position: absolute;
-    top: 2px; /* Sesuaikan dengan padding wadah */
-    bottom: 2px; /* Sesuaikan dengan padding wadah */
-    left: var(--slider-left, 2px); /* Posisi diatur oleh JavaScript */
-    width: var(--slider-width, 50%); /* Lebar diatur oleh JavaScript */
-    background-color: #003779; /* Warna biru cerah sesuai permintaan */
+    top: 2px; 
+    bottom: 2px;
+    left: var(--slider-left, 2px);
+    width: var(--slider-width, 50%);
+    background-color: #003779;
     border-radius: 50rem;
-    /* Animasi lebih lambat sesuai permintaan */
     transition: left 0.6s ease-out, width 0.6s ease-out;
-    z-index: 0; /* Posisikan di belakang teks */
+    z-index: 0;
 }
 
-/* styling booking-history-detail */
-
-/* Styling untuk Rating Bintang */
 .rating {
     display: inline-block;
-    /* Trik agar bintang terisi dari kanan ke kiri saat hover */
     direction: rtl; 
     text-align: center;
 }
 
-/* Sembunyikan radio button asli */
 .rating input {
     display: none;
 }
 
-/* Style untuk bintang (yang sebenarnya adalah label) */
 .rating label {
-    color: #ddd; /* Warna bintang mati */
+    color: #ddd;
     cursor: pointer;
     transition: color 0.2s;
 }
 
-/* Aturan untuk memperbesar bintang */
 .rating.larger-stars label {
-    font-size: 3.5rem; /* Anda bisa ubah ukurannya di sini */
+    font-size: 5rem;
     padding: 0 0.1em;
 }
 
-/* Aturan saat bintang di-hover atau dipilih */
 .rating input:checked ~ label,
 .rating label:hover,
 .rating label:hover ~ label {
-    color: #ffc107; /* Warna emas untuk bintang aktif/hover */
+    color: #ffc107;
 }
 
-/* Wrapper untuk memposisikan semua elemen review ke tengah */
 .review-form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.1rem; /* Jarak antar elemen form */
+    gap: 0.1rem;
 }

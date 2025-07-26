@@ -20,51 +20,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
         links.forEach(link => {
             link.addEventListener('click', function (e) {
-                // Hentikan link dari pindah halaman
                 e.preventDefault(); 
-                
-                // Pindahkan kelas 'active'
+               
                 links.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
                 
-                // Gerakkan slider
                 moveSlider(this);
             });
         });
     }
 
-    // Kode ini akan menargetkan semua form dengan class 'review-form'
     document.querySelectorAll('.review-form').forEach(form => {
         form.addEventListener('submit', function(event) {
-            // 1. Mencegah form dikirim secara normal (agar halaman tidak refresh)
             event.preventDefault();
 
             const submitButton = form.querySelector('button[type="submit"]');
             const generalErrorDiv = form.querySelector('.general-error');
 
-            // Reset tampilan error sebelum mengirim
             submitButton.disabled = true;
             submitButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Submitting...`;
             form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
             form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
             generalErrorDiv.classList.add('d-none');
 
-            // 2. Kirim data form ke server menggunakan AJAX (Fetch API)
             fetch(form.action, {
                 method: 'POST',
                 body: new FormData(form),
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    // Ambil token CSRF dari halaman
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : ''
                 },
             })
             .then(response => response.json().then(data => ({ status: response.status, body: data })))
             .then(({ status, body }) => {
-                // 3. Tangani respon dari server
-                if (status === 422) { // 422 adalah kode untuk error validasi
-                    // Tampilkan pesan error di bawah setiap input yang salah
+                if (status === 422) { 
                     if (body.errors) {
                         for (const field in body.errors) {
                             const errorElement = form.querySelector(`.invalid-feedback[data-field="${field}"]`);
@@ -72,12 +62,23 @@ document.addEventListener('DOMContentLoaded', function () {
                             
                             if (inputElement) inputElement.classList.add('is-invalid');
                             if (errorElement) errorElement.textContent = body.errors[field][0];
+                            if (field === 'rating') {
+                                const ratingContainer = form.querySelector('.rating');
+                                if (ratingContainer) {
+                                    ratingContainer.classList.add('is-invalid');
+                                }
+                            } else {
+                                const inputElement = form.querySelector(`[name="${field}"]`);
+                                if (inputElement) {
+                                    inputElement.classList.add('is-invalid');
+                                }
+                            }
                         }
                     }
-                } else if (status === 200 && body.success) { // Jika sukses
-                    alert(body.message); // Tampilkan pesan sukses
-                    window.location.reload(); // Muat ulang halaman untuk melihat perubahan
-                } else { // Error lain (misal: 403 Unauthorized)
+                } else if (status === 200 && body.success) { 
+                    alert(body.message);
+                    window.location.reload();
+                } else {
                     generalErrorDiv.textContent = body.message || 'An unexpected error occurred.';
                     generalErrorDiv.classList.remove('d-none');
                 }
@@ -88,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 generalErrorDiv.classList.remove('d-none');
             })
             .finally(() => {
-                // Kembalikan tombol ke keadaan semula setelah selesai
                 submitButton.disabled = false;
                 submitButton.innerHTML = 'Submit Review';
             });
@@ -99,21 +99,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateToInput = document.getElementById('date_to');
 
     flatpickr("#date_range_picker", {
-        mode: "range", // Mengaktifkan mode rentang tanggal
-        dateFormat: "d M Y", // Format tampilan tanggal (e.g., 14 Jul 2025)
-        altInput: true, // Membuat input palsu yang lebih cantik (ini opsional tapi bagus)
-        altFormat: "d M Y", // Format yang ditampilkan di input palsu
+        mode: "range",
+        dateFormat: "d M Y",
+        altInput: true,
+        altFormat: "d M Y",
         
-        // Mengisi kembali nilai kalender jika ada pencarian sebelumnya
         defaultDate: [dateFromInput.value, dateToInput.value],
 
-        // Fungsi yang akan dijalankan saat pengguna selesai memilih rentang
         onClose: function(selectedDates) {
             if (selectedDates.length === 2) {
                 const startDate = selectedDates[0];
                 const endDate = selectedDates[1];
 
-                // Format tanggal agar sesuai untuk dikirim ke backend (YYYY-MM-DD)
                 const formatDate = (date) => {
                     const d = new Date(date);
                     const year = d.getFullYear();
@@ -122,7 +119,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     return `${year}-${month}-${day}`;
                 };
 
-                // Isi nilai input tersembunyi yang akan dikirim ke controller
                 dateFromInput.value = formatDate(startDate);
                 dateToInput.value = formatDate(endDate);
             }

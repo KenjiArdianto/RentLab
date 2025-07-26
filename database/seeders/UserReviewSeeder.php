@@ -13,13 +13,11 @@ class UserReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        DB::table('user_review')->insert([
-            // Review dari Admin untuk transaksi ID 4 (yang statusnya "Review By Admin")
+        DB::table('user_reviews')->insert([
             [
                 'transaction_id' => 5,
-                'user_id' => 1,         // Pengguna yang direview
-                'admin_id' => 1,        // Admin yang mereview (misal: Test User)
+                'user_id' => 1,
+                'admin_id' => 1,
                 'rate' => 5,
                 'comment' => 'Pengguna sangat kooperatif dan mengembalikan kendaraan tepat waktu.',
                 'created_at' => now(),
@@ -27,8 +25,8 @@ class UserReviewSeeder extends Seeder
             ],
             [
                 'transaction_id' => 8,
-                'user_id' => 1,         // Pengguna yang direview
-                'admin_id' => 1,        // Admin yang mereview (misal: Test User)
+                'user_id' => 1,
+                'admin_id' => 1,
                 'rate' => 5,
                 'comment' => 'Pengguna sangat kooperatif, kendaraan tetap bersih dan mengembalikan kendaraan tepat waktu.',
                 'created_at' => now(),

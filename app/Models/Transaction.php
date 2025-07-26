@@ -34,7 +34,7 @@ class Transaction extends Model
 
     public function userReview()
     {
-        return $this->hasOne(UserReview::class);
+        return $this->hasMany(UserReview::class);
     }
 
     public function vehicleReview()
@@ -52,14 +52,11 @@ class Transaction extends Model
 
                 $start = Carbon::parse($this->start_book_date);
                 $end = Carbon::parse($this->end_book_date);
-                
-                // Menggunakan perhitungan hari sesuai kode asli Anda
+
                 $days = $start->diffInDays($end);
 
-                // Hitung harga dasar sewa kendaraan
                 $vehiclePrice = $days * $this->vehicle->price;
-                
-                // Jika tidak, kembalikan harga kendaraan saja
+
                 return $vehiclePrice;
             }
         );

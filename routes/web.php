@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingHistoryController;
 use App\Http\Controllers\UserReviewController;
+use App\Http\Controllers\LanguageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,10 +17,8 @@ Route::get('/receipt/{transaction}/download', [BookingHistoryController::class, 
     //->middleware('auth')
     ->name('receipt.download');
 
-Route::get('/info', function () {
-    phpinfo();
-});
-
 Route::post('/reviews/{transaction}', [UserReviewController::class, 'store'])
     //->middleware('auth')
     ->name('reviews.store');
+
+Route::post('/lang', LanguageController::class);

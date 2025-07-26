@@ -15,8 +15,8 @@ class UserSeeder extends Seeder
     {
         // Membuat user utama sesuai screenshot Anda
         \App\Models\User::updateOrCreate(
-['email' => 'test@example.com'], // <-- Kunci untuk mencari
-    [                                 // <-- Data untuk diisi jika tidak ada, atau diperbarui
+['email' => 'test@example.com'], 
+    [
                 'name' => 'Test User',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now()
