@@ -2,7 +2,7 @@
 
 return [
     'on_going' => 'Sedang Berlangsung',
-    'history' => 'Riwayat',
+    'history' => 'Riwayat Transaksi',
     'search_vehicle' => 'Cari nama kendaraan...',
     'date_format_flatpickr' => 'd/m/Y',
     'date_placeholder' => 'hh/bb/tttt',
@@ -39,6 +39,7 @@ return [
     'modal.your_rating' => 'Penilaian Anda',
     'modal.your_comment' => 'Komentar Anda',
     'modal.submit_review' => 'Kirim Ulasan',
+    'modal.to' => 'sampai',
 
     'error.already_reviewed' => 'Transaksi ini sudah pernah Anda ulas.',
 
@@ -56,4 +57,6 @@ return [
     'pdf.driver_service' => 'Biaya Jasa Pengemudi',
     'pdf.total_payment' => 'Total Pembayaran',
     'pdf.vat_note' => 'Semua biaya yang dibebankan oleh RentLab (jika ada) sudah termasuk PPN.',
+
+    'footer_text' => 'Hak Cipta Dilindungi.',
 ];

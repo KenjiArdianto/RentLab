@@ -39,6 +39,7 @@ return [
     'modal.your_rating' => 'Your Rating',
     'modal.your_comment' => 'Your Comment',
     'modal.submit_review' => 'Submit Review',
+    'modal.to' => 'to',
 
     'error.already_reviewed' => 'This transaction has already been reviewed.',
 
@@ -56,4 +57,6 @@ return [
     'pdf.driver_service' => 'Driver Service Fee',
     'pdf.total_payment' => 'Total Payment',
     'pdf.vat_note' => 'All fees charged by RentLab (if any) are inclusive of VAT.',
+
+    'footer_text' => 'All Rights Reserved.',
 ];
