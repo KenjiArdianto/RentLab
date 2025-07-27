@@ -10,6 +10,10 @@ class Location extends Model
     /** @use HasFactory<\Database\Factories\LocationFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'location'
+    ];
+
     public function driver() 
     {
         return $this->hasMany(Driver::class);
