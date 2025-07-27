@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Driver extends Model
 {
     /** @use HasFactory<\Database\Factories\DriverFactory> */
+
+    protected $fillable = [
+        'name',
+        'location_id',
+        'image',
+    ];
+
     use HasFactory;
 
     public function location() 
