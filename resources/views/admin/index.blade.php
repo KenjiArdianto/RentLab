@@ -7,7 +7,6 @@
             :title="$count['title']"
             :count="$count['count']"
             :href="$count['route']"
-            :label="$count['label']"
             :color="$count['color']"
             />
         @endforeach

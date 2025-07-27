@@ -83,7 +83,7 @@ class AdminVehicleController extends Controller
                     $query->whereHas('vehicleReview', function ($q) use ($value) {
                         $q->selectRaw('vehicle_id, AVG(rate) as avg_rating')
                         ->groupBy('vehicle_id')
-                        ->havingRaw('CEIL(avg_rating) = ?', [(int)$value]);
+                        ->havingRaw('FLOOR(avg_rating) = ?', [(int)$value]);
                     });
                 }
                 // handle transactions

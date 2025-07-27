@@ -41,11 +41,11 @@ class AdminUserController extends Controller
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
                 
                 // handle user_id
-                if ($key === 'user_id') {
+                if ($key === 'user_id' || $key === 'id_pengguna') {
                     $query->where('id', $value);
                 }
                 // handle username
-                else if ($key === 'username') {
+                else if ($key === 'username' || $key === 'nama_pengguna') {
                     $query->where('name', 'like', '%' . $value . '%');
                 }
                 // handle email
@@ -55,37 +55,31 @@ class AdminUserController extends Controller
                     });
                 }
                 // handle first_name
-                else if ($key === 'first_name') {
+                else if ($key === 'first_name' || $key === 'nama_depan') {
                     $query->whereHas('detail', function ($q) use ($value) {
                         $q->where('fname', 'like', '%' . $value . '%');
                     });
                 }
                 // handle last_name
-                else if ($key === 'last_name') {
+                else if ($key === 'last_name' || $key === 'nama_belakang') {
                     $query->whereHas('detail', function ($q) use ($value) {
                         $q->where('lname', 'like', '%' . $value . '%');
                     });
                 }
                 // handle phone_number
-                else if ($key === 'phone_number') {
+                else if ($key === 'phone_number' || $key === 'nomor_hp') {
                     $query->whereHas('detail', function ($q) use ($value) {
                         $q->where('phoneNumber', 'like', '%' . $value . '%');
                     });
                 }  
                 // handle idcard_number
-                else if ($key === 'idcard_number') {
+                else if ($key === 'idcard_number' || $key === 'nik') {
                     $query->whereHas('detail', function ($q) use ($value) {
                         $q->where('idcardNumber', 'like', '%' . $value . '%');
                     });
-                }  
-                // handle phone_number
-                else if ($key === 'phone_number') {
-                    $query->whereHas('detail', function ($q) use ($value) {
-                        $q->where('phoneNumber', 'like', '%' . $value . '%');
-                    });
-                }  
+                }
                 // handle dob
-                else if ($key === 'dob') {
+                else if ($key === 'dob' || $key === 'tanggal_lahir') {
                     $dateParts = explode('-', $value);
 
                     if (count($dateParts) === 3) {
@@ -104,6 +98,46 @@ class AdminUserController extends Controller
                         $query->whereHas('detail', function ($q) use ($value) {
                             $q->whereYear('dateOfBirth',$value);
                         });
+                    }
+                }
+                // handle rating
+                else if ($key === 'rating' || $key === 'penilaian') {
+                    $query->whereHas('reviews', function ($q) use ($value) {
+                        $q->selectRaw('user_id, AVG(rate) as avg_rating')
+                        ->groupBy('user_id')
+                        ->havingRaw('FLOOR(avg_rating) = ?', [(int)$value]);
+                    });
+                }
+                // handle suspended_at
+                else if ($key === 'suspended_at' || $key === 'ditangguhkan_sejak') {
+                    $dateParts = explode('-', $value);
+
+                    if (count($dateParts) === 3) {
+                        // yyyy-mm-dd
+                        $query->where('suspended_at', $value);
+                    } elseif (count($dateParts) === 2) {
+                        // yyyy-mm
+                        [$year, $month] = explode('-', $value);
+                        $query->whereYear('suspended_at',$year)->whereMonth('suspended_at', $month);
+                    } elseif (count($dateParts) === 1) {
+                        // yyyy
+                        $query->whereYear('suspended_at',$value);
+                    }
+                }
+                // handle deleted_at
+                else if ($key === 'deleted_at' || $key === 'dihapus_sejak') {
+                    $dateParts = explode('-', $value);
+
+                    if (count($dateParts) === 3) {
+                        // yyyy-mm-dd
+                        $query->where('deleted_at', $value);
+                    } elseif (count($dateParts) === 2) {
+                        // yyyy-mm
+                        [$year, $month] = explode('-', $value);
+                        $query->whereYear('deleted_at',$year)->whereMonth('deleted_at', $month);
+                    } elseif (count($dateParts) === 1) {
+                        // yyyy
+                        $query->whereYear('deleted_at',$value);
                     }
                 }
             }

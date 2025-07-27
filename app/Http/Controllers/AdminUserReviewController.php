@@ -26,23 +26,23 @@ class AdminUserReviewController extends Controller
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
                 
                 // handle review_id
-                if ($key === 'review_id') {
+                if ($key === 'review_id' || $key === 'id_ulasan') {
                     $query->where('id', $value);
                 }
                 // handle admin_id
-                else if ($key === 'admin_id') {
+                else if ($key === 'admin_id' || $key === 'id_admin') {
                     $query->where('admin_id', $value);
                 }
                 // handle transaction_id
-                else if ($key === 'transaction_id') {
+                else if ($key === 'transaction_id' || $key === 'id_transaksi') {
                     $query->where('transaction_id', $value);
                 }
                 // handle comment
-                else if ($key === 'comment') {
+                else if ($key === 'comment' || $key === 'komentar') {
                     $query->where('comment', 'like', "%{$value}%");
                 }
                 // handle rating
-                else if ($key === 'rating') {
+                else if ($key === 'rating' || $key === 'penilaian') {
                     $query->where('rate', $value);
                 }
             }

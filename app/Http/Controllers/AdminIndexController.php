@@ -31,65 +31,56 @@ class AdminIndexController extends Controller
         //     'color' => 'primary'
         // ],
         [
-            'title' => 'Users',
+            'title' => __('admin_tables.users'),
             'count' => $userCount,
             'route' => route('admin.users'),
-            'label' => 'Users',
             'color' => 'secondary'
         ],
         [
-            'title' => 'Drivers',
+            'title' => __('admin_tables.drivers'),
             'count' => $driverCount,
             'route' => route('admin.drivers'),
-            'label' => 'Drivers',
             'color' => 'success'
         ],
         [
-            'title' => 'Transactions',
+            'title' => __('admin_tables.transactions'),
             'count' => $transactionCount,
             'route' => route('admin.transactions'),
-            'label' => 'Transactions',
             'color' => 'info'
         ],
         [
-            'title' => 'Vehicles',
+            'title' => __('admin_tables.vehicles'),
             'count' => $vehicleCount,
             'route' => route('admin.vehicles'),
-            'label' => 'Vehicles',
             'color' => 'warning'
         ],
         [
-            'title' => 'Vehicle Types',
+            'title' => __('admin_tables.vehicle_types'),
             'count' => $vehicleTypeCount,
             'route' => route('admin.vehicle-types'),
-            'label' => 'Types',
             'color' => 'dark'
         ],
         [
-            'title' => 'Vehicle Names',
+            'title' => __('admin_tables.vehicle_names'),
             'count' => $vehicleNameCount,
             'route' => route('admin.vehicle-names'),
-            'label' => 'Names',
             'color' => 'primary'
         ],
         [
-            'title' => 'Vehicle Transmissions',
+            'title' => __('admin_tables.vehicle_transmissions'),
             'count' => $vehicleTransmissionCount,
             'route' => route('admin.vehicle-transmissions'),
-            'label' => 'Transmissions',
             'color' => 'secondary'
         ],
-        ['title' => 'Vehicle Categories',
+        [   'title' => __('admin_tables.vehicle_categories'),
             'count' => $vehicleCategoryCount,
             'route' => route('admin.vehicle-categories'),
-            'label' => 'Categories',
             'color' => 'success'
         ],
         [
-            'title' => 'Locations',
+            'title' => __('admin_tables.locations'),
             'count' => $locationCount,
             'route' => route('admin.locations'),
-            'label' => 'Locations',
             'color' => 'info'
         ],
     ];
