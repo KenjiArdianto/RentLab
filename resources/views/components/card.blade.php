@@ -1,7 +1,3 @@
-{{-- GANTI SELURUH ISI FILE x-card ANDA DENGAN INI --}}
-@props(['href', 'vehicle_item'])
-
-{{-- GANTI SELURUH ISI FILE x-card ANDA DENGAN KODE YANG SUDAH DIPERBAIKI INI --}}
 @props(['href', 'vehicle_item'])
 
 <a href="{{ $href }}" class="text-decoration-none d-block h-100">
@@ -9,20 +5,19 @@
         <img src="{{ $vehicle_item->main_image }}" class="card-img-top" alt="{{ $vehicle_item->vehicleName->name }}">
 
         <div class="card-body d-flex flex-column p-2">
-            {{-- PERUBAHAN: Kelasnya diubah menjadi "vehicle-card-title" agar cocok dengan CSS --}}
             <h5 class="vehicle-card-title fw-semibold">
                 {{ $vehicle_item->vehicleName->name }}
             </h5>
 
             <div class="d-flex align-items-baseline mt-1">
-                 {{-- PERUBAHAN: Kelasnya diubah menjadi "vehicle-card-price" --}}
                 <p class="vehicle-card-price text-primary fw-bold">
                     {{ 'Rp ' . number_format($vehicle_item->price, 0, ',', '.') }}
                 </p>
-                <p class="text-muted ms-1" style="font-size: 0.8em;">/hari</p>
+                {{-- Menerjemahkan "/hari" --}}
+                <p class="text-muted ms-1" style="font-size: 0.8em;">@lang('app.card.per_day')</p>
             </div>
 
-            {{-- PERUBAHAN: Detail dibungkus dengan div kelas "vehicle-card-details" --}}
+            {{-- Kategori dan detail lainnya diasumsikan sudah diterjemahkan dari Controller --}}
             <div class="vehicle-card-details text-muted">
                 <p class="mb-2">
                     @foreach($vehicle_item->vehicleCategories as $kategori)
@@ -31,9 +26,7 @@
                 </p>
             </div>
 
-            {{-- mt-auto akan mendorong blok ini ke bawah --}}
             <div class="mt-auto pt-2">
-                {{-- PERUBAHAN: Spesifikasi (transmisi, CC) dibungkus dengan div kelas "vehicle-card-specs" --}}
                 <div class="d-flex align-items-center justify-content-between vehicle-card-specs">
                     <span class="fw-bold">{{ $vehicle_item->vehicleTransmission->transmission }}</span>
                     <span class="badge text-bg-light border fw-semibold">{{ $vehicle_item->engine_cc . ' CC' }}</span>

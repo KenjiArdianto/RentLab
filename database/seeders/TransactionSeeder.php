@@ -17,22 +17,13 @@ class TransactionSeeder extends Seeder
 
         Transaction::insert([
             [
-                'vehicle_id' => 1,
-                'user_id' => 1,
-                'driver_id' => 1,
-                'start_book_date' => '2025-07-26',
-                'end_book_date' => '2025-07-27',
-                'return_date' => '2025-07-28',
-                'status' => 0
-            ],
-            [
                 'vehicle_id' => 2,
                 'user_id' => 2,
                 'driver_id' => 2,
                 'start_book_date' => '2025-07-26',
                 'end_book_date' => '2025-07-27',
                 'return_date' => '2025-07-28',
-                'status' => 1
+                'transaction_status_id' => 1
             ],
             [
                 'vehicle_id' => 3,
@@ -41,7 +32,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2025-07-26',
                 'end_book_date' => '2025-07-27',
                 'return_date' => '2025-07-28',
-                'status' => 2
+                'transaction_status_id' => 2
             ],
             [
                 'vehicle_id' => 4,
@@ -50,7 +41,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2025-07-26',
                 'end_book_date' => '2025-07-27',
                 'return_date' => '2025-07-28',
-                'status' => 3
+                'transaction_status_id' => 3
             ],
             [
                 'vehicle_id' => 5,
@@ -59,7 +50,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2025-07-26',
                 'end_book_date' => '2025-07-27',
                 'return_date' => '2025-07-28',
-                'status' => 4
+                'transaction_status_id' => 4
             ],
             [
                 'vehicle_id' => 6,
@@ -68,7 +59,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2025-07-26',
                 'end_book_date' => '2025-07-27',
                 'return_date' => '2025-07-28',
-                'status' => 5
+                'transaction_status_id' => 5
             ],
             [
                 'vehicle_id' => 7,
@@ -77,7 +68,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2025-07-26',
                 'end_book_date' => '2025-07-27',
                 'return_date' => '2025-07-28',
-                'status' => 6
+                'transaction_status_id' => 6
             ]
         ]);
     }
