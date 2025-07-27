@@ -22,29 +22,32 @@
         <div class="container-flex m-4">
             <div class="row row-cols-1 row-cols-lg-4 g-4">
 
-                {{-- Add Item Button --}}
+                {{-- Add New Driver Card --}}
                 <div class="col">
-                    <div class="container">
-                        <div class="container-flex" style="width: 23vw; height: 4vh">
-                        
-                        </div>
-                        <div class="card text-center d-flex align-items-center justify-content-center" style="width: 23vw; height: 65vh; font-size: 48px; cursor: pointer; cursor: pointer; border: 1.5px dashed black;!important;" data-bs-toggle="modal" data-bs-target="#addModal">
-                        +
+                    <div class="mb-2 d-flex justify-content-center">
+                        <input class="form-check-input" type="checkbox" name="selected[]" onclick="event.stopPropagation()" style="border: 1px solid black; box-shadow: 0 0 3px rgba(0,0,0,0.3); transform: scale(1.2); visibility: hidden;">
+                    </div>
+
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="card text-center d-flex align-items-center justify-content-center w-100" style="height: 100%; min-height: 350px; cursor: pointer; border: 2px dashed black;" data-bs-toggle="modal" data-bs-target="#addModal">
+                            <span class="display-3">+</span>
                         </div>
                     </div>
                 </div>
+                 {{-- Driver Cards --}}
                 @foreach ($drivers as $driver)
-                    {{-- Card containing Driver Information --}}
                     <div class="col">
-                        <div class="container">
-                            <div class="container-flex text-center" style="width: 23vw; height: 4vh" >
-                                <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $driver->id }}" id="checkDefault" style="border: 1px solid black;!important; box-shadow: 0 0 3px rgba(0,0,0,0.3);!important">
+                        <div class="d-flex flex-column align-items-center">
+                            {{-- Centered Checkbox Above Card --}}
+                            <div class="mb-2 d-flex justify-content-center">
+                                <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $driver->id }}" onclick="event.stopPropagation()" style="border: 1px solid black; box-shadow: 0 0 3px rgba(0,0,0,0.3); transform: scale(1.2);">
                             </div>
-                            <div class="card" style="width: 23vw; height: 65vh; cursor: pointer; border: 1px solid black;!important;" data-bs-toggle="modal" data-bs-target="#editModal{{ $driver->id }}">
-                                {{-- <img src="{{ asset('storage/' . $driver->image) }}" alt="Driver Image" class="card-img-top"> --}}
-                                <img src="{{ asset($driver->image) }}" alt="Driver Image" class="card-img-top">
-                                <div class="card-body">
-                                    <table class="table table-borderless mb-0">
+
+                            {{-- Card with Modal --}}
+                            <div class="card w-100 h-100" style="min-height: 350px; cursor: pointer; border: 1px solid black;" data-bs-toggle="modal" data-bs-target="#editModal{{ $driver->id }}">
+                                <img src="{{ asset($driver->image) }}" alt="Driver Image" class="card-img-top img-fluid" style="object-fit: cover; height: 200px;">
+                                <div class="card-body p-3">
+                                    <table class="table table-sm table-borderless mb-0">
                                         <tr>
                                             <th class="text-start">Driver ID</th>
                                             <td>:</td>
@@ -99,8 +102,8 @@
                                 <th class="text-start">Location</th>
                                 <td>:</td>
                                 <td>
-                                    <select class="form-select" name="location_id">
-                                    <option value="" disabled selected hidden>Insert Location</option>
+                                    <select class="form-select selectpicker" name="location_id">
+                                    <option value="" disabled selected hidden >Insert Location</option>
                                         @foreach ($locations as $location)
                                             <option value="{{ $location->id }}">{{ $location->location }}</option>
                                         @endforeach

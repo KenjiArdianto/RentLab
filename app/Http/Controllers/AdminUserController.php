@@ -29,6 +29,86 @@ class AdminUserController extends Controller
             }
         }
 
+        $search = $request->query('search');
+
+        // split search by comma
+        if ($search) {
+            $pairs = explode(',', $search);
+
+            foreach ($pairs as $pair) {
+                if (!str_contains($pair, '=')) continue;
+
+                [$key, $value] = array_map('trim', explode('=', $pair, 2));
+                
+                // handle user_id
+                if ($key === 'user_id') {
+                    $query->where('id', $value);
+                }
+                // handle username
+                else if ($key === 'username') {
+                    $query->where('name', 'like', '%' . $value . '%');
+                }
+                // handle email
+                else if ($key === 'email') {
+                    $query->whereHas('detail', function ($q) use ($value) {
+                        $q->where('email', 'like', '%' . $value . '%');
+                    });
+                }
+                // handle first_name
+                else if ($key === 'first_name') {
+                    $query->whereHas('detail', function ($q) use ($value) {
+                        $q->where('fname', 'like', '%' . $value . '%');
+                    });
+                }
+                // handle last_name
+                else if ($key === 'last_name') {
+                    $query->whereHas('detail', function ($q) use ($value) {
+                        $q->where('lname', 'like', '%' . $value . '%');
+                    });
+                }
+                // handle phone_number
+                else if ($key === 'phone_number') {
+                    $query->whereHas('detail', function ($q) use ($value) {
+                        $q->where('phoneNumber', 'like', '%' . $value . '%');
+                    });
+                }  
+                // handle idcard_number
+                else if ($key === 'idcard_number') {
+                    $query->whereHas('detail', function ($q) use ($value) {
+                        $q->where('idcardNumber', 'like', '%' . $value . '%');
+                    });
+                }  
+                // handle phone_number
+                else if ($key === 'phone_number') {
+                    $query->whereHas('detail', function ($q) use ($value) {
+                        $q->where('phoneNumber', 'like', '%' . $value . '%');
+                    });
+                }  
+                // handle dob
+                else if ($key === 'dob') {
+                    $dateParts = explode('-', $value);
+
+                    if (count($dateParts) === 3) {
+                        // yyyy-mm-dd
+                        $query->whereHas('detail', function ($q) use ($value) {
+                            $q->where('dateOfBirth', $value);
+                        });
+                    } elseif (count($dateParts) === 2) {
+                        // yyyy-mm
+                        [$year, $month] = explode('-', $value);
+                        $query->whereHas('detail', function ($q) use ($value) {
+                            $q->whereYear('dateOfBirth',$year)->whereMonth('dateOfBirth', $month);
+                        });
+                    } elseif (count($dateParts) === 1) {
+                        // yyyy
+                        $query->whereHas('detail', function ($q) use ($value) {
+                            $q->whereYear('dateOfBirth',$value);
+                        });
+                    }
+                }
+            }
+        }
+
         $users = $query->paginate(33);
 
         return view('admin.users', compact('users'));

@@ -18,6 +18,11 @@
     </div>
 </form>
 
+@php
+    use Illuminate\Support\Str;
+@endphp
+
+
 <div class="container mt-4">
     @if (request('filter') == 'active')
             <form action="{{ route('admin.users.suspendSelected') }}" method="post">
@@ -39,21 +44,24 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             @foreach ($users as $user)
                 <div class="col">
-                    @if (request('filter') == 'active' || request('filter') == 'suspended')
-                        <div class="container-flex text-center" style="width: 23vw; height: 4vh" >
-                            <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $user->id }}" id="checkDefault" style="border: 1px solid black;!important; box-shadow: 0 0 3px rgba(0,0,0,0.3);!important">
-                        </div>
-                    @endif
-                    <div class="card shadow-sm p-3 d-flex flex-row align-items-center" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#viewModal{{ $user->id }}">
-                            <img src="{{  ($user->detail && $user->detail->profilePicture) ? asset($user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" class="rounded-circle bg-secondary me-3" style="width: 60px; height: 60px;">
-                        <div>
-                            <div class="fw-bold">Username: {{ $user->name }}</div>
-                            <div>User ID: {{  $user->id }}</div>
+                    <div class="d-flex align-items-center gap-2">
+                        @if (request('filter') == 'active' || request('filter') == 'suspended')
+                            <input class="form-check-input mt-0" type="checkbox" name="selected[]" value="{{ $user->id }}" style="border: 1px solid black; box-shadow: 0 0 3px rgba(0,0,0,0.3);">
+                        @endif
+
+                        <div class="card flex-grow-1 shadow-sm p-3 d-flex flex-row align-items-center" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#viewModal{{ $user->id }}">
+                            <img src="{{ ($user->detail && $user->detail->profilePicture) ? asset($user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" class="rounded-circle bg-secondary me-3" style="width: 60px; height: 60px;">
+                            <div>
+                                <div class="fw-bold">Username: {{ \Illuminate\Support\Str::limit($user->name, 20, '...') }}</div>
+                                <div>User ID: {{ $user->id }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
+
+
     </form>
 </div>
 
@@ -70,8 +78,8 @@
 
             <div class="modal-body">
                 <div class="d-flex justify-content-center gap-2 mb-4">
-                    <img src="{{ $user->detail && $user->detail->profilePicture ? asset($user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" alt="Profile Picture" class="img-fluid border" style="max-height: 200px;">
-                    <img src="{{ $user->detail && $user->detail->idcardPicture ? asset($user->detail->idcardPicture) : asset('assets/users/picture_id_default.jpg') }}" alt="ID Card" class="img-fluid border" style="max-height: 200px;">
+                    <img src="{{ $user->detail && $user->detail->profilePicture ? asset($user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" alt="Profile Picture" class="img-fluid border" style="max-height: 15vh;">
+                    <img src="{{ $user->detail && $user->detail->idcardPicture ? asset($user->detail->idcardPicture) : asset('assets/users/picture_id_default.jpg') }}" alt="ID Card" class="img-fluid border" style="max-height: 15vh;">
                 </div>
                 <div class="text-start px-3">
                     <p><strong>Username</strong>: {{ $user->name }}</p>
