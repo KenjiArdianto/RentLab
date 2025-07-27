@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vehicle;
-use App\Models\VehicleReview;
 use Illuminate\Http\Request;
+use App\Models\User;
 
-class AdminVehicleReviewController extends Controller
+class AdminUserReviewController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, Vehicle $vehicle)
+    public function index(Request $request, User $user)
     {
         //
         $search = $request->query('search');
-        $query = $vehicle->vehicleReview()->getQuery();
+        $query = $user->reviews()->getQuery();
 
         // split search by comma
         if ($search) {
@@ -30,9 +29,9 @@ class AdminVehicleReviewController extends Controller
                 if ($key === 'review_id') {
                     $query->where('id', $value);
                 }
-                // handle user_id
-                else if ($key === 'user_id') {
-                    $query->where('user_id', $value);
+                // handle admin_id
+                else if ($key === 'admin_id') {
+                    $query->where('admin_id', $value);
                 }
                 // handle transaction_id
                 else if ($key === 'transaction_id') {
@@ -52,7 +51,7 @@ class AdminVehicleReviewController extends Controller
 
         $reviews = $query->paginate(100);
 
-        return view('admin.vehicles.reviews', compact('vehicle', 'reviews'));
+        return view('admin.users.reviews', compact('user', 'reviews'));
     }
 
     /**
@@ -90,40 +89,16 @@ class AdminVehicleReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vehicle $vehicle, VehicleReview $vehicleReview)
+    public function update(Request $request, string $id)
     {
         //
-        $reviewUpdated = false;
-
-        // dd($vehicleReview->id);
-        if ($vehicleReview->comment != $request->comment) {
-            $reviewUpdated = true;
-            $vehicleReview->comment = $request->comment;
-        }
-
-        if ($vehicleReview->rate != $request->rate) {
-            $reviewUpdated = true;
-            $vehicleReview->rate = $request->rate;
-        }
-
-        $vehicleReview->save();
-
-        if (!$reviewUpdated) {
-            return back()->with('error', 'Review Not Updated');
-        }
-
-        return back()->with('success', 'Review Updated Successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Vehicle $vehicle, VehicleReview $vehicleReview)
+    public function destroy(string $id)
     {
         //
-        $vehicleReview->delete();
-
-        return back()->with('success', 'Review Deleted Successfully');
-
     }
 }

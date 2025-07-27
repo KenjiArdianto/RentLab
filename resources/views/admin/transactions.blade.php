@@ -58,7 +58,7 @@
 
                 <tr data-bs-toggle="modal" data-bs-target="#editModal{{ $t->id }}">
                     <td>{{ $t->id }}</td>
-                    <td><strong>{{ $t->user?->username ?? 'N/A' }}</strong></td>
+                    <td><strong>{{ $t->user->name ?? 'N/A' }}</strong></td>
                     <td>{{ $t->user_id }}</td>
                     <td>{{ $t->driver_id }}</td>
                     <td>{{ $t->vehicle_id }}</td>

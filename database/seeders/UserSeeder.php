@@ -138,7 +138,7 @@ class UserSeeder extends Seeder
                 'phoneNumber' => $u['phone'],
                 'idcardNumber' => $u['idcard'],
                 'dateOfBirth' => $u['dob'],
-                'idcardPicture' => 'picture_profile_user_default.jpg',
+                // 'idcardPicture' => 'picture_profile_user_default.jpg',
                 'profilePicture' => $u['profilePicture'],
             ]);
         }

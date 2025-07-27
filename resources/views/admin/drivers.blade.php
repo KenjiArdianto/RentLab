@@ -75,60 +75,55 @@
     <form action="{{ route('admin.drivers.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         {{-- Modal to Add Driver --}}
-            <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="driverModalLabelAdd" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addModal">Add Driver</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table table-borderless mb-0">
-                                <tr>
-                                    <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
-                                </tr>
-                                <tr>
-                                    <th class="text-start" style="width: 40%;">Name</th>
-                                    <td style="width: 5%;">:</td>
-                                    <td>
-                                        <input name="name" value="" type="text" class="form-control" placeholder="Insert Name" required>
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="driverModalLabelAdd" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModal">Add Driver</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-borderless mb-0">
+                            <tr>
+                                <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+                            </tr>
+                            <tr>
+                                <th class="text-start" style="width: 40%;">Name</th>
+                                <td style="width: 5%;">:</td>
+                                <td>
+                                    <input name="name" value="" type="text" class="form-control" placeholder="Insert Name" required>
 
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-start">Location</th>
-                                    <td>:</td>
-                                    <td>
-                                        <select class="form-select" name="location_id">
-                                        <option value="" disabled selected hidden>Insert Location</option>
-                                            @foreach ($locations as $location)
-                                                <option value="{{ $location->id }}">{{ $location->location }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-start">Location</th>
+                                <td>:</td>
+                                <td>
+                                    <select class="form-select" name="location_id">
+                                    <option value="" disabled selected hidden>Insert Location</option>
+                                        @foreach ($locations as $location)
+                                            <option value="{{ $location->id }}">{{ $location->location }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
 
-                            {{-- Buttons for apply changes and delete item --}}
-                            <div class="container text-center">
-                                <div class="row">
-                                    <div class="col">           
-                                        <div class="mt-4 d-flex justify-content-center">
-                                            <button type="submit" class="btn btn-danger" name="action_type" value="edit_{{ $driver->id }}">Apply</button>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="mt-4 d-flex justify-content-center">
-                                            <button type="submit" class="btn btn-danger" name="action_type" value="delete_{{ $driver->id }}">Delete</button>
-                                        </div>
+                        {{-- Buttons for apply changes and delete item --}}
+                        <div class="container text-center">
+                            <div class="row">
+                                <div class="col">           
+                                    <div class="mt-4 d-flex justify-content-center">
+                                        <button type="submit" class="btn btn-danger" name="action_type" value="edit_{{ $driver->id }}">Apply</button>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
+
                     </div>
                 </div>
             </div>
+        </div>
     </form>
 
     @foreach ($drivers as $driver)

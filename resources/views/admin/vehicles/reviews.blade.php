@@ -12,10 +12,10 @@
 
     <div class="d-flex justify-content-center gap-3 align-items-center my-2 mx-auto">
         <span class="badge bg-primary fs-6">
-            Average Rating: {{ number_format($reviews->avg('rate'), 1) }}
+            Average Rating: {{ number_format($vehicle->vehicleReview->avg('rate'), 1) }}
         </span>
         <span class="badge bg-secondary fs-6">
-            Reviews: {{ $reviews->count() }}
+            Reviews: {{ $vehicle->vehicleReview->count() }}
         </span>
     </div>
 

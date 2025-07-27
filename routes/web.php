@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminVehicleCategoryController;
 use App\Http\Controllers\AdminVehicleTransmissionController;
 use App\Http\Controllers\AdminLocationController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminUserReviewController;
 
 Route::get('/admin',[AdminIndexController::class, 'index'])->name('admin.index');
 
@@ -20,7 +21,13 @@ Route::get('/admin/logs', function () {
 })->name('admin.logs');
 
 Route::get('/admin/users}',[AdminUserController::class, 'index'])->name('admin.users');
-Route::post('/admin/users/suspend',[AdminUserController::class, 'suspend'])->name('admin.users.suspend');
+Route::post('/admin/users/suspend-selected',[AdminUserController::class, 'suspendSelected'])->name('admin.users.suspendSelected');
+Route::post('/admin/users/suspend/{user}',[AdminUserController::class, 'suspend'])->name('admin.users.suspend');
+Route::post('/admin/users/unsuspend-selected',[AdminUserController::class, 'unsuspendSelected'])->name('admin.users.unsuspendSelected');
+Route::post('/admin/users/unsuspend/{user}',[AdminUserController::class, 'unsuspend'])->name('admin.users.unsuspend');
+Route::get('/admin/users/{user}/reviews', [AdminUserReviewController::class, 'index'])->name('admin.users.reviews');
+
+// Route::get('/admin/drivers', function () {
 
 // Route::get('/admin/drivers', function () {
 //     return view('admin.drivers');
