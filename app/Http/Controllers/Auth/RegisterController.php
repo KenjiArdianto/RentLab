@@ -38,37 +38,13 @@ class RegisterController extends Controller
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         'password' => ['required', 'string', 'min:8', 'confirmed'],
-
-        // 'fname' => ['nullable', 'string', 'max:255'],
-        // 'lname' => ['nullable', 'string', 'max:255'],
-        // 'phoneNumber' => ['nullable', 'string', 'max:20'],
-        // 'idcardNumber' => ['nullable', 'string', 'max:50'],
-        // 'dateOfBirth' => ['nullable', 'date'],
-        // 'idcardPicture' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
     ]);
-    // return "hi";
     
-    // return dd($request);
     // Check if a user with this email already exists (for edge cases)
     if (User::where('email', $request->email)->exists()) {
         return back()->withErrors(['email' => 'Email is already registered.']);
     }
 
-    // if (UserDetail::where('idcardNumber', $request->idcardNumber)->exists()) {
-    //     return back()->withErrors(['idcard' => 'NIK is already registered.']);
-    // }
-
-    // // return $request;
-    // $image = $request->file('idcardPicture');
-    // $ext = $image->getClientOriginalExtension();
-    // do {
-    //     $filename = Str::random(20) . '.' . $ext;
-    // } while (
-    //     Storage::disk('public')->exists("tempidcard/{$filename}") ||
-    //     Storage::disk('public')->exists("idcard/{$filename}")
-    // );
-    // Storage::disk('public')->putFileAs('tempidcard', $image, $filename);
-    // return "hi";
 
     $otp = rand(100000, 999999);
 
@@ -79,23 +55,14 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
 
-            // 'fname' => $request->fname,
-            // 'lname' => $request->lname,
-            // 'phoneNumber' => $request->phoneNumber,
-            // 'idcardNumber' => $request->idcardNumber,
-            // 'dateOfBirth' => $request->dateOfBirth,
-            // 'idcardPicture' => $filename,
-
             'otp' => $otp,
         ],
         'otp_expires_at' => now()->addMinutes(5),
     ]);
-    // return "hi all ";
+    
     // Send OTP
     Mail::to($request->email)->send(new SendOTP($otp));
-    // return session('temp_user');
-    // return "hi all";
-
+    
     return redirect()->route('otp.verify.form')->with('success', 'OTP has been sent to your email.');
 }
 
