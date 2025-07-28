@@ -5,13 +5,13 @@
 
 <div class="container-fluid justify-content-between align-items-center mb-4">
     <form action="{{ route('admin.locations') }}" method="GET">
-        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Search Locations" aria-label="Search">
+        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.locations') }}" aria-label="Search">
         
     </form>
 </div> 
 
 <div class="container mt-4">
-    <h3 class="mb-3">Locations</h3>
+    <h3 class="mb-3">{{ __('admin_tables.locations') }}</h3>
 
     <div class="border rounded p-2 mb-3 d-flex justify-content-between align-items-center">
         <div style="width: 40px;">
@@ -20,7 +20,7 @@
         <form action="{{ route('admin.locations.store') }}" method="POST" class="d-flex flex-fill mx-2">
             @csrf
             <input type="text" name="location" class="form-control form-control-sm me-2" placeholder="Enter new location">
-            <button type="submit" class="btn btn-sm btn-primary">Add</button>
+            <button type="submit" class="btn btn-sm btn-primary">{{ __('admin_buttons.add') }}</button>
         </form>
     </div>
 
@@ -34,12 +34,12 @@
             <form action="{{ route('admin.locations.update', $location->id) }}" method="POST" class="d-flex flex-fill mx-2">
                 @csrf
                 <input type="text" name="location" class="form-control form-control-sm me-2" value="{{ $location->location }}">
-                <button type="submit" class="btn btn-sm btn-success">Apply</button>
+                <button type="submit" class="btn btn-sm btn-success">{{ __('admin_buttons.apply') }}</button>
             </form>
 
             <form action="{{ route('admin.locations.destroy', $location->id) }}" method="POST" style="margin: 0;">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                <button type="submit" class="btn btn-sm btn-danger">{{ __('admin_buttons.delete') }}</button>
             </form>
 
         </div>

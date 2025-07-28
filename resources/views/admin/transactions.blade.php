@@ -2,9 +2,19 @@
 
 @section('content')
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>ini error {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    
     <div class="container-fluid justify-content-between align-items-center mb-4">
         <form action="{{ route('admin.transactions') }}" method="GET">
-            <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: transaction_id=1,start=2025-01-31,status=review_by_user" aria-label="Search">
+            <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.transactions') }}" aria-label="Search">
         </form>
     </div> 
     
@@ -14,13 +24,13 @@
                 <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
                     <tr>
                         <th>ID</th>
-                        <th>Username</th>
-                        <th>User ID</th>
-                        <th>Driver ID</th>
-                        <th>Vehicle ID</th>
-                        <th>Start</th>
-                        <th>End</th>
-                        <th>Return</th>
+                        <th>{{ __('admin_tables.username') }}</th>
+                        <th>{{ __('admin_tables.user_id') }}</th>
+                        <th>{{ __('admin_tables.driver_id') }}</th>
+                        <th>{{ __('admin_tables.vehicle_id') }}</th>
+                        <th>{{ __('admin_tables.start') }}</th>
+                        <th>{{ __('admin_tables.end') }}</th>
+                        <th>{{ __('admin_tables.return') }}</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -70,7 +80,7 @@
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel{{ $t->id }}">Transaction Detail - #{{ $t->id }}</h5>
+                                    <h5 class="modal-title" id="editModalLabel{{ $t->id }}">{{ __('admin_transactions.transaction_detail') }} - #{{ $t->id }}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
 
@@ -78,24 +88,24 @@
                                     @csrf
                                     <div class="modal-body">
                                         <dl class="row mb-0">
-                                            <dt class="col-sm-3">User</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.user') }}</dt>
                                             <dd class="col-sm-9">
-                                                {{ $t->user?->username ?? 'N/A' }} (ID: {{ $t->user_id }})
+                                                {{ $t->user->name ?? 'N/A' }} (ID: {{ $t->user_id }})
                                             </dd>
 
-                                            <dt class="col-sm-3">Driver ID</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.driver_id') }}</dt>
                                             <dd class="col-sm-9">{{ $t->driver_id }}</dd>
 
-                                            <dt class="col-sm-3">Vehicle ID</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.vehicle_id') }}</dt>
                                             <dd class="col-sm-9">{{ $t->vehicle_id }}</dd>
 
-                                            <dt class="col-sm-3">Start</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.start') }}</dt>
                                             <dd class="col-sm-9">{{ $t->start_book_date }}</dd>
 
-                                            <dt class="col-sm-3">End</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.end') }}</dt>
                                             <dd class="col-sm-9">{{ $t->end_book_date }}</dd>
 
-                                            <dt class="col-sm-3">Return</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.return') }}</dt>
                                             <dd class="col-sm-9">{{ $t->return_date }}</dd>
 
                                             <dt class="col-sm-3">Status</dt>
@@ -113,34 +123,34 @@
                                         </dl>
 
                                         @if($t->transaction_status_id == 4)
-                                            <dt class="col-sm-3">Review</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.reviews') }}</dt>
                                             <dd class="col-sm-9">
                                                 <textarea name="comment"
                                                         class="form-control" 
                                                         rows="3" 
                                                         maxlength="250" 
                                                         oninput="updateCharCount(this, 'reviewCounter-{{ $t->id }}')"
-                                                        placeholder="Write your review here (max 250 characters)..."></textarea>
+                                                        placeholder="{{ __('admin_transactions.comment_hint') }}"></textarea>
                                                 <small class="text-muted">
-                                                    <span id="reviewCounter-{{ $t->id }}">0</span>/250 characters
+                                                    <span id="reviewCounter-{{ $t->id }}">0</span>/250 {{ __('admin_transactions.characters') }}
                                                 </small>
                                             </dd>
 
-                                            <dt class="col-sm-3">Rating</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.rating') }}</dt>
                                             <dd class="col-sm-9">
                                                 <select name="rating" class="form-select w-auto">
-                                                    <option value="1">1 Star</option>
-                                                    <option value="2">2 Stars</option>
-                                                    <option value="3">3 Stars</option>
-                                                    <option value="4">4 Stars</option>
-                                                    <option value="5">5 Stars</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
                                                 </select>
                                             </dd>
                                         @endif
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Apply</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{  __('admin_transactions.close') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{  __('admin_transactions.apply') }}</button>
                                     </div>
                                 </form>
                             </div>

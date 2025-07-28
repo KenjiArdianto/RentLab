@@ -7,7 +7,7 @@
 @endphp
 
 <div class="text-center fw-bold fs-3 mb-2">
-    {{ __('admin_tables.users') }} #{{ $user->id }}
+    {{ __('admin_tables.user') }} #{{ $user->id }}
 </div>
 
 <div class="d-flex justify-content-center gap-3 align-items-center my-2 mx-auto flex-wrap text-center">
@@ -22,7 +22,7 @@
 <div class="container-fluid mb-4">
     <form action="{{ route('admin.users.reviews', $user->id) }}" method="GET">
         <input name="search" class="form-control border-dark mx-auto my-2" style="width: 50%;"
-               placeholder=""
+               placeholder="{{ __('admin_search_hints.user_reviews') }}"
                aria-label="Search">
     </form>
 </div>

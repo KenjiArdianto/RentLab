@@ -2,15 +2,24 @@
 
 @section('content')
     
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>ini error {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 <form action="{{ route('admin.users') }}" method="GET">
     <div class="container-fluid justify-content-between align-items-center mb-4">
-        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_users.search_hint') }}" aria-label="Search">
+        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.users') }}" aria-label="Search">
     </div> 
     <div class="container-fluid d-flex justify-content-center mb-4">
         <select name="filter" class="form-select w-auto ms-3" onchange="this.form.submit()">
             <option value="" {{ request('filter') == null ? 'selected' : '' }}>{{ __('admin_users.all_user') }}</option>
-            <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>{{ __('admin_users.users') }}</option>
+            <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>{{ __('admin_tables.users') }}</option>
             <option value="suspended" {{ request('filter') == 'suspended' ? 'selected' : '' }}>{{ __('admin_users.suspended') }}</option>
             <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>{{ __('admin_users.deleted') }}</option>
         </select>

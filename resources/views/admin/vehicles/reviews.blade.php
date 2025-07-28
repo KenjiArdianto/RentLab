@@ -6,23 +6,33 @@
     use Illuminate\Support\Str;
 @endphp
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>ini error {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <div class="text-center fw-bold fs-3 mb-2">
-    Vehicle #{{ $vehicle->id }}
+    {{ __('admin_tables.vehicle') }} #{{ $vehicle->id }}
 </div>
 
 <div class="d-flex justify-content-center gap-3 align-items-center my-2 mx-auto flex-wrap text-center">
     <span class="badge bg-primary fs-6">
-        Average Rating: {{ number_format($vehicle->vehicleReview->avg('rate'), 1) }}
+        {{ __('admin_vehicles.average_rating') }} {{ number_format($vehicle->vehicleReview->avg('rate'), 1) }}
     </span>
     <span class="badge bg-secondary fs-6">
-        Reviews: {{ $vehicle->vehicleReview->count() }}
+        {{ __('admin_tables.reviews') }}: {{ $vehicle->vehicleReview->count() }}
     </span>
 </div>
 
 <div class="container-fluid mb-4">
     <form action="{{ route('admin.vehicles.reviews', $vehicle->id) }}" method="GET">
         <input name="search" class="form-control border-dark mx-auto my-2" style="width: 50%;"
-               placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: review_id=1,transaction_id=1,comment=bad,rating=4"
+               placeholder="{{ __('admin_search_hints.vehicle_reviews') }}"
                aria-label="Search">
     </form>
 </div>
@@ -31,18 +41,18 @@
     <table class="table table-bordered table-hover align-middle text-center table-striped" style="cursor: pointer;">
         <thead class="table-light">
             <tr>
-                <th class="responsive-th">User ID</th>
-                <th class="responsive-th">Transaction ID</th>
-                <th class="responsive-th">Comment</th>
-                <th class="responsive-th">Rating</th>
+                <th class="responsive-th">{{  __('admin_tables.user_id') }}</th>
+                <th class="responsive-th">{{  __('admin_tables.transaction_id') }}</th>
+                <th class="responsive-th">{{  __('admin_tables.comment') }}</th>
+                <th class="responsive-th">{{  __('admin_tables.rating') }}</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($reviews as $i => $review)
+            @forelse ($reviews as $review)
                 <tr data-bs-toggle="modal" data-bs-target="#editModal{{ $review->id }}">
                     <td>{{ $review->user_id }}</td>
                     <td>{{ $review->transaction_id }}</td>
-                    <td id="comment{{ $i }}">{{ $review->comment }}</td>
+                    <td id="comment{{ $review }}">{{ $review->comment }}</td>
                     <td>{{ $review->rate ?? 'N/A' }}</td>
                 </tr>
 
@@ -52,7 +62,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel{{ $review->id }}">Edit Review - #{{ $review->id }}</h5>
+                                <h5 class="modal-title" id="editModalLabel{{ $review->id }}">{{ __('admin_vehicles.edit_review') }} - #{{ $review->id }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
@@ -62,31 +72,31 @@
                                 @csrf
                                 <div class="modal-body">
                                     <dl class="row mb-0">
-                                        <dt class="col-sm-3">User ID</dt>
+                                        <dt class="col-sm-3">{{ __('admin_tables.user_id') }}</dt>
                                         <dd class="col-sm-9">{{ $review->user_id ?? 'N/A' }}</dd>
 
-                                        <dt class="col-sm-3">Transaction ID</dt>
+                                        <dt class="col-sm-3">{{ __('admin_tables.transaction_id') }}</dt>
                                         <dd class="col-sm-9">{{ $review->transaction_id }}</dd>
 
-                                        <dt class="col-sm-3">Review</dt>
+                                        <dt class="col-sm-3">{{  __('admin_tables.comment') }}</dt>
                                         <dd class="col-sm-9">
                                             <textarea name="comment"
                                                     class="form-control"
                                                     rows="3"
                                                     maxlength="250"
                                                     oninput="updateCharCount(this, 'reviewCounter-{{ $review->id }}')"
-                                                    placeholder="Write your review here (max 250 characters)...">{{ $review->comment ?? '' }}</textarea>
+                                                    placeholder="{{  __('admin_vehicles.hint_review')}}">{{ $review->comment ?? '' }}</textarea>
                                             <small class="text-muted">
-                                                <span id="reviewCounter-{{ $review->id }}">{{ strlen($review->comment ?? '') }}</span>/250 characters
+                                                <span id="reviewCounter-{{ $review->id }}">{{ strlen($review->comment ?? '') }}</span>/250 {{ __('admin_vehicles.characters') }}
                                             </small>
                                         </dd>
 
-                                        <dt class="col-sm-3">Rating</dt>
+                                        <dt class="col-sm-3">{{  __('admin_tables.rating') }}</dt>
                                         <dd class="col-sm-9">
                                             <select name="rate" class="form-select w-auto">
                                                 @for ($j = 1; $j <= 5; $j++)
                                                     <option value="{{ $j }}" {{ ($review->rate ?? '') == $j ? 'selected' : '' }}>
-                                                        {{ $j }} Star{{ $j > 1 ? 's' : '' }}
+                                                        {{ $j }}
                                                     </option>
                                                 @endfor
                                             </select>
@@ -98,17 +108,17 @@
                             <div class="modal-footer">
                                 <form action="{{ route('admin.vehicles.reviews.destroy', ['vehicle' => $vehicle->id, 'vehicleReview' => $review->id]) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <button type="submit" class="btn btn-danger">{{ __('admin_vehicles.delete') }}</button>
                                 </form>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" form="updateReviewForm-{{ $review->id }}" class="btn btn-primary">Apply</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin_vehicles.close') }}</button>
+                                <button type="submit" form="updateReviewForm-{{ $review->id }}" class="btn btn-primary">{{  __('admin_vehicles.apply') }}</button>
                             </div>
                         </div>
                     </div>
                 </div>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">No reviews found.</td>
+                    <td colspan="4" class="text-center">{{  __('admin_vehicles.no_reviews') }}</td>
                 </tr>
             @endforelse
         </tbody>
@@ -158,12 +168,12 @@
             td.style.fontSize = fontSize;
         });
 
-        @foreach ($reviews as $i => $review)
-            const commentEl{{ $i }} = document.getElementById("comment{{ $i }}");
-            if (commentEl{{ $i }}) {
-                const text{{ $i }} = commentEl{{ $i }}.textContent.trim();
-                if (text{{ $i }}.length > limit) {
-                    commentEl{{ $i }}.textContent = text{{ $i }}.substring(0, limit) + "...";
+        @foreach ($reviews as $review => $review)
+            const commentEl{{ $review }} = document.getElementById("comment{{ $review }}");
+            if (commentEl{{ $review }}) {
+                const text{{ $review }} = commentEl{{ $review }}.textContent.trim();
+                if (text{{ $review }}.length > limit) {
+                    commentEl{{ $review }}.textContent = text{{ $review }}.substring(0, limit) + "...";
                 }
             }
         @endforeach

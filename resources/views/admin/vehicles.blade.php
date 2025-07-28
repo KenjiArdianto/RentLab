@@ -2,16 +2,26 @@
 
 @section('content')
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>ini error {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="container-fluid justify-content-between align-items-center mb-4">
         <form action="{{ route('admin.vehicles') }}" method="GET">
-            <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Format: Attribute1=Value1,Attribute2=Value2 ex: vehicle_id=1,rating=4,transactions=10" aria-label="Search">
+            <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.vehicle_types') }}" aria-label="Search">
             
         </form>
     </div>  
 
     <div class="text-center">
         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
-            Add Vehicle
+            {{  __('admin_vehicles.add_vehicle') }}
         </button>
     </div>  
 
@@ -22,7 +32,7 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addVehicleModalLabel">Add Vehicle</h5>
+                    <h5 class="modal-title" id="addVehicleModalLabel">{{  __('admin_vehicles.add_vehicle') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -31,89 +41,89 @@
                     <div class="modal-body">
                         <dl class="row mb-0">
                             {{-- Vehicle Name --}}
-                            <dt class="col-sm-3">Name</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.name') }}</dt>
                             <dd class="col-sm-9">
                                 <select name="vehicle_name_id" class="form-select" required>
-                                    <option value="" disabled selected>-- Choose Vehicle Name --</option>
+                                    <option value="" disabled selected>{{  __('admin_vehicles.choose_vehicle_name') }}</option>
                                     @foreach($vehicleNames as $name)
                                         <option value="{{ $name->id }}">{{ $name->name }}</option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">Select the vehicle name from the list.</small>
+                                <small class="text-muted">{{ __('admin_vehicles.hint_vehicle_name') }}</small>
                             </dd>
 
                             {{-- Type --}}
-                            <dt class="col-sm-3">Type</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.type') }}</dt>
                             <dd class="col-sm-9">
                                 <select name="vehicle_type_id" class="form-select" required>
-                                    <option value="" disabled selected>-- Choose Vehicle Type --</option>
+                                    <option value="" disabled selected>{{  __('admin_vehicles.choose_vehicle_type') }}</option>
                                     @foreach($vehicleTypes as $type)
                                         <option value="{{ $type->id }}">{{ $type->type }}</option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">Select the type of the vehicle (e.g., SUV, Sedan).</small>
+                                <small class="text-muted">{{  __('admin_vehicles.hint_vehicle_type') }}</small>
                             </dd>
 
                             {{-- Transmission --}}
-                            <dt class="col-sm-3">Transmission</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.transmission') }}</dt>
                             <dd class="col-sm-9">
                                 <select name="vehicle_transmission_id" class="form-select" required>
-                                    <option value="" disabled selected>-- Choose Transmission --</option>
+                                    <option value="" disabled selected>{{ __('admin_vehicles.choose_vehicle_transmission') }}</option>
                                     @foreach($vehicleTransmissions as $trans)
                                         <option value="{{ $trans->id }}">{{ $trans->transmission }}</option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">Choose between automatic or manual transmission.</small>
+                                <small class="text-muted">{{ __('admin_vehicles.hint_vehicle_transmission') }}</small>
                             </dd>
 
                             {{-- Engine CC --}}
-                            <dt class="col-sm-3">Engine CC</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.engine_cc') }}</dt>
                             <dd class="col-sm-9">
-                                <input type="number" name="engine_cc" class="form-control" placeholder="e.g., 1500" value="{{ old('engine_cc') }}" required>
-                                <small class="text-muted">Enter the engine capacity in CC (e.g., 1500).</small>
+                                <input type="number" name="engine_cc" class="form-control" placeholder="{{ __('admin_vehicles.placeholder_engine_cc') }}" value="{{ old('engine_cc') }}" required>
+                                <small class="text-muted">{{ __('admin_vehicles.hint_engine_cc') }}</small>
                             </dd>
                             
                             {{-- Seats --}}
-                            <dt class="col-sm-3">Seats</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.seats') }}</dt>
                             <dd class="col-sm-9">
-                                <input type="number" name="seats" class="form-control" placeholder="e.g., 5" value="{{ old('seats') }}" required>
-                                <small class="text-muted">Enter the number of passenger seats.</small>
+                                <input type="number" name="seats" class="form-control" placeholder="{{ __('admin_vehicles.placeholder_seats') }}" value="{{ old('seats') }}" required>
+                                <small class="text-muted">{{ __('admin_vehicles.hint_seats') }}</small>
                             </dd>
 
                             {{-- Price --}}
-                            <dt class="col-sm-3">Price</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.price') }}</dt>
                             <dd class="col-sm-9">
-                                <input type="number" name="price" class="form-control" placeholder="e.g., 250000" value="{{ old('price') }}" required>
-                                <small class="text-muted">Enter the price in your local currency.</small>
+                                <input type="number" name="price" class="form-control" placeholder="{{  __('admin_vehicles.placeholder_price') }}" value="{{ old('price') }}" required>
+                                <small class="text-muted">{{  __('admin_vehicles.hint_price') }}</small>
                             </dd>
 
                             {{-- Location --}}
-                            <dt class="col-sm-3">Location</dt>
+                            <dt class="col-sm-3">{{ __('admin_tables.location') }}</dt>
                             <dd class="col-sm-9">
                                 <select name="location_id" class="form-select" required>
-                                    <option value="" disabled selected>-- Choose Location --</option>
+                                    <option value="" disabled selected>{{ __('admin_vehicles.choose_location') }}</option>
                                     @foreach($locations as $loc)
                                         <option value="{{ $loc->id }}">{{ $loc->location }}</option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">Select the location where the vehicle is available.</small>
+                                <small class="text-muted">{{ __('admin_vehicles.hint_location') }}</small>
                             </dd>
 
                             {{-- Main Image --}}
-                            <dt class="col-sm-3">Main Image</dt>
+                            <dt class="col-sm-3">{{  __('admin_tables.main_image') }}</dt>
                             <dd class="col-sm-9">
                                 <input class="form-control" type="file" name="main_image" accept=".jpg,.jpeg,.png" required>
-                                <small class="text-muted">Upload the main display image of the vehicle. Only .jpg, .jpeg, .png allowed.</small>
+                                <small class="text-muted">{{  __('admin_vehicles.hint_main_image') }}</small>
                             </dd>
 
                             {{-- Vehicle Images --}}
-                            <dt class="col-sm-3">Vehicle Images</dt>
+                            <dt class="col-sm-3">{{  __('admin_tables.vehicle_images') }}</dt>
                             <dd class="col-sm-9">
                                 @for($i = 1; $i <= 4; $i++)
                                     <div class="mb-2">
-                                        <div class="text">Image {{ $i }}</div>
+                                        <div class="text">{{ __('admin_vehicles.image') }} {{ $i }}</div>
                                         <input class="form-control" type="file" name="image{{ $i }}" accept=".jpg,.jpeg,.png">
-                                        <small class="text-muted">Additional image {{ $i }} (optional). Only .jpg, .jpeg, .png allowed.</small>
+                                        <small class="text-muted">{{  __('admin_vehicles.additional_image') }} {{ $i }} {{ __('admin_vehicles.hint_additional_image') }}</small>
                                     </div>
                                 @endfor
                             </dd>
@@ -133,25 +143,25 @@
 
     
 
-    <div class="container-fluid">
+    <div class="container-fluid mt-4">
         <div class="table-responsive" style="overflow-x: auto; overflow-y: hidden;">
             <table class="table table-bordered table-hover align-middle text-center w-100 table-striped">
                 <thead class="table-light">
                     <tr>
                         <th class="text-nowrap">ID</th>
-                        <th class="text-nowrap">Main Image</th>
-                        <th class="text-nowrap">Name</th>
-                        <th class="text-nowrap">Type</th>
-                        <th class="text-nowrap">Transmission</th>
-                        <th class="text-nowrap">Engine CC</th>
-                        <th class="text-nowrap">Seats</th>
-                        <th class="text-nowrap">Year</th>
-                        <th class="text-nowrap">Price</th>
-                        <th class="text-nowrap">Location</th>
-                        <th class="text-nowrap">Categories</th>
-                        <th class="text-nowrap">Rating</th>
-                        <th class="text-nowrap">Transactions</th>
-                        <th class="text-nowrap">Actions</th>
+                        <th class="text-nowrap">{{  __('admin_tables.main_image') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.name') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.type') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.transmission') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.engine_cc') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.seats') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.year') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.price') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.location') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.categories') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.rating') }}</th>
+                        <th class="text-nowrap">{{  __('admin_tables.transactions') }}</th>
+                        <th class="text-nowrap">{{  __('admin_vehicles.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -185,16 +195,16 @@
                         <td class="text-center">
                             <div class="d-flex flex-column gap-1">
                                 <button class="btn btn-primary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editVehicleModal{{ $v->id }}">
-                                    Edit Vehicle
+                                    {{ __('admin_vehicles.edit_vehicle') }}
                                 </button>
                                 <button class="btn btn-warning btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $v->id }}">
-                                    Edit Categories
+                                    {{ __('admin_vehicles.edit_categories') }}
                                 </button>
                                 <a href="{{ route('admin.vehicles.reviews', $v->id) }}" class="btn btn-info btn-sm text-nowrap">
-                                    View Reviews
+                                    {{ __('admin_vehicles.view_reviews') }}
                                 </a>
                                 <a href="{{ route('admin.transactions') }}?search={{ rawurlencode('vehicle_id=' . $v->id) }}" class="btn btn-secondary btn-sm text-nowrap">
-                                    View Transactions
+                                    {{ __('admin_vehicles.view_transactions') }}
                                 </a>
                             </div>
                         </td>
@@ -204,7 +214,7 @@
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="editVehicleModalLabel{{ $v->id }}">Vehicle Detail - #{{ $v->id }}</h5>
+                                    <h5 class="modal-title" id="editVehicleModalLabel{{ $v->id }}">{{ __('admin_vehicles.vehicle_details') }} - #{{ $v->id }}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
 
@@ -213,7 +223,7 @@
                                     @csrf
                                     <div class="modal-body">
                                         <dl class="row mb-0">
-                                            <dt class="col-sm-3">Name</dt>
+                                            <dt class="col-sm-3">{{ __('admin_tables.name') }}</dt>
                                             <dd class="col-sm-9">
                                                 <select name="vehicle_name_id" class="form-select" style="max-height: 50vh; overflow-y: auto;">
                                                     @foreach($vehicleNames as $name)
@@ -224,7 +234,7 @@
                                                 </select>
                                             </dd>
 
-                                            <dt class="col-sm-3">Type</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.type') }}</dt>
                                             <dd class="col-sm-9">
                                                 <select name="vehicle_type_id" class="form-select" style="max-height: 50vh; overflow-y: auto;">
                                                     @foreach($vehicleTypes as $type)
@@ -235,7 +245,7 @@
                                                 </select>
                                             </dd>
 
-                                            <dt class="col-sm-3">Transmission</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.transmission') }}</dt>
                                             <dd class="col-sm-9">
                                                 <select name="vehicle_transmission_id" class="form-select" style="max-height: 50vh; overflow-y: auto;">
                                                     @foreach($vehicleTransmissions as $trans)
@@ -246,27 +256,27 @@
                                                 </select>
                                             </dd>
 
-                                            <dt class="col-sm-3">Engine CC</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.engine_cc') }}</dt>
                                             <dd class="col-sm-9">
                                                 <input type="number" name="engine_cc" class="form-control" value="{{ old('engine_cc', $v->engine_cc ?? 0) }}">
                                             </dd>
                                             
-                                            <dt class="col-sm-3">Seats</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.seats') }}</dt>
                                             <dd class="col-sm-9">
                                                 <input type="number" name="seats" class="form-control" value="{{ old('seats', $v->seats ?? 0) }}">
                                             </dd>
 
-                                            <dt class="col-sm-3">Year</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.year') }}</dt>
                                             <dd class="col-sm-9">
                                                 <input type="number" name="year" class="form-control" value="{{ old('year', $v->year ?? 0) }}">
                                             </dd>
 
-                                            <dt class="col-sm-3">Price</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.price') }}</dt>
                                             <dd class="col-sm-9">
                                                 <input type="number" name="price" class="form-control" value="{{ old('price', $v->price ?? 0) }}">
                                             </dd>
 
-                                            <dt class="col-sm-3">Location</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.location') }}</dt>
                                             <dd class="col-sm-9">
                                                 <select name="location_id" class="form-select" style="max-height: 50vh; overflow-y: auto;">
                                                     @foreach($locations as $loc)
@@ -277,12 +287,12 @@
                                                 </select>
                                             </dd>
 
-                                            <dt class="col-sm-3">Categories</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.categories') }}</dt>
                                             <dd class="col-sm-9">
                                                 {{ $vehicleCategories }}
                                             </dd>
                                             
-                                            <dt class="col-sm-3">Main Image</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.main_image') }}</dt>
                                             <dd class="col-sm-9">
                                                 <img src="{{ asset($v->main_image) }}" 
                                                     alt="Vehicle Main Image" 
@@ -291,12 +301,12 @@
 
                                                 <input class="form-control" type="file" id="main_image" name="main_image" accept=".jpg,.jpeg,.png">
                                                 
-                                                <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
+                                                <small class="text-muted">{{  __('admin_vehicles.hint_image') }}</small>
                                             </dd>
 
-                                            <dt class="col-sm-3">Vehicle Images</dt>
+                                            <dt class="col-sm-3">{{  __('admin_tables.vehicle_images') }}</dt>
                                             <dd class="col-sm-9">
-                                                <div class="text">Image 1</div>
+                                                <div class="text">{{  __('admin_vehicles.image') }} 1</div>
                                                 @if ($image1 != null)
                                                     <input type="hidden" name="image1_id" value="{{ $image1->id }}">
                                                     <img src="{{ asset($image1->image) }}" 
@@ -305,8 +315,8 @@
                                                     style="max-width: 150px; border-radius: 8px;">
                                                 @endif
                                                 <input class="form-control" type="file" id="image1" name="image1" accept=".jpg,.jpeg,.png">
-                                                <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
-                                                <div class="text">Image 2</div>
+                                                <small class="text-muted">{{  __('admin_vehicles.hint_image') }}</small>
+                                                <div class="text">{{  __('admin_vehicles.image') }} 2</div>
                                                 @if ($image2 != null)
                                                     <input type="hidden" name="image2_id" value="{{ $image2->id }}">
                                                     <img src="{{ asset($image2->image) }}" 
@@ -315,8 +325,8 @@
                                                     style="max-width: 150px; border-radius: 8px;">
                                                 @endif
                                                 <input class="form-control" type="file" id="image2" name="image2" accept=".jpg,.jpeg,.png">
-                                                <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
-                                                <div class="text">Image 3</div>
+                                                <small class="text-muted">{{  __('admin_vehicles.hint_image') }}</small>
+                                                <div class="text">{{  __('admin_vehicles.image') }} 3</div>
                                                 @if ($image3 != null)
                                                     <input type="hidden" name="image3_id" value="{{ $image3->id }}">
                                                     <img src="{{ asset($image3->image) }}" 
@@ -325,8 +335,8 @@
                                                     style="max-width: 150px; border-radius: 8px;">
                                                 @endif
                                                 <input class="form-control" type="file" id="image3" name="image3" accept=".jpg,.jpeg,.png">
-                                                <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
-                                                <div class="text">Image 4</div>
+                                                <small class="text-muted">{{  __('admin_vehicles.hint_image') }}</small>
+                                                <div class="text">{{  __('admin_vehicles.image') }} 4</div>
                                                 @if ($image4 != null)
                                                     <input type="hidden" name="image4_id" value="{{ $image4->id }}">
                                                     <img src="{{ asset($image4->image) }}" 
@@ -336,14 +346,14 @@
                                                     
                                                 @endif
                                                 <input class="form-control" type="file" id="image4" name="image4" accept=".jpg,.jpeg,.png">
-                                                <small class="text-muted">Only accept .jpg, .jpeg, .png</small>
+                                                <small class="text-muted">{{  __('admin_vehicles.hint_image') }}</small>
                                             </dd>
                                             
                                         </dl>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Apply</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{  __('admin_vehicles.close') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{  __('admin_vehicles.apply') }}</button>
                                     </div>
                                 </form>
                             </div>
@@ -356,14 +366,14 @@
                             <div class="modal-content">
 
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="editCategoryModalLabel{{ $v->id }}">Vehicle Categories - #{{ $v->id }}</h5>
+                                    <h5 class="modal-title" id="editCategoryModalLabel{{ $v->id }}">{{  __('admin_tables.vehicle_categories') }} - #{{ $v->id }}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
 
                                 <div class="modal-body">
 
                                     <div class="mb-4">
-                                        <label class="form-label fw-bold">Current Categories</label>
+                                        <label class="form-label fw-bold">{{  __('admin_vehicles.current_categories') }}</label>
                                         <ul class="list-group">
                                             @forelse($v->vehicleCategories as $cat)
                                                 <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -375,7 +385,7 @@
                                                     </form>
                                                 </li>
                                             @empty
-                                                <li class="list-group-item text-muted fst-italic">No categories.</li>
+                                                <li class="list-group-item text-muted fst-italic">{{  __('admin_vehicles.no_categories') }}</li>
                                             @endforelse
                                         </ul>
                                     </div>
@@ -383,12 +393,12 @@
                                     <hr>
 
                                     <div class="mb-0">
-                                        <label for="newCategorySelect-{{ $v->id }}" class="form-label fw-bold">Add Category</label>
+                                        <label for="newCategorySelect-{{ $v->id }}" class="form-label fw-bold">{{  __('admin_vehicles.add_category') }}</label>
                                         <form action="{{ route('admin.vehicles.updateCategory', $v->id) }}" method="POST" class="row g-2 align-items-center">
                                             @csrf
                                             <div class="col-9">
                                                 <select id="newCategorySelect-{{ $v->id }}" name="category_id" class="form-select" required>
-                                                    <option value="" selected disabled>Choose...</option>
+                                                    <option value="" selected disabled>{{  __('admin_vehicles.hint_choose') }}</option>
                                                     @foreach($categories as $c)
                                                         @if(!$v->vehicleCategories->contains('id', $c->id))
                                                             <option value="{{ $c->id }}">{{ $c->category }}</option>
@@ -397,7 +407,7 @@
                                                 </select>
                                             </div>
                                             <div class="col-3 d-grid">
-                                                <button type="submit" class="btn btn-outline-primary">Add</button>
+                                                <button type="submit" class="btn btn-outline-primary">{{  __('admin_vehicles.add') }}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -405,7 +415,7 @@
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{  __('admin_vehicles.close') }}</button>
                                 </div>
 
                             </div>
