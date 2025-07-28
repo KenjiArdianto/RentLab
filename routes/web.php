@@ -31,7 +31,7 @@ use Illuminate\Routing\Middleware;
 use App\Http\Controllers\LanguageController;
 
 
-    Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch'); 
+Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch'); 
 
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
