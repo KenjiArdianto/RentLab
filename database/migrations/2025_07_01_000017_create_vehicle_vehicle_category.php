@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_review', function (Blueprint $table) {
+        Schema::create('vehicle_vehicle_category', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('admin_id')->constrained('users');
-            $table->foreignId('user_id');
-            $table->foreignId('transaction_id');
-            $table->string('comment');
-            $table->integer('rate');
+            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
+            $table->foreignId('vehicle_category_id')->constrained('vehicle_categories')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_reviews');
+        Schema::dropIfExists('vehicle_vehicle_category');
     }
 };

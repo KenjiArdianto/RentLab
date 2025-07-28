@@ -45,6 +45,7 @@ class VehicleFactory extends Factory
             'vehicle_transmission_id' => $transmission,
             'engine_cc' => $engine_cc,
             'seats' => $this->faker->numberBetween(2,8),
+            'year' => $this->faker->year(),
             'location_id' => Location::inRandomOrder()->value('id'),
             'main_image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/700/400',
             'price' => $this->faker->numberBetween(100000,500000),

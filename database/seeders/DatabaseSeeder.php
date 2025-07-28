@@ -31,11 +31,11 @@ class DatabaseSeeder extends Seeder
             VehicleTypeSeeder::class,
             VehicleCategorySeeder::class,
             VehicleTransmissionSeeder::class,
-            TransactionStatusSeeder::class,
             LocationSeeder::class,
-
             DriverSeeder::class,
             VehicleSeeder::class,
+            TransactionStatusSeeder::class,
+            TransactionSeeder::class,
             // UserSeeder::class,
 
             // CartSeeder::class,

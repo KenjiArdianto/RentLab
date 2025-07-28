@@ -24,7 +24,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-06-03',
                 'end_book_date' => '2023-06-04',
                 'return_date' => '2023-06-05',
-                'status' => 0
+                'transaction_status_id' => 1
             ],
             [
                 'external_id' => 'RENTAL-SEED-2',
@@ -34,7 +34,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-05-03',
                 'end_book_date' => '2023-05-04',
                 'return_date' => '2023-05-05',
-                'status' => 1
+                'transaction_status_id' => 2
             ],
             [
                 'external_id' => 'RENTAL-SEED-3',
@@ -44,7 +44,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-04-03',
                 'end_book_date' => '2023-04-04',
                 'return_date' => '2023-04-05',
-                'status' => 2
+                'transaction_status_id' => 3
             ],
             [
                 'external_id' => 'RENTAL-SEED-4',
@@ -54,7 +54,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-03-03',
                 'end_book_date' => '2023-03-04',
                 'return_date' => '2023-03-05',
-                'status' => 3
+                'transaction_status_id' => 4
             ],
             [
                 'external_id' => 'RENTAL-SEED-5',
@@ -64,7 +64,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-02-03',
                 'end_book_date' => '2023-02-04',
                 'return_date' => '2023-02-05',
-                'status' => 4
+                'transaction_status_id' => 5
             ],
             [
                 'external_id' => 'RENTAL-SEED-6',
@@ -74,7 +74,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2023-01-03',
                 'end_book_date' => '2023-01-04',
                 'return_date' => '2023-01-05',
-                'status' => 5
+                'transaction_status_id' => 6
             ],
             [
                 'external_id' => 'RENTAL-SEED-7',
@@ -84,7 +84,7 @@ class TransactionSeeder extends Seeder
                 'start_book_date' => '2022-12-03',
                 'end_book_date' => '2022-12-04',
                 'return_date' => '2022-12-05',
-                'status' => 6
+                'transaction_status_id' => 7
             ]
         ]);
     }
