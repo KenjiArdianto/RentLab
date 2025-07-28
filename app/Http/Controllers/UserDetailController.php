@@ -39,11 +39,11 @@ class UserDetailController extends Controller
             return redirect()->route('home')->with('info', 'You have already completed your profile.');
         }
         $request->validate([
-            'fname' => ['nullable', 'string', 'max:255'],
-            'lname' => ['nullable', 'string', 'max:255'],
-            'phoneNumber' => ['nullable', 'string', 'max:20'],
-            'idcardNumber' => ['nullable', 'string', 'max:50'],
-            'dateOfBirth' => ['nullable', 'date'],
+            'fname' => ['required', 'string', 'max:255'],
+            'lname' => ['required', 'string', 'max:255'],
+            'phoneNumber' => ['required', 'string', 'max:20'],
+            'idcardNumber' => ['required', 'string', 'max:50'],
+            'dateOfBirth' => ['required', 'date'],
             'idcardPicture' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
         ]);
         // return "hi all";
@@ -69,7 +69,7 @@ class UserDetailController extends Controller
             'phoneNumber'=>$request->phoneNumber,
             'idcardNumber'=>$request->idcardNumber,
             'dateOfBirth'=>$request->dateOfBirth,
-            'idcardPicture'=>$filename,
+            'idcardPicture'=>"idcard/{$filename}",
         ]);
         // return $user->detail();
     

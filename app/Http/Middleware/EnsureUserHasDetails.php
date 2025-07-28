@@ -17,7 +17,8 @@ class EnsureUserHasDetails
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && !Auth::user()->detail) {
+        
+        if (Auth::user()->role !== 'admin' && (Auth::check() && !Auth::user()->detail)) {
             return redirect()->route('complete.user.detail');
         }
 

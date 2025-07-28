@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
@@ -34,6 +35,20 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            if ($user->isForceDeleting()) {
+                $user->detail()->withTrashed()->forceDelete();
+            } else {
+                $user->detail()->delete();
+            }
+        });
+
+        static::restoring(function ($user) {
+            $user->detail()->withTrashed()->restore();
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

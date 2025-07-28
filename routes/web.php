@@ -52,6 +52,12 @@ Route::post('/complete-user-detail',[UserDetailController::class,'store'])->name
 // Route::get('/complete-user-detail', [UserDetailController::class, 'show'])->name('complete.user.detail');
 // Route::post('/complete-user-detail', [UserDetailController::class, 'store']);
 
+
+Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+Route::post('/profile',[ProfileController::class,'change'])->name('change.profile');
+Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
+// Route::get('/coba',[ProfileController::class,'coba']);
+
 Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
 Route::get('/catalog', [VehicleController::class, 'catalog'])->name('vehicle.catalog');
 
