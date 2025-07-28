@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\UserReview;
+use App\Http\Requests\VehicleFilterRequest; // <-- 1. Gunakan Form Request ini
 use App\Models\Advertisement;
 use App\Models\Vehicle;
 use App\Models\VehicleImage;
@@ -101,145 +102,108 @@ class VehicleController extends Controller
         //
     }
     
+    /**
+     * Mengambil kategori mobil dari file bahasa.
+     */
     private function getCarCategories(): array
     {
-        return [
-            'Sedan', 'SUV', 'Hatchback', 'Convertible', 'Coupe', 'Wagon',
-            'Pickup', 'Van', 'Electric', 'Hybrid', 'Luxury', 'Off-Road',
-            'Sport', 'City', 'Custom'
-        ];
-    }
-
-    private function getMotorcycleCategories(): array
-    {
-        return ['Scooter', 'Moped', 'Sport', 'Cruiser', 'Touring', 'Off-Road', 'Naked', 'Electric', 'Commuter', 'Custom'];
+        return (array) __('vehicles.categories.car');
     }
 
     /**
-     * Method filter yang sudah diperbaiki dan dirapikan.
-     */
-    public function filter(Request $request, Builder $query)
+     * Mengambil kategori motor dari file bahasa.
+    */
+    private function getMotorcycleCategories(): array
     {
-        // FIX 1: Validasi sekarang menggunakan nama yang benar: 'start_date' & 'end_date'
-        $validatedData = $request->validate([
-            'Tipe_Kendaraan'  => 'nullable|string|in:Car,Motor',
-            'Jenis_Kendaraan' => 'nullable|array',
-            'Jenis_Transmisi' => 'nullable|array',
-            'Tempat'          => 'nullable|array',
-            'min_price'       => 'nullable|numeric|gte:0',
-            'max_price'       => 'nullable|numeric|gte:min_price',
-            'start_date'      => 'nullable|date',
-            'end_date'        => 'nullable|date|after_or_equal:start_date',
-        ]);
+        return (array) __('vehicles.categories.motorcycle');
+    }
 
-        // FIX 2: Ambil data tanggal dari request dengan nama yang benar
-        // Ambil tanggal dari data yang sudah divalidasi
-        $startDate = $validatedData['start_date'] ?? null;
-        $endDate = $validatedData['end_date'] ?? null;
+    private function filter(VehicleFilterRequest $request, Builder $query)
+    {
+        $filters = $request->validated();
 
-        // Logika filter ketersediaan dengan BUFFER 1 HARI
-        if ($startDate && $endDate) {
-
-            // 1. Ubah string tanggal menjadi objek Carbon
-            $userStartDate = \Carbon\Carbon::parse($startDate);
-            $userEndDate = \Carbon\Carbon::parse($endDate);
-
-            // 2. Buat rentang buffer: H-1 dan H+1
+        // Filter ketersediaan berdasarkan tanggal
+        if (isset($filters['start_date']) && isset($filters['end_date'])) {
+            $userStartDate = \Carbon\Carbon::parse($filters['start_date']);
+            $userEndDate = \Carbon\Carbon::parse($filters['end_date']);
             $bufferStartDate = $userStartDate->copy()->subDay();
             $bufferEndDate = $userEndDate->copy()->addDay();
 
-            // 3. Jalankan query dengan rentang buffer
-            $query->whereDoesntHave('transactions', function ($subQuery) use ($bufferStartDate, $bufferEndDate) {
+            $query->whereHas('transactions', function ($subQuery) use ($bufferStartDate, $bufferEndDate) {
                 $subQuery
-                    // Hanya cari transaksi yang aktif (status 1, 2, atau 3)
-                    ->whereIn('transaction_status_id', [2, 3, 4])
-
-                    // Cek tumpang tindih dengan RENTANG BUFFER
+                    ->whereIn('transaction_status_id', [1, 2, 3])
                     ->where(function ($dateQuery) use ($bufferStartDate, $bufferEndDate) {
                         $dateQuery->where('start_book_date', '<=', $bufferEndDate)
-                                ->where('end_book_date', '>=', $bufferStartDate);
+                                  ->where('end_book_date', '>=', $bufferStartDate);
                     });
             });
         }
 
-        // Langkah 3: Terapkan semua filter lain menggunakan 'when' dan 'filled()'
+        // Terapkan filter lainnya
         $query
-            // Selalu terapkan harga minimum, default ke 0 jika kosong.
-            ->where('price', '>=', $request->input('min_price', 0))
-
-            // Terapkan filter lain HANYA JIKA diisi oleh pengguna
-            ->when($request->filled('max_price'), function ($q) use ($request) {
-                $q->where('price', '<=', $request->input('max_price'));
+            ->when($filters['min_price'] ?? null, function ($q, $minPrice) {
+                $q->where('price', '>=', $minPrice);
             })
-            ->when($request->filled('Tipe_Kendaraan'), function ($q) use ($request) {
-                $q->whereHas('vehicleType', function ($subQuery) use ($request) {
-                    $subQuery->where('type', $request->input('Tipe_Kendaraan'));
+            ->when($filters['max_price'] ?? null, function ($q, $maxPrice) {
+                $q->where('price', '<=', $maxPrice);
+            })
+            ->when($filters['Tipe_Kendaraan'] ?? null, function ($q, $type) {
+                $q->whereHas('vehicleType', function ($subQuery) use ($type) {
+                    $subQuery->where('type', $type);
                 });
             })
-            ->when($request->filled('Jenis_Kendaraan'), function ($q) use ($request) {
-                $q->whereHas('vehicleCategories', function ($subQuery) use ($request) {
-                    $subQuery->whereIn('category', $request->input('Jenis_Kendaraan'));
+            ->when($filters['Jenis_Kendaraan'] ?? null, function ($q, $categories) {
+                $q->whereHas('vehicleCategories', function ($subQuery) use ($categories) {
+                    $subQuery->whereIn('category', $categories);
                 });
             })
-            ->when($request->filled('Jenis_Transmisi'), function ($q) use ($request) {
-                $q->whereHas('vehicleTransmission', function ($subQuery) use ($request) {
-                    $subQuery->whereIn('transmission', $request->input('Jenis_Transmisi'));
+            ->when($filters['Jenis_Transmisi'] ?? null, function ($q, $transmissions) {
+                $q->whereHas('vehicleTransmission', function ($subQuery) use ($transmissions) {
+                    $subQuery->whereIn('transmission', $transmissions);
                 });
             })
-            ->when($request->filled('Tempat'), function ($q) use ($request) {
-                $q->whereIn('vehicle_location', $request->input('Tempat'));
+            ->when($filters['Tempat'] ?? null, function ($q, $locations) {
+                $q->whereHas('location', function ($subQuery) use ($locations) {
+                    $subQuery->whereIn('name', $locations);
+                });
             });
 
         return $query;
     }
 
-    public function display(Request $request)
+    /**
+     * Menampilkan kendaraan di halaman utama dengan filter.
+     */
+    public function display(VehicleFilterRequest $request) // <-- 2. Ganti Request biasa dengan Form Request
     {
-        if (!$request->has('Tipe_Kendaraan')) {
-            $request->merge(['Tipe_Kendaraan' => 'Car']);
-        }
-
         $vehicleQuery = Vehicle::query();
+        $this->filter($request, $vehicleQuery); // Panggil private method filter
+        $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
 
-        $this->filter($request, $vehicleQuery);
-        // dd($vehicleQuery->toSql());
-
-        $vehicle = $vehicleQuery->orderBy('id')->paginate(16)->withQueryString();
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
 
-        return view(
-            'webview.homescreen',
-            [
-                "vehicle" => $vehicle,
-                "advertisement" => $advertisement,
-                // FIX 3: Ambil daftar kategori dari fungsi terpusat
-                "carCategories" => $this->getCarCategories(),
-                "motorcycleCategories" => $this->getMotorcycleCategories(),
-            ]
-        );
+        return view('webview.homescreen', [
+            "vehicle" => $vehicle,
+            "advertisement" => $advertisement,
+            "carCategories" => $this->getCarCategories(),
+            "motorcycleCategories" => $this->getMotorcycleCategories(),
+        ]);
     }
 
-    public function catalog(Request $request)
+    public function catalog(VehicleFilterRequest $request) // <-- 2. Ganti Request biasa dengan Form Request
     {
-        if (!$request->has('Tipe_Kendaraan')) {
-            $request->merge(['Tipe_Kendaraan' => 'Car']);
-        }
-        // ============================= FIX ENDS HERE =============================
-
         $vehicleQuery = Vehicle::query();
+        $filters = $request->validated(); // Ambil data yang sudah bersih
 
-        if ($request->filled('search')) {
-            $searchTerm = $request->input('search');
-            $vehicleQuery->whereHas('vehicleName', function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', '%' . $searchTerm . '%');
+        // Logika pencarian khusus untuk katalog
+        if (isset($filters['search'])) {
+            $vehicleQuery->whereHas('vehicleName', function ($subQuery) use ($filters) {
+                $subQuery->where('name', 'LIKE', '%' . $filters['search'] . '%');
             });
         }
 
-        // Sekarang, saat filter() dipanggil, Tipe_Kendaraan sudah ada di dalam request,
-        // sehingga filter tipe kendaraan akan diterapkan dengan benar.
-        $this->filter($request, $vehicleQuery);
-
-        $vehicle = $vehicleQuery->orderBy('id')->paginate(16)->withQueryString();
+        $this->filter($request, $vehicleQuery); // Panggil private method filter
+        $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
 
         return view('webview.catalog', [
             "vehicle" => $vehicle,
@@ -247,6 +211,7 @@ class VehicleController extends Controller
             "motorcycleCategories" => $this->getMotorcycleCategories(),
         ]);
     }
+
 
     public function detail(Vehicle $vehicle)
     {

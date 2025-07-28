@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             DriverSeeder::class,
             VehicleSeeder::class,
             TransactionStatusSeeder::class,
-            TransactionSeeder::class,
+            // TransactionSeeder::class,
             // UserSeeder::class,
 
             UserReviewSeeder::class,
