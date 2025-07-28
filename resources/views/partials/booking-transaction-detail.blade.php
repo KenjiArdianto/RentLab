@@ -120,6 +120,12 @@
                 @endif
             </div>
             <div class="modal-footer">
+                @if (in_array($transaction->transaction_status_id, [1, 2]))
+                    <form action="{{ route('booking.cancel', $transaction) }}" method="POST" onsubmit="return confirm('{{ __('booking-history.cancel_validation') }}');">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">{{ __ ('booking-history.cancel_order_btn') }}</button>
+                    </form>
+                @endif
                 <a href="{{ route('receipt.download', $transaction) }}" class="btn btn-primary">{{ __('booking-history.button.download_receipt') }}</a>
             </div>
         </div>

@@ -59,4 +59,9 @@ return [
     'pdf.vat_note' => 'All fees charged by RentLab (if any) are inclusive of VAT.',
 
     'footer_text' => 'All Rights Reserved.',
+
+    'cancel_massage' => 'This order cannot be canceled.',
+    'success_cancel' => 'Order has been successfully canceled.',
+    'cancel_order_btn' => 'Cancel Order',
+    'cancel_validation' => 'Are you sure you want to cancel this order?',
 ];

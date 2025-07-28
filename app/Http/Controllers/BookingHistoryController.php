@@ -88,4 +88,22 @@ class BookingHistoryController extends Controller
         $fileName = 'receipt rentlab - ' . $transaction->id . ' - ' . Str::slug($transaction->user->name) . '.pdf';
         return $pdf->download($fileName);
     }
+
+    public function cancel(Transaction $transaction)
+    {
+        
+        // if (1 != $transaction->user_id) {
+        // // if (Auth::id() != $transaction->user_id) { 
+        //     abort(403, 'AKSI TIDAK DIIZINKAN');
+        // }
+
+        if (!in_array($transaction->transaction_status_id, [1, 2])) {
+            return back()->with('error', __('booking-history.cancel_massage'));
+        }
+
+        $transaction->transaction_status_id = 7; 
+        $transaction->save();
+
+        return redirect()->route('booking.history')->with('success', __('booking-history.cancel_success_message'));
+    }
 }

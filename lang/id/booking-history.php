@@ -59,4 +59,8 @@ return [
     'pdf.vat_note' => 'Semua biaya yang dibebankan oleh RentLab (jika ada) sudah termasuk PPN.',
 
     'footer_text' => 'Hak Cipta Dilindungi.',
+    'cancel_massage' => 'Pesanan ini tidak dapat dibatalkan.',
+    'success_cancel' => 'Pesanan telah berhasil dibatalkan.',
+    'cancel_order_btn' => 'Batalkan Pesanan',
+    'cancel_validation' => 'Anda yakin ingin membatalkan pesanan ini?',
 ];
