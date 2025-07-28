@@ -23,13 +23,13 @@ class CartSeeder extends Seeder
                 'end_date' => '2023-06-06',
             ],
             [
-                'user_id' => 2,
+                'user_id' => 1,
                 'vehicle_id' => 2,
                 'start_date' => '2023-05-03',
                 'end_date' => '2023-05-06',
             ],
             [
-                'user_id' => 3,
+                'user_id' => 1,
                 'vehicle_id' => 3,
                 'start_date' => '2023-04-03',
                 'end_date' => '2023-04-06',

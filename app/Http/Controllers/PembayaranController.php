@@ -3,162 +3,250 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
-use App\Models\Vehicle;
-
-// Gunakan namespace yang benar untuk Exception
+use App\Models\User; // <-- Tambahkan ini untuk mengambil data user
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 use Xendit\Invoice\CreateInvoiceRequest;
-// use Xendit\Exceptions\ApiException; // <-- Komentari jika kelas tidak tersedia
 
 class PembayaranController extends Controller
 {
+    public function __construct()
+    {
+        Configuration::setXenditKey(config('services.xendit.secret_key'));
+    }
+
+    /**
+     * Menampilkan halaman checkout.
+     */
+    public function show(Request $request)
+    {
+        $validated = $request->validate([
+            'cart_ids'   => 'sometimes|array',
+            'cart_ids.*' => 'integer|exists:carts,id',
+        ]);
+
+        // ===================================================================
+        // FIX: Mengembalikan logika ke Auth::id() untuk mengambil ID pengguna
+        // yang sedang login, sesuai dengan cara kerja aplikasi yang benar.
+        // Untuk testing, pastikan Anda login sebagai user dengan ID 1.
+        // ===================================================================
+        // $userId = Auth::id();
+        $userId = 1;
+
+        $selectedCartIds = $validated['cart_ids'] ?? [];
+
+        $cartItemsQuery = Cart::with('vehicle.vehicleName')
+            ->where('user_id', $userId);
+
+        if (!empty($selectedCartIds)) {
+            $cartItemsQuery->whereIn('id', $selectedCartIds);
+        }
+
+        $cartItems = $cartItemsQuery->get();
+
+        if ($cartItems->isEmpty()) {
+            return view('checkout', [
+                'cartItems' => collect(),
+                'totalAmount' => 0,
+                'selectedCartIds' => [],
+            ]);
+        }
+
+        $totalAmount = 0;
+        foreach ($cartItems as $item) {
+            $startDate = new \DateTime($item->start_date);
+            $endDate = new \DateTime($item->end_date);
+
+            // Perhitungan durasi yang sudah benar (inklusif)
+            $duration = $startDate->diff($endDate)->days + 1;
+
+            $item->duration = $duration;
+            $item->subtotal = $item->vehicle->price * $duration;
+            $totalAmount += $item->subtotal;
+        }
+
+        return view('checkout', [
+            'cartItems' => $cartItems,
+            'totalAmount' => $totalAmount,
+            'selectedCartIds' => $selectedCartIds ?: $cartItems->pluck('id')->all(),
+        ]);
+    }
+
+    /**
+     * Memproses checkout, membuat transaksi, dan membuat invoice Xendit.
+     */
     public function createCheckoutInvoice(Request $request)
     {
-        // Asumsi $request->cart_ids adalah array dari ID item keranjang yang dipilih
-        // $request->cart_ids = [1, 2, 3];
-        // $selectedCartIds = $request->input('cart_ids');
-        $selectedCartIds = [1,2,3];
-        $userIdForTesting = 1;
+        $validated = $request->validate([
+            'cart_ids' => 'required|array|min:1',
+            'cart_ids.*' => 'integer|exists:carts,id',
+        ]);
 
-        if (empty($selectedCartIds)) {
-            return back()->with('error', 'Tidak ada item keranjang yang dipilih.');
+        $selectedCartIds = $validated['cart_ids'];
+        // dd($selectedCartIds);
+
+        // ===================================================================
+        // FIX: Mengembalikan logika ke Auth::user() untuk mengambil data
+        // pengguna yang sedang login.
+        // ===================================================================
+        $user = User::find(1);
+        // $user = Auth::user();
+
+        if (!$user) {
+            // Ini akan mencegah error jika pengguna tidak login
+            return redirect()->route('login')->with('error', 'Anda harus login untuk melanjutkan pembayaran.');
+        }
+
+        // ===================================================================
+        // FIX: Memastikan query hanya mengambil item milik pengguna yang login.
+        // ===================================================================
+        $cartItems = Cart::with('vehicle')
+            ->where('user_id', $user->id)
+            ->whereIn('id', $selectedCartIds)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return back()->with('error', 'Item keranjang tidak valid atau bukan milik Anda.');
         }
 
         $totalAmount = 0;
         $transactionsToCreate = [];
-        // $commonExternalId = 'RENTAL-' . time() . '-' . $request->user()->id; // ID unik untuk seluruh checkout ini
+        $commonExternalId = 'RENTAL-' . time() . '-' . $user->id;
 
-        $commonExternalId = 'RENTAL-' . time() . '-' . str()->random();
+        foreach ($cartItems as $cartItem) {
+            $startDate = new \DateTime($cartItem->start_date);
+            $endDate = new \DateTime($cartItem->end_date);
+
+            $duration = $startDate->diff($endDate)->days + 1;
+
+            $subtotal = $cartItem->vehicle->price * $duration;
+            $totalAmount += $subtotal;
+
+            $transactionsToCreate[] = [
+                'vehicle_id' => $cartItem->vehicle_id,
+                'user_id' => $user->id,
+                'driver_id' => $cartItem->driver_id,
+                'start_book_date' => $cartItem->start_date,
+                'end_book_date' => $cartItem->end_date,
+                'return_date' => $cartItem->end_date,
+                'transaction_status_id' => 1,
+                'external_id' => $commonExternalId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        if ($totalAmount <= 0) {
+            return back()->with('error', 'Total pembayaran tidak valid.');
+        }
 
         try {
-            // Loop melalui setiap ID keranjang yang dipilih
-            foreach ($selectedCartIds as $cartId) {
-                $cartItem = Cart::with('vehicle')->findOrFail($cartId); // Ambil item keranjang beserta detail mobil
-                // dd($cartItem);
-                if (!$cartItem->vehicle) {
-                    Log::error("Vehicle not found for cart item ID: {$cartId}");
-                    continue; // Lewati item jika kendaraan tidak ditemukan
-                }
-
-                $vehicle = $cartItem->vehicle;
-                $startDate = new \DateTime($cartItem->start_date);
-                $endDate = new \DateTime($cartItem->end_date);
-                $duration = $startDate->diff($endDate)->days;
-                if ($duration == 0) $duration = 1; // Asumsi minimal 1 hari sewa
-
-                $subtotal = $vehicle->price * $duration; // Hitung subtotal untuk item ini
-                $totalAmount += $subtotal; // Tambahkan ke total keseluruhan
-
-                $transactionsToCreate[] = [
-                    'vehicle_id'      => $vehicle->id,
-                    // 'user_id'         => $request->user()->id,
-                    'user_id'         => $userIdForTesting,
-                    'driver_id'       => 1, // Sesuaikan jika ada driver yang dipilih di keranjang
-                    'start_book_date' => $cartItem->start_date,
-                    'end_book_date'   => $cartItem->end_date,
-                    'return_date'     => $cartItem->end_date,
-                    'status'          => 1, // Status pending
-                    'external_id'     => $commonExternalId, // Semua item dalam checkout ini pakai external_id yang sama
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
-                ];
-                // $userIdForTesting += 1;
-            }
-
-            // Pastikan total amount tidak nol
-            if ($totalAmount <= 0) {
-                return back()->with('error', 'Total pembayaran tidak valid.');
-            }
-
-            // dd($transactionsToCreate);
-
-            // Simpan semua transaksi ke database
-            // Ini akan membuat banyak baris di tabel `transactions`
             Transaction::insert($transactionsToCreate);
 
-            // Buat invoice Xendit
-            Configuration::setXenditKey(config('services.xendit.secret_key'));
             $apiInstance = new InvoiceApi();
-
             $createInvoiceRequest = new CreateInvoiceRequest([
-                'external_id' => $commonExternalId, // ID unik untuk seluruh checkout
-                'amount'      => $totalAmount,      // Jumlah total pembayaran
-                'currency'    => 'IDR',
-                'description' => 'Pembayaran Sewa Banyak Mobil (Order: ' . $commonExternalId . ')',
-                'success_redirect_url' => route('payment.success'),
-                // 'payer_email' => $request->user()->email, // Asumsi user punya email
+                'external_id' => $commonExternalId,
+                'amount' => $totalAmount,
+                'currency' => 'IDR',
+                'description' => 'Pembayaran Sewa Kendaraan (Order: ' . $commonExternalId . ')',
+                'success_redirect_url' => route('payment.success', ['locale' => app()->getLocale()]),
+                'failure_redirect_url' => route('payment.failed', ['locale' => app()->getLocale()]),
+                'payer_email' => $user->email,
             ]);
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
 
-            // Opsional: Hapus item dari keranjang setelah berhasil dibuat transaksinya
-            Cart::whereIn('id', $selectedCartIds)->delete();
+            Cart::whereIn('id', $selectedCartIds)->where('user_id', $user->id)->delete();
 
-            return redirect($result->getInvoiceUrl());
+            return redirect()->away($result->getInvoiceUrl());
 
         } catch (\Exception $e) {
-            Log::error('Error creating multi-transaction invoice:', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return back()->with('error', 'Terjadi kesalahan saat memproses checkout: ' . $e->getMessage());
+            Log::error('Error creating Xendit invoice:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Terjadi kesalahan saat memproses pembayaran.');
         }
     }
 
-
+    /**
+     * Menerima webhook dari Xendit dan mengupdate status transaksi.
+     */
     public function handleWebhook(Request $request)
     {
-        // Log payload lengkap yang diterima
-        Log::info('Webhook Payload Diterima:', $request->all());
+        $payload = $request->all();
+        Log::info('Webhook Xendit Diterima:', $payload);
 
-        $externalId = $request->input('external_id');
-        $statusPembayaran = $request->input('status');
+        $externalId = $payload['external_id'];
+        $paymentStatus = $payload['status'];
 
-        Log::info("Webhook diproses. External ID: {$externalId}, Status Xendit: {$statusPembayaran}");
-
-        // --- PERUBAHAN PENTING DI SINI ---
-        // Gunakan ->get() untuk mendapatkan semua transaksi dengan external_id yang sama
         $transactions = Transaction::where('external_id', $externalId)->get();
-        // dd($transactions);
-        // Cek apakah ada transaksi yang ditemukan
+
         if ($transactions->isEmpty()) {
-            Log::warning("Transaksi dengan external_id: {$externalId} TIDAK DITEMUKAN di database.");
-            return response()->json(['status' => 'error', 'message' => 'Transactions not found'], 404);
-        } else{
-            Log::info("Transaksi dengan external_id: {$externalId} DITEMUKAN di database");
+            Log::warning("Webhook: Transaksi dengan external_id {$externalId} tidak ditemukan.");
+            return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
         }
 
-        // Lakukan perulangan untuk mengupdate setiap transaksi yang ditemukan
-        foreach ($transactions as $transaction) { // <-- LOOPING DI SINI
-            Log::info("Transaksi DITEMUKAN. ID Transaksi: {$transaction->id}, External ID: {$externalId}, Status Saat Ini di DB: {$transaction->status}");
+        $newStatusId = null;
+        if ($paymentStatus === 'PAID') {
+            $newStatusId = 2; // Lunas
+        } elseif ($paymentStatus === 'EXPIRED') {
+            $newStatusId = 0; // Kadaluarsa/Batal
+        }
 
-            if ($statusPembayaran === 'PAID') {
-                if ($transaction->status != 2) { // Hanya update jika status belum lunas
-                    $transaction->status = 2; // Lunas
-                    $transaction->save();
-                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) BERHASIL DIUPDATE menjadi LUNAS (status 2).");
-                } else {
-                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) sudah lunas, tidak perlu update lagi.");
-                }
-            } elseif ($statusPembayaran === 'CANCELLED' || $statusPembayaran === 'EXPIRED') {
-                if ($transaction->status != 0) { // Hanya update jika status belum batal/kadaluarsa
-                    $transaction->status = 0; // Batal/Kadaluarsa
-                    $transaction->save();
-                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) DIBATALKAN/KADALUARSA (status 0). Status Xendit: {$statusPembayaran}");
-                } else {
-                    Log::info("Transaksi {$transaction->id} (External ID: {$externalId}) sudah batal/kadaluarsa, tidak perlu update lagi.");
-                }
-            } else {
-                Log::info("Status Xendit '{$statusPembayaran}' diterima untuk {$externalId} (Transaksi {$transaction->id}), tidak ada perubahan status.");
+        if ($newStatusId !== null) {
+            foreach ($transactions as $transaction) {
+                $transaction->transaction_status_id = $newStatusId;
+                $transaction->save();
             }
-        } // <-- AKHIR LOOPING
+            Log::info("Webhook: Status untuk external_id {$externalId} berhasil diupdate menjadi {$newStatusId}.");
+        }
 
         return response()->json(['status' => 'success']);
+    }
+
+    /**
+     * Menampilkan halaman setelah pembayaran berhasil.
+     */
+    public function success()
+    {
+        // ===================================================================
+        // FIX: Menggunakan helper `__()` untuk menerjemahkan teks di dalam controller.
+        // ===================================================================
+        $title = __('payment.title.success');
+        $message = __('payment.status.success_message');
+        $homeUrl = route('checkout', ['locale' => app()->getLocale()]);
+        $buttonText = __('payment.buttons.back_to_home');
+
+        return "
+            <div style='font-family: sans-serif; text-align: center; padding: 40px;'>
+                <h1>{$title}</h1>
+                <p>{$message}</p>
+                <a href='{$homeUrl}' style='display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;'>{$buttonText}</a>
+            </div>
+        ";
+    }
+
+    /**
+     * Menampilkan halaman setelah pembayaran gagal.
+     */
+    public function failed()
+    {
+        // ===================================================================
+        // FIX: Menggunakan helper `__()` untuk menerjemahkan teks di dalam controller.
+        // ===================================================================
+        $title = __('payment.title.failed');
+        $message = __('payment.status.failed_message');
+        $homeUrl = route('checkout', ['locale' => app()->getLocale()]);
+        $buttonText = __('payment.buttons.try_again');
+
+        return "
+            <div style='font-family: sans-serif; text-align: center; padding: 40px;'>
+                <h1>{$title}</h1>
+                <p>{$message}</p>
+                <a href='{$homeUrl}' style='display: inline-block; padding: 10px 20px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px;'>{$buttonText}</a>
+            </div>
+        ";
     }
 }

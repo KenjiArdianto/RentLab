@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,11 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Daftarkan pengecualian CSRF di sini
+        // ===================================================================
+        // FIX: Tambahkan ini untuk mengecualikan webhook Xendit dari CSRF.
+        // ===================================================================
         $middleware->validateCsrfTokens(except: [
-            'xendit/webhook', // <-- Ini URI webhook Anda
+            'payment/callback'
         ]);
-    }) // <-- BLOK INI YANG PERLU ANDA TAMBAHKAN/PASTIKAN ADA
+
+        // Daftarkan juga alias untuk middleware SetLocale di sini
+        $middleware->alias([
+            'setlocale' => SetLocale::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

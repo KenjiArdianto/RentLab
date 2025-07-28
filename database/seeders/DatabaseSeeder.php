@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // DriverSeeder::class,
             // VehicleSeeder::class,
-            CartSeeder::class,
+            // CartSeeder::class,
             // TransactionSeeder::class,
             // RatingSeeder::class,
             // LogSeeder::class,
@@ -35,10 +35,10 @@ class DatabaseSeeder extends Seeder
             DriverSeeder::class,
             VehicleSeeder::class,
             TransactionStatusSeeder::class,
-            TransactionSeeder::class,
+            // TransactionSeeder::class,
             // UserSeeder::class,
 
-            // CartSeeder::class,
+            CartSeeder::class,
             TransactionSeeder::class,
 
 
