@@ -53,13 +53,32 @@
                                 </ul>
                             </div>
 
-                            <li class="nav-item ms-lg-2 mt-3 mt-lg-0">
-                                <a class="btn btn-outline-primary rounded-pill w-100" href="#">{{ __('landing.register') }}</a>
-                            </li>
+                            @guest
+                                <li class="nav-item ms-lg-2 mt-3 mt-lg-0">
+                                    <a class="btn btn-outline-primary rounded-pill w-100" href="{{ route('register') }}">{{ __('landing.register') }}</a>
+                                </li>
 
-                            <li class="nav-item ms-lg-2 mt-2 mt-lg-0 mb-2 mb-lg-0">
-                                <a class="btn btn-primary rounded-pill w-100" href="#">{{ __('landing.login') }}</a>
-                            </li>
+                                <li class="nav-item ms-lg-2 mt-2 mt-lg-0 mb-2 mb-lg-0">
+                                    <a class="btn btn-primary rounded-pill w-100" href="{{ route('login') }}">{{ __('landing.login') }}</a>
+                                </li>
+                            @endguest
+
+                            @auth
+                                <div class="dropdown">
+                                    <button class="btn btn-primary rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Welcome, {{ Auth::user()->name }}!
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="{{ route('view.profile') }}">Profile</a></li>
+                                        <li>
+                                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item">Logout</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            @endauth
                         </ul>
                     </div>
                 </div>
@@ -87,7 +106,7 @@
                                 </div>
                             @endif
 
-                            <form id="rentalForm" action="#" method="GET">
+                            <form id="rentalForm" action="{{ route('vehicle.display') }}" method="GET">
                                 <div class="date_inputs">
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
