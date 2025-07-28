@@ -10,6 +10,10 @@ class VehicleCategory extends Model
     /** @use HasFactory<\Database\Factories\VehicleCategoryFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'category'
+    ];
+
     public function vehicles()
     {
         return $this->belongsToMany(Vehicle::class);
