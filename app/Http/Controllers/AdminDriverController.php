@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Driver;
 use App\Models\Location;
 use Illuminate\Support\Facades\File;
+use App\Http\Requests\AdminDriverEditSelectedRequest;
 
 
 class AdminDriverController extends Controller
@@ -18,13 +19,10 @@ class AdminDriverController extends Controller
     {
         $locations = Location::all();
         $search = $request->query('search');
-        $hasValidFilters = false;
 
-        $query = Driver::join('locations', 'drivers.location_id', '=', 'locations.id')
-                    ->select('drivers.*', 'locations.location as location_location'); // avoid column conflicts
+        $query = Driver::query()->with('location');
 
-        $allowedFields = ['name', 'driver_id', 'location_id'];
-
+        // split search by comma
         if ($search) {
             $pairs = explode(',', $search);
 
@@ -32,29 +30,25 @@ class AdminDriverController extends Controller
                 if (!str_contains($pair, '=')) continue;
 
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
-
-                if ($key === 'location' && $value !== '') {
-                    $query->where('locations.location', 'like', "%{$value}%");
-                    $hasValidFilters = true;
-                } elseif (in_array($key, $allowedFields) && $value !== '') {
-                    if ($key === 'driver_id') {
-                        $key = 'id';
-                    }
-                    $query->where("drivers.$key", 'like', "%{$value}%");
-                    $hasValidFilters = true;
+                
+                // handle driver_id
+                if ($key === 'driver_id' || $key === 'id_pengemudi') {
+                    $query->where('id', $value);
+                }
+                // handle name
+                else if ($key === 'name' || $key === 'nama') {
+                    $query->where('name', 'like', '%' . $value . '%');
+                }
+                // handle location
+                else if ($key === 'location' || $key === 'lokasi') {
+                    $query->whereHas('location', function ($q) use ($value) {
+                        $q->where('location', 'like', '%' . $value . '%');
+                    });
                 }
             }
         }
 
-        if (!$hasValidFilters) {
-            $drivers = Driver::with('location')->paginate(31)->appends(['search' => $search]);;
-        } else {
-            $drivers = $query->with('location')->paginate(31)->appends(['search' => $search]);;
-        }
-
-        if ($drivers->isEmpty()) {
-            return redirect()->route('admin.drivers')->with('error', 'No drivers found.');
-        }
+        $drivers = $query->paginate(31);
 
         return view('admin.drivers', compact('drivers', 'locations'));
     }
@@ -127,10 +121,12 @@ class AdminDriverController extends Controller
         //
     }
 
-    public function editSelected(Request $request)
+    public function editSelected(AdminDriverEditSelectedRequest $request)
     {
         // Format variable action_type dari request itu Operation_DriverID
         // Jadi disini di split dulu dengan _ sebagai separator
+        return "hi";
+        $request = $request->validate();
 
         list($action_type, $driver_id) = explode('_', $request->input('action_type'));
 
@@ -170,11 +166,11 @@ class AdminDriverController extends Controller
             // $driver->image = $request->input('image');
             $driver->save();
             
-            return back()->with('success', 'Selected driver edited.');
+            return redirect()->back()->with('success', 'Selected driver edited.');
         }
     }
 
-    public function deleteSelected(Request $request)
+    public function deleteSelected(AdminDriverDeleteSelectedRequest $request)
     {
         $id_list = $request->input('selected', []);
 

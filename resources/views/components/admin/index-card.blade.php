@@ -2,7 +2,6 @@
     'title',
     'count' => 0,
     'href' => '#',
-    'label' => null,
     'color' => 'primary'
 ])
 
@@ -16,8 +15,8 @@
             {{ $title }}
         </div>
         <div class="card-body">
-            <p>Total {{ $labelText }}: {{ $count }}</p>
-            <a href="{{ $href }}" class="btn btn-sm btn-{{ $color }}">Manage</a>
+            <p>{{ __('admin_navbar.total') }} {{ $title }}: {{ $count }}</p>
+            <a href="{{ $href }}" class="btn btn-sm btn-{{ $color }}">{{ __('admin_navbar.manage') }}</a>
         </div>
     </div>
 </div>

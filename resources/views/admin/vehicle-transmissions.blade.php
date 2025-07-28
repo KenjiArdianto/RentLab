@@ -5,13 +5,13 @@
 
 <div class="container-fluid justify-content-between align-items-center mb-4">
     <form action="{{ route('admin.vehicle-transmissions') }}" method="GET">
-        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="Search Vehicle Transmission" aria-label="Search">
+        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.vehicle_transmissions') }}" aria-label="Search">
         
     </form>
 </div> 
 
 <div class="container mt-4">
-    <h3 class="mb-3">Vehicle Transmissions</h3>
+    <h3 class="mb-3">{{ __('admin_tables.vehicle_transmissions') }}</h3>
 
     <div class="border rounded p-2 mb-3 d-flex justify-content-between align-items-center">
         <div style="width: 40px;">
@@ -20,7 +20,7 @@
         <form action="{{ route('admin.vehicle-transmissions.store') }}" method="POST" class="d-flex flex-fill mx-2">
             @csrf
             <input type="text" name="transmission" class="form-control form-control-sm me-2" placeholder="Enter new vehicle transmission">
-            <button type="submit" class="btn btn-sm btn-primary">Add</button>
+            <button type="submit" class="btn btn-sm btn-primary">{{ __('admin_buttons.add') }}</button>
         </form>
     </div>
 
@@ -34,12 +34,12 @@
             <form action="{{ route('admin.vehicle-transmissions.update', $vehicleTransmission->id) }}" method="POST" class="d-flex flex-fill mx-2">
                 @csrf
                 <input type="text" name="transmission" class="form-control form-control-sm me-2" value="{{ $vehicleTransmission->transmission }}">
-                <button type="submit" class="btn btn-sm btn-success">Apply</button>
+                <button type="submit" class="btn btn-sm btn-success">{{ __('admin_buttons.apply') }}</button>
             </form>
 
             <form action="{{ route('admin.vehicle-transmissions.destroy', $vehicleTransmission->id) }}" method="POST" style="margin: 0;">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                <button type="submit" class="btn btn-sm btn-danger">{{ __('admin_buttons.delete') }}</button>
             </form>
 
         </div>

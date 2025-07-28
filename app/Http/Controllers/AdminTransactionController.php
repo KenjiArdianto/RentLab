@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\UserReview;
 use Illuminate\Http\Request;
+use App\Http\Requests\AdminTransactionUpdateRequest;
 
 class AdminTransactionController extends Controller
 {
@@ -15,16 +16,8 @@ class AdminTransactionController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $hasValidFilters = false;
-
-        // $query = Transaction::join('users', 'transactions.user_id', '=', 'users.id')
-        //             ->select('transactions.*', 'users.username')
-        //             ->get();
-
 
         $query = Transaction::query();
-
-
 
         // split search by comma
         if ($search) {
@@ -36,23 +29,23 @@ class AdminTransactionController extends Controller
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
 
                 // handle transaction_id
-                if ($key === 'transaction_id') {
+                if ($key === 'transaction_id' || $key === 'id_transaksi') {
                     $query->where('id', $value);
                 }
                 // handle user_id
-                else if ($key === 'user_id') {
+                else if ($key === 'user_id' || $key === 'id_pengguna') {
                     $query->where('user_id', $value);
                 }
                 // handle driver_id
-                else if ($key === 'driver_id') {
+                else if ($key === 'driver_id' || $key === 'id_pengemudi') {
                     $query->where('driver_id', $value);
                 }
                 // handle vehicle_id
-                else if ($key === 'vehicle_id') {
+                else if ($key === 'vehicle_id' || $key === 'id_kendaraan') {
                     $query->where('vehicle_id', $value);
                 }
                 // handle start
-                else if ($key === 'start') {
+                else if ($key === 'start' || $key === 'mulai') {
                     $dateParts = explode('-', $value);
 
                     if (count($dateParts) === 3) {
@@ -67,7 +60,7 @@ class AdminTransactionController extends Controller
                         $query->whereYear('start_book_date', $value);
                     }
                 }
-                else if ($key === 'end') {
+                else if ($key === 'end' || $key === 'selesai') {
                     $dateParts = explode('-', $value);
 
                     if (count($dateParts) === 3) {
@@ -82,7 +75,7 @@ class AdminTransactionController extends Controller
                         $query->whereYear('end_book_date', $value);
                     }
                 }
-                else if ($key === 'return') {
+                else if ($key === 'return' || $key === 'kembali') {
                     $dateParts = explode('-', $value);
 
                     if (count($dateParts) === 3) {
@@ -155,11 +148,9 @@ class AdminTransactionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Transaction $transaction)
+    public function update(AdminTransactionUpdateRequest $request, Transaction $transaction)
     {
         //
-
-        $request->status = intval($request->status);
         
         // dd($transaction);
 

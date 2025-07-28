@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vehicle;
 use App\Models\VehicleReview;
 use Illuminate\Http\Request;
+use App\Http\Requests\AdminVehicleReviewRequest;
 
 class AdminVehicleReviewController extends Controller
 {
@@ -26,7 +27,7 @@ class AdminVehicleReviewController extends Controller
 
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
                 
-                // handle vehicle_id
+                // handle review_id
                 if ($key === 'review_id') {
                     $query->where('id', $value);
                 }
@@ -90,7 +91,7 @@ class AdminVehicleReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vehicle $vehicle, VehicleReview $vehicleReview)
+    public function update(AdminVehicleUpdateRequest $request, Vehicle $vehicle, VehicleReview $vehicleReview)
     {
         //
         $reviewUpdated = false;

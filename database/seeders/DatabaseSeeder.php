@@ -16,20 +16,6 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-        // 1. Dapatkan instance Faker dari service container Laravel
-        $faker = app(FakerGenerator::class);
-
-        // 2. Atur seed untuk Faker dengan angka yang sudah Anda pilih
-        //    Anda bisa mengkondisikan ini hanya untuk environment tertentu jika perlu
-        if (app()->environment(['local', 'testing', 'demo'])) { // Opsional: sesuaikan environment
-            $faker->seed(12345); // GANTI 12345 DENGAN ANGKA SEED PILIHAN ANDA
-        }
-
         $this->call([
             // DriverSeeder::class,
             // VehicleSeeder::class,
@@ -42,7 +28,6 @@ class DatabaseSeeder extends Seeder
             VehicleCategorySeeder::class,
             VehicleTransmissionSeeder::class,
             LocationSeeder::class,
-
             UserSeeder::class,
             DriverSeeder::class,
             VehicleSeeder::class,
