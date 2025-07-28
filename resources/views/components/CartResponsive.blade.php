@@ -4,7 +4,13 @@
     <div class="d-flex col-12 me-0 cart-responsive-item">
         <div class="col-1 d-flex justify-content-center align-items-center">
             <label>
-                <input type="checkbox" class="cart-checkbox mobile-checkbox" data-price="{{ $param->vehicle->price }}">
+                
+                <input type="checkbox"
+                    class="cart-checkbox mobile-checkbox"
+                    data-cart-id="{{$param->id }}"
+                    data-subtotal="{{ $param->subtotal }}"
+                    data-start-date="{{ $param->start_date }}"
+                    data-end-date="{{ $param->end_date }}">
             </label>
         </div>
         <div class="d-flex col-11 bg-light p-2 ps-2 rounded-3 shadow-sm">
@@ -23,11 +29,12 @@
                     <h6 style="font-size:10px; margin-bottom: 6px"> {{ \Carbon\Carbon::parse($param->start_date)->format('j M Y') }} -
                         {{ \Carbon\Carbon::parse($param->end_date)->format('j M Y') }}
                     </h6>
-                    <h6 class="text-muted m-0">Rp.{{ $param->vehicle->price }},00</h6>
+                    
+                    <h6 class="text-muted m-0 subtotal-display">Rp.{{ number_format($param->subtotal, 0, ',', '.') }},00 /{{__('vehicle.PerDay')}}</h6>
                 </div>
             </div>
 
-            {{-- <form class="col-2 m-0 d-flex align-items-center justify-content-center" action="/CartPage/{{ $param->id }}" --}}
+
             <form class="col-2 m-0 d-flex align-items-center justify-content-center" action="{{route('cart.destroy', ['id'=>$param->id])}}"
                 method="POST">
                 @csrf

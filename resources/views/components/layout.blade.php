@@ -58,7 +58,7 @@
     </header>
 
 
-    <main class = "container">
+    <main class = "container-fluid">
         {{ $slot }}
     </main>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
@@ -79,18 +79,7 @@
                         </div>
                     @endforeach
         </div>
-
-        <div>
-            <h1>col2</h1>   
-        </div>
-
-        <div style="display:flex; flex-direction: column">
-            <h1>col3</h1>
-            <h1>col1</h1>
-            <h1>cola</h1>
-            <h1>colb</h1>
-        </div>
-    </div> --}}
+ --}}
 
 </body>
 </html>

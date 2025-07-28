@@ -62,6 +62,7 @@ class VehicleController extends Controller
                 'end_date' => $item->end_date,
             ];
         });
+    
 
         $rating = DB::table('user_reviews')
         ->join('transactions', 'user_reviews.transaction_id', '=', 'transactions.id')

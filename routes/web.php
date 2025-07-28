@@ -15,11 +15,16 @@ Route::get('/cart', [CartController::class,'index'])->name('cart');
 
 
 Route::delete('/cart/{id}/destroy', [CartController::class,'destroy'])->name("cart.destroy"); 
-
-
+    
 // input
 Route::post('/cart/store', [CartController::class,'store'])->name('cart.store'); 
 
+
+Route::get('/cart-item-count', [CartController::class, 'getCartItemCount'])->name('cart.itemCount');
+
+Route::delete('/cart/clear-outdated', [CartController::class, 'clearOutdated'])->name('cart.clearOutdated');
+
+Route::get('/payment', [CartController::class, 'processPayment'])->name('cart.processPayment');
 
 
 

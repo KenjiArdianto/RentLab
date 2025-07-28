@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\UserReview;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -35,7 +36,8 @@ class DatabaseSeeder extends Seeder
             VehicleSeeder::class,
             TransactionStatusSeeder::class,
             TransactionSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
+            UserReviewSeeder::class,
 
             CartSeeder::class,
             TransactionSeeder::class,
