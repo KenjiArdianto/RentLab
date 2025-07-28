@@ -58,18 +58,22 @@
         <!-- Top bar for language selection -->
         <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-none d-lg-flex">
             <div class="container-fluid justify-content-end">
-                <a class="navbar-brand d-flex align-items-center gap-0 p-0 px-4 mt-1 m-0" href="#">
-                    <img src="https://placehold.co/12x12/cccccc/000000?text=F" width="12" height="12" alt="Language Icon">
-                    <div class="ms-1 navbar-brand d-flex align-items-center p-0">
-                        <p class="m-0 p-0 fw-bold" style="font-size: 9px;">FAQ</p>
-                    </div>
-                </a>
-                <a class="navbar-brand d-flex align-items-center gap-0 p-0 px-4 mt-1 m-0" href="#">
-                    <img src="https://placehold.co/12x12/cccccc/000000?text=B" width="12" height="12" alt="Language Icon">
-                    <div class="ms-1 navbar-brand d-flex align-items-center p-0">
-                        <p class="m-0 p-0 fw-bold" style="font-size: 9px;">Bahasa Indonesia</p>
-                    </div>
-                </a>
+                <a class="nav-link py-1 px-3 small" href="#">@lang('app.nav.faq')</a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle py-1 px-3 small" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate"></i> @lang('app.nav.language')
+                    </a>
+                    @php
+                        $available_locales = ['en' => 'English', 'id' => 'Bahasa Indonesia'];
+                    @endphp
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach ($available_locales as $locale_code => $locale_name)
+                            @if ($locale_code !== app()->getLocale())
+                                <li><a class="dropdown-item" href="{{ url('/lang/' . $locale_code) }}">{{ $locale_name }}</a></li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </nav>
 
