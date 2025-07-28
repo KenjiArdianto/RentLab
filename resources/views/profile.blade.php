@@ -499,7 +499,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
 
 //for profilepic
   document.querySelector('div.avatar').addEventListener('click',function(){
-    document.querySelector('div.card').style.opacity="80%";
+    document.querySelector('div.card').style.opacity="30%";
     document.querySelector('div.bg-popup').classList.add('active');
     document.querySelector('.profile-image-popup').style.backgroundImage=document.querySelector('.avatar').style.backgroundImage;
   })
