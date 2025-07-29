@@ -191,10 +191,10 @@ Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])
 // 1. Mengarahkan dari halaman utama (root) LANGSUNG ke halaman checkout dengan bahasa default.
 
 // Tolong disatuin
-// Route::get('/', function () {
-//     $defaultLocale = config('app.fallback_locale', 'id');
-//     return redirect()->route('checkout', ['locale' => $defaultLocale]);
-// });
+Route::get('/', function () {
+    $defaultLocale = config('app.fallback_locale', 'id');
+    return redirect()->route('checkout', ['locale' => $defaultLocale]);
+});
 
 // RUTE UNTUK FITUR PEMBAYARAN
 // Route::match(['get', 'post'], '/checkout', [PembayaranController::class, 'show'])->name('checkout');
