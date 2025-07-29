@@ -1,9 +1,14 @@
+@php
+    $currLang = session()->get('lang', 'en');
+    app()->setLocale($currLang);
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rent Lab - Easy Vehicle Rentals</title>
+        <title>{{ __('landing.title') }}</title>
 
         <link rel="stylesheet" href="{{ asset('build/assets/CSS/landing.css') }}">
 
@@ -16,29 +21,65 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     </head>
     <body>
-
-        {{-- ================================================================= --}}
-        {{--                            HEADER                                 --}}
-        {{-- ================================================================= --}}
-        
-        <header>
-            <nav class="navbar navbar-expand-lg bg-white fixed-top border-bottom">
-                <div class="container-fluid py-2 px-lg-5">
-                    {{-- Application Brand/Logo --}}
-                    <a class="navbar-brand fw-bold" style="font-family: 'Poppins', sans-serif; font-size: 2rem; color: #0D2A4E;" href="{{ route('landing.index') }}">RENT LAB</a>
-                    
-                    {{-- Toggler button for mobile view --}}
+        <header class="sticky-top bg-light shadow-sm">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand fs-3 fw-bold" href="/">RentLab</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    {{-- Collapsible Navbar Content --}}
+                    </button>  
                     <div class="collapse navbar-collapse" id="mainNavbar">
-                        {{-- Authentication buttons moved to the right using margin-start: auto --}}
-                        <div class="navbar-nav ms-auto align-items-center">
-                            <a class="btn btn-outline-primary rounded-pill px-4 me-lg-2 mb-2 mb-lg-0" href="#">Register</a> {{-- ubah di sini ya kalo register nya beda nama routenya -> href="{{ route('register') }}" --}}
-                            <a class="btn btn-primary rounded-pill px-4" href="#">Login</a> {{-- ubah di sini ya kalo login nya beda nama routenya -> href="{{ route('login') }}"--}}
-                        </div>
+                        <ul class="navbar-nav ms-auto align-items-center">
+                            <div class="dropdown me-lg-2">
+                                <button class="btn btn-outline-primary rounded-pill dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-translate me-2"></i>
+                                    <span>{{ app()->getLocale() == 'id' ? 'ID' : 'EN' }}</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form action="/lang" method="POST" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="lang" value="en">
+                                            <button type="submit" class="dropdown-item">English</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="/lang" method="POST" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="lang" value="id">
+                                            <button type="submit" class="dropdown-item">Bahasa Indonesia</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            @guest
+                                <li class="nav-item ms-lg-2 mt-3 mt-lg-0">
+                                    <a class="btn btn-outline-primary rounded-pill w-100" href="{{ route('register') }}">{{ __('landing.register') }}</a>
+                                </li>
+
+                                <li class="nav-item ms-lg-2 mt-2 mt-lg-0 mb-2 mb-lg-0">
+                                    <a class="btn btn-primary rounded-pill w-100" href="{{ route('login') }}">{{ __('landing.login') }}</a>
+                                </li>
+                            @endguest
+
+                            @auth
+                                <div class="dropdown">
+                                    <button class="btn btn-primary rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Welcome, {{ Auth::user()->name }}!
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="{{ route('view.profile') }}">Profile</a></li>
+                                        <li>
+                                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item">Logout</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            @endauth
+                        </ul>
                     </div>
                 </div>
             </nav>
@@ -50,13 +91,13 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="welcome_card">
                             <div class="card_header_text">
-                                <h1>Welcome</h1>
-                                <p class="sub_heading">What would you like to rent today?</p>
+                                <h1>{{ __('landing.hero_welcome') }}</h1>
+                                <p class="sub_heading">{{ __('landing.hero_subtitle') }}</p>
                             </div>
 
                             @if ($errors->any())
                                 <div class="alert alert-danger mb-3">
-                                    <strong>Whoops! Something went wrong:</strong>
+                                    <strong>{{ __('landing.error_warning') }}</strong>
                                     <ul class="mb-0" style="padding-left: 1.2rem;">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
@@ -71,16 +112,14 @@
                                         <span class="icon_calendar">
                                             <img src="{{ asset('build/assets/images/Calender.png') }}" alt="Calendar Icon">
                                         </span>
-                                        {{-- The 'name' attribute now matches the migration column --}}
-                                        <input type="text" class="date_input_field" placeholder="Start Date" id="startBookDate" name="start_book_date" value="{{ $search_data['start_book_date'] ?? '' }}" required>
+                                        <input type="text" class="date_input_field" placeholder="{{ __('landing.start_date_placeholder') }}" id="startBookDate" name="start_book_date" value="{{ $search_data['start_book_date'] ?? '' }}" required>
                                     </div>
                                     <span class="arrow_separator">&#x2194;</span>
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
                                             <img src="{{ asset('build/assets/images/Calender.png') }}" alt="Calendar Icon">
                                         </span>
-                                        {{-- The 'name' attribute now matches the migration column --}}
-                                        <input type="text" class="date_input_field" placeholder="End Date" id="endBookDate" name="end_book_date" value="{{ $search_data['end_book_date'] ?? '' }}" required>
+                                        <input type="text" class="date_input_field" placeholder="{{ __('landing.end_date_placeholder') }}" id="endBookDate" name="end_book_date" value="{{ $search_data['end_book_date'] ?? '' }}" required>
                                     </div>
                                 </div>
 
@@ -92,13 +131,12 @@
                                             <img src="{{ asset('build/assets/images/Motor.png') }}" alt="Motorcycle" class="motorcycle_icon_img">
                                             <img src="{{ asset('build/assets/images/Mobil.png') }}" alt="Car" class="car_icon_img">
                                         </span>
-                                        <span class="track_text motorcycle_track_text">Motorcycle</span>
-                                        <span class="track_text car_track_text">Car</span>
+                                        <span class="track_text motorcycle_track_text">{{ __('landing.toggle_motorcycle') }}</span>
+                                        <span class="track_text car_track_text">{{ __('landing.toggle_car') }}</span>
                                     </label>
-                                    {{-- This input sends the vehicle type ('car' or 'motorcycle') for searching --}}
                                     <input type="hidden" id="vehicleTypeInput" name="vehicle_type" value="{{ $search_data['vehicle_type'] ?? 'motorcycle' }}">
                                 </div>
-                                <button type="submit" class="btn btn-lg w-100" id="searchNowBtn" disabled>Search Now</button>
+                                <button type="submit" class="btn btn-lg w-100" id="searchNowBtn" disabled>{{ __('landing.search_now_button') }}</button>
                             </form>
                         </div>
                     </div>
@@ -122,8 +160,8 @@
             <div class="container text-center"> 
                 <div class="row justify-content-center">
                     <div class="col-lg-12"> 
-                        <h2 class="section_title">What is Rent Lab?</h2>
-                        <p class="lead text-muted">Rent Lab provides modern mobility solutions through an integrated digital platform. We are committed to providing a quality fleet of professionally maintained vehicles, with transparent pricing principles and supported by responsive customer service, to ensure a safe, comfortable, and efficient rental experience for every customer.</p> 
+                        <h2 class="section_title">{{ __('landing.about_title') }}</h2>
+                        <p class="lead text-muted">{{ __('landing.about_text') }}</p> 
                     </div>
                 </div> 
             </div>
@@ -131,24 +169,24 @@
 
         <section class="features_section py-5">
             <div class="container text-center">
-                <h2 class="section_title">Why Rent Lab?</h2>
+                <h2 class="section_title">{{ __('landing.features_title') }}</h2>
                 <div class="row gy-4">
                     <div class="col-md-4">
                         <div class="feature_item">
                             <div class="icon_container"><img src="{{ asset('build/assets/images/ArmadaBersih.png') }}" alt="Clean Fleet Icon"></div>
-                            <h3>Clean and Well-Maintained Fleet</h3>
+                            <h3>{{ __('landing.feature_1') }}</h3>
                         </div>
                     </div> 
                     <div class="col-md-4">
                         <div class="feature_item">
                             <div class="icon_container"><img src="{{ asset('build/assets/images/HargaKompetitif.png') }}" alt="Competitive Price Icon"></div>
-                            <h3>Transparent and Competitive Pricing</h3>
+                            <h3>{{ __('landing.feature_2') }}</h3>
                         </div>
                     </div> 
                     <div class="col-md-4">
                         <div class="feature_item">
                             <div class="icon_container"><img src="{{ asset('build/assets/images/PelayananRamah.png') }}" alt="Friendly Service Icon"></div>
-                            <h3>Friendly and Responsive Service</h3>
+                            <h3>{{ __('landing.feature_3') }}</h3>
                         </div>
                     </div>
                 </div>
@@ -159,7 +197,7 @@
 
         <footer class="footer text-center py-4">
             <div class="container">
-                <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script> Rent Lab. All Rights Reserved.</p>
+                <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script> RentLab. {{ __('landing.footer_text') }}</p>
             </div>
         </footer>
 
@@ -168,7 +206,6 @@
         <script type="text/javascript" src="{{ asset('build/assets/js/landing.js') }}"></script>
     
         <script>
-            // Wait until the entire HTML document is fully loaded
             document.addEventListener('DOMContentLoaded', function() {
 
                 function checkDates() {
@@ -182,42 +219,30 @@
                         searchButton.setAttribute('disabled', 'true');
                     }
                 }
-
-                // Simpan instance flatpickr End Date ke dalam variabel
                 const endDatePicker = flatpickr("#endBookDate", {
                     altInput: true,
                     altFormat: "d/m/Y",
                     dateFormat: "Y-m-d",
                     minDate: "today",
                     onChange: function(selectedDates, dateStr, instance) {
-                        checkDates(); // Cek tanggal setiap kali ada perubahan
+                        checkDates();
                     }
                 });
-
-                // Konfigurasi Flatpickr untuk Start Date, dengan logika tambahan
                 flatpickr("#startBookDate", {
                     altInput: true,
                     altFormat: "d/m/Y",
                     dateFormat: "Y-m-d",
                     minDate: "today",
                     onChange: function(selectedDates, dateStr, instance) {
-                        checkDates(); // Tetap jalankan fungsi pengecekan tanggal
-
-                        // Jika ada tanggal yang dipilih di Start Date
+                        checkDates();
                         if (selectedDates[0]) {
-                            // atur tanggal minimum di End Date menjadi tanggal tersebut.
                             endDatePicker.set('minDate', selectedDates[0]);
-
-                            // Jika tanggal End Date yang sudah terpilih lebih kecil dari Start Date baru, hapus isinya.
                             if (endDatePicker.selectedDates[0] < selectedDates[0]) {
                                 endDatePicker.clear();
                             }
                         }
                     }
                 });
-
-
-                // Logic for the motorcycle/car toggle button
                 const vehicleToggle = document.getElementById('vehicleToggle');
                 const vehicleTypeInput = document.getElementById('vehicleTypeInput');
 
@@ -228,8 +253,6 @@
                         vehicleTypeInput.value = 'motorcycle';
                     }
                 });
-
-                // Call checkDates on initial load, in case of old values being present
                 checkDates();
             });
         </script>

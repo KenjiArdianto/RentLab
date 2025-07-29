@@ -190,7 +190,8 @@ Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])
 
 // 1. Mengarahkan dari halaman utama (root) LANGSUNG ke halaman checkout dengan bahasa default.
 
-// Tolong disatuin
+// Tolong disatuinuse App\Http\Controllers\LanguageController;
+
 Route::get('/', function () {
     $defaultLocale = config('app.fallback_locale', 'id');
     return redirect()->route('checkout', ['locale' => $defaultLocale]);
@@ -201,3 +202,5 @@ Route::get('/', function () {
 Route::post('/process-payment', [PembayaranController::class, 'createCheckoutInvoice'])->name('payment.process');
 Route::get('/payment-success', [PembayaranController::class, 'success'])->name('payment.success');
 Route::get('/payment-failed', [PembayaranController::class, 'failed'])->name('payment.failed');
+Route::post('/landing/search', [LandingController::class, 'search'])->name('landing.search');
+Route::post('/lang', LanguageController::class);
