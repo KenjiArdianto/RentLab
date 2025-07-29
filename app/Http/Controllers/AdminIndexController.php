@@ -23,67 +23,67 @@ class AdminIndexController extends Controller
         $locationCount         = \App\Models\Location::count();
         
         $counts = [
-        // [
-        //     'title' => 'Logs',
-        //     'count' => $logCount,
-        //     'route' => route('admin.logs'),
-        //     'label' => 'Logs',
-        //     'color' => 'primary'
-        // ],
-        [
-            'title' => __('admin_tables.users'),
-            'count' => $userCount,
-            'route' => route('admin.users'),
-            'color' => 'secondary'
-        ],
-        [
-            'title' => __('admin_tables.drivers'),
-            'count' => $driverCount,
-            'route' => route('admin.drivers'),
-            'color' => 'success'
-        ],
-        [
-            'title' => __('admin_tables.transactions'),
-            'count' => $transactionCount,
-            'route' => route('admin.transactions'),
-            'color' => 'info'
-        ],
-        [
-            'title' => __('admin_tables.vehicles'),
-            'count' => $vehicleCount,
-            'route' => route('admin.vehicles'),
-            'color' => 'warning'
-        ],
-        [
-            'title' => __('admin_tables.vehicle_types'),
-            'count' => $vehicleTypeCount,
-            'route' => route('admin.vehicle-types'),
-            'color' => 'dark'
-        ],
-        [
-            'title' => __('admin_tables.vehicle_names'),
-            'count' => $vehicleNameCount,
-            'route' => route('admin.vehicle-names'),
-            'color' => 'primary'
-        ],
-        [
-            'title' => __('admin_tables.vehicle_transmissions'),
-            'count' => $vehicleTransmissionCount,
-            'route' => route('admin.vehicle-transmissions'),
-            'color' => 'secondary'
-        ],
-        [   'title' => __('admin_tables.vehicle_categories'),
-            'count' => $vehicleCategoryCount,
-            'route' => route('admin.vehicle-categories'),
-            'color' => 'success'
-        ],
-        [
-            'title' => __('admin_tables.locations'),
-            'count' => $locationCount,
-            'route' => route('admin.locations'),
-            'color' => 'info'
-        ],
-    ];
+            // [
+            //     'title' => 'Logs',
+            //     'count' => $logCount,
+            //     'route' => route('admin.logs'),
+            //     'label' => 'Logs',
+            //     'color' => 'primary'
+            // ],
+            [
+                'title' => __('admin_tables.users'),
+                'count' => $userCount,
+                'route' => route('admin.users'),
+                'color' => 'secondary'
+            ],
+            [
+                'title' => __('admin_tables.drivers'),
+                'count' => $driverCount,
+                'route' => route('admin.drivers'),
+                'color' => 'success'
+            ],
+            [
+                'title' => __('admin_tables.transactions'),
+                'count' => $transactionCount,
+                'route' => route('admin.transactions'),
+                'color' => 'info'
+            ],
+            [
+                'title' => __('admin_tables.vehicles'),
+                'count' => $vehicleCount,
+                'route' => route('admin.vehicles'),
+                'color' => 'warning'
+            ],
+            [
+                'title' => __('admin_tables.vehicle_types'),
+                'count' => $vehicleTypeCount,
+                'route' => route('admin.vehicle-types'),
+                'color' => 'dark'
+            ],
+            [
+                'title' => __('admin_tables.vehicle_names'),
+                'count' => $vehicleNameCount,
+                'route' => route('admin.vehicle-names'),
+                'color' => 'primary'
+            ],
+            [
+                'title' => __('admin_tables.vehicle_transmissions'),
+                'count' => $vehicleTransmissionCount,
+                'route' => route('admin.vehicle-transmissions'),
+                'color' => 'secondary'
+            ],
+            [   'title' => __('admin_tables.vehicle_categories'),
+                'count' => $vehicleCategoryCount,
+                'route' => route('admin.vehicle-categories'),
+                'color' => 'success'
+            ],
+            [
+                'title' => __('admin_tables.locations'),
+                'count' => $locationCount,
+                'route' => route('admin.locations'),
+                'color' => 'info'
+            ],
+        ];
 
         return view('admin.index', compact('counts'));
     }
