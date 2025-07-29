@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+// 1. Import kelas Request yang baru
+use App\Http\Requests\CreateCheckoutInvoiceRequest;
+use App\Http\Requests\ShowCheckoutRequest;
 use App\Models\Cart;
 use App\Models\Transaction;
-use App\Models\User; // <-- Tambahkan ini untuk mengambil data user
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
-use Xendit\Invoice\CreateInvoiceRequest;
+use Xendit\Invoice\CreateInvoiceRequest as XenditInvoiceRequest; // Ganti nama alias agar tidak konflik
 
 class PembayaranController extends Controller
 {
@@ -22,19 +25,11 @@ class PembayaranController extends Controller
     /**
      * Menampilkan halaman checkout.
      */
-    public function show(Request $request)
+    public function show(ShowCheckoutRequest $request) // <-- 2. Gunakan ShowCheckoutRequest
     {
-        $validated = $request->validate([
-            'cart_ids'   => 'sometimes|array',
-            'cart_ids.*' => 'integer|exists:carts,id',
-        ]);
+        // Validasi sudah otomatis berjalan, ambil data yang bersih
+        $validated = $request->validated();
 
-        // ===================================================================
-        // FIX: Mengembalikan logika ke Auth::id() untuk mengambil ID pengguna
-        // yang sedang login, sesuai dengan cara kerja aplikasi yang benar.
-        // Untuk testing, pastikan Anda login sebagai user dengan ID 1.
-        // ===================================================================
-        // $userId = Auth::id();
         $userId = 1;
 
         $selectedCartIds = $validated['cart_ids'] ?? [];
@@ -60,10 +55,7 @@ class PembayaranController extends Controller
         foreach ($cartItems as $item) {
             $startDate = new \DateTime($item->start_date);
             $endDate = new \DateTime($item->end_date);
-
-            // Perhitungan durasi yang sudah benar (inklusif)
             $duration = $startDate->diff($endDate)->days + 1;
-
             $item->duration = $duration;
             $item->subtotal = $item->vehicle->price * $duration;
             $totalAmount += $item->subtotal;
@@ -79,31 +71,19 @@ class PembayaranController extends Controller
     /**
      * Memproses checkout, membuat transaksi, dan membuat invoice Xendit.
      */
-    public function createCheckoutInvoice(Request $request)
+    public function createCheckoutInvoice(CreateCheckoutInvoiceRequest $request) // <-- 3. Gunakan CreateCheckoutInvoiceRequest
     {
-        $validated = $request->validate([
-            'cart_ids' => 'required|array|min:1',
-            'cart_ids.*' => 'integer|exists:carts,id',
-        ]);
+        // Validasi sudah otomatis berjalan, ambil data yang bersih
+        $validated = $request->validated();
 
         $selectedCartIds = $validated['cart_ids'];
-        // dd($selectedCartIds);
 
-        // ===================================================================
-        // FIX: Mengembalikan logika ke Auth::user() untuk mengambil data
-        // pengguna yang sedang login.
-        // ===================================================================
         $user = User::find(1);
-        // $user = Auth::user();
 
         if (!$user) {
-            // Ini akan mencegah error jika pengguna tidak login
             return redirect()->route('login')->with('error', 'Anda harus login untuk melanjutkan pembayaran.');
         }
 
-        // ===================================================================
-        // FIX: Memastikan query hanya mengambil item milik pengguna yang login.
-        // ===================================================================
         $cartItems = Cart::with('vehicle')
             ->where('user_id', $user->id)
             ->whereIn('id', $selectedCartIds)
@@ -117,12 +97,12 @@ class PembayaranController extends Controller
         $transactionsToCreate = [];
         $commonExternalId = 'RENTAL-' . time() . '-' . $user->id;
 
+        Log::info("MEMBUAT TRANSAKSI & INVOICE dengan external_id: [{$commonExternalId}]");
+
         foreach ($cartItems as $cartItem) {
             $startDate = new \DateTime($cartItem->start_date);
             $endDate = new \DateTime($cartItem->end_date);
-
             $duration = $startDate->diff($endDate)->days + 1;
-
             $subtotal = $cartItem->vehicle->price * $duration;
             $totalAmount += $subtotal;
 
@@ -148,7 +128,8 @@ class PembayaranController extends Controller
             Transaction::insert($transactionsToCreate);
 
             $apiInstance = new InvoiceApi();
-            $createInvoiceRequest = new CreateInvoiceRequest([
+            // Gunakan alias XenditInvoiceRequest
+            $createInvoiceRequest = new XenditInvoiceRequest([
                 'external_id' => $commonExternalId,
                 'amount' => $totalAmount,
                 'currency' => 'IDR',
@@ -156,6 +137,7 @@ class PembayaranController extends Controller
                 'success_redirect_url' => route('payment.success', ['locale' => app()->getLocale()]),
                 'failure_redirect_url' => route('payment.failed', ['locale' => app()->getLocale()]),
                 'payer_email' => $user->email,
+                'invoice_duration' => 60,
             ]);
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
@@ -164,56 +146,64 @@ class PembayaranController extends Controller
 
             return redirect()->away($result->getInvoiceUrl());
 
-        } catch (\Exception $e) {
-            Log::error('Error creating Xendit invoice:', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Terjadi kesalahan saat memproses pembayaran.');
+        } catch (\Xendit\XenditSdkException $e) { // Tangkap exception spesifik dari Xendit
+            Log::error('XENDIT SDK ERROR:', [
+                'message' => $e->getMessage(),
+                'full_error' => $e->getFullError() // Log ini akan memberikan detail lengkap dari Xendit
+            ]);
+            return back()->with('error', 'Terjadi kesalahan spesifik saat membuat invoice Xendit.');
+        } catch (\Exception $e) { // Tangkap error umum lainnya
+            Log::error('GENERAL ERROR saat membuat invoice:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Terjadi kesalahan umum saat memproses pembayaran.');
         }
     }
 
-    /**
-     * Menerima webhook dari Xendit dan mengupdate status transaksi.
-     */
+    // ... (Sisa method handleWebhook, success, dan failed tetap sama persis) ...
     public function handleWebhook(Request $request)
     {
         $payload = $request->all();
         Log::info('Webhook Xendit Diterima:', $payload);
 
+        // 1. Validasi payload untuk memastikan data yang dibutuhkan ada
+        if (!isset($payload['external_id'], $payload['status'])) {
+            Log::warning('Webhook Ditolak: Payload tidak lengkap.', $payload);
+            return response()->json(['status' => 'error', 'message' => 'Invalid payload'], 400);
+        }
+
         $externalId = $payload['external_id'];
         $paymentStatus = $payload['status'];
+        Log::info("$paymentStatus");
 
-        $transactions = Transaction::where('external_id', $externalId)->get();
+        // 2. Gunakan 'match' expression (PHP 8+) untuk menentukan status baru
+        // Ini lebih ringkas dan mudah dibaca daripada if/elseif
+        $newStatusId = match ($paymentStatus) {
+            'PAID' => 2,                // Lunas
+            'EXPIRED', 'FAILED' => 7,   // Kadaluarsa atau Gagal
+            default => null,            // Abaikan status lain yang tidak kita kenali
+        };
 
-        if ($transactions->isEmpty()) {
-            Log::warning("Webhook: Transaksi dengan external_id {$externalId} tidak ditemukan.");
-            return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
-        }
-
-        $newStatusId = null;
-        if ($paymentStatus === 'PAID') {
-            $newStatusId = 2; // Lunas
-        } elseif ($paymentStatus === 'EXPIRED') {
-            $newStatusId = 0; // Kadaluarsa/Batal
-        }
-
+        // 3. Lakukan update hanya jika statusnya relevan
         if ($newStatusId !== null) {
-            foreach ($transactions as $transaction) {
-                $transaction->transaction_status_id = $newStatusId;
-                $transaction->save();
+            // 4. Gunakan satu query UPDATE untuk semua transaksi yang cocok.
+            // Ini jauh lebih efisien daripada mengambil data lalu melakukan loop.
+            $updatedRows = Transaction::where('external_id', $externalId)
+                                    ->update(['transaction_status_id' => $newStatusId]);
+
+            if ($updatedRows > 0) {
+                Log::info("Webhook: {$updatedRows} transaksi untuk external_id [{$externalId}] berhasil diupdate menjadi status {$newStatusId}.");
+            } else {
+                Log::warning("Webhook: Tidak ada transaksi yang diupdate untuk external_id [{$externalId}]. Mungkin sudah diupdate atau tidak ditemukan.");
             }
-            Log::info("Webhook: Status untuk external_id {$externalId} berhasil diupdate menjadi {$newStatusId}.");
+        } else {
+            Log::info("Webhook: Status '{$paymentStatus}' untuk external_id [{$externalId}] diabaikan.");
         }
 
         return response()->json(['status' => 'success']);
     }
 
-    /**
-     * Menampilkan halaman setelah pembayaran berhasil.
-     */
+
     public function success()
     {
-        // ===================================================================
-        // FIX: Menggunakan helper `__()` untuk menerjemahkan teks di dalam controller.
-        // ===================================================================
         $title = __('payment.title.success');
         $message = __('payment.status.success_message');
         $homeUrl = route('checkout', ['locale' => app()->getLocale()]);
@@ -228,14 +218,8 @@ class PembayaranController extends Controller
         ";
     }
 
-    /**
-     * Menampilkan halaman setelah pembayaran gagal.
-     */
     public function failed()
     {
-        // ===================================================================
-        // FIX: Menggunakan helper `__()` untuk menerjemahkan teks di dalam controller.
-        // ===================================================================
         $title = __('payment.title.failed');
         $message = __('payment.status.failed_message');
         $homeUrl = route('checkout', ['locale' => app()->getLocale()]);
