@@ -6,7 +6,6 @@ use App\Http\Controllers\VehicleController;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
-// use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OtpController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\GoogleController;
@@ -142,3 +141,37 @@ Route::post('/cart/store', [CartController::class,'store'])->name('cart.store');
     Route::post('/admin/locations/store', [AdminLocationController::class, 'store'])->name('admin.locations.store');
     Route::post('/admin/locations/{location}/update', [AdminLocationController::class, 'update'])->name('admin.locations.update');
     Route::post('/admin/locations/{location}/destroy', [AdminLocationController::class, 'destroy'])->name('admin.locations.destroy');
+
+
+    // Ini nanti mau diupdate
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
+
+Route::get('/faq', function (Request $request) {
+    $searchTerm = trim($request->input('search'));
+    $allFaqs = [];
+
+    for ($i = 1; $i <= 30; $i++) {
+        if (Lang::has('faq.q'.$i) && Lang::has('faq.a'.$i)) {
+            $allFaqs[] = [ 'id' => $i, 'question' => __('faq.q'.$i), 'answer' => __('faq.a'.$i) ];
+        }
+    }
+
+    $filteredFaqs = $allFaqs;
+    $noResults = false;
+    if (!empty($searchTerm)) {
+        $filteredFaqs = array_filter($allFaqs, function ($faq) use ($searchTerm) {
+            return Str::contains(strtolower($faq['question']), strtolower($searchTerm));
+        });
+
+        if (count($filteredFaqs) === 0) {
+            $noResults = true;
+        }
+    }
+
+    return view('faq', [
+        'faqs' => $filteredFaqs,
+        'noResults' => $noResults,
+    ]);
+
+})->name('faq.index');

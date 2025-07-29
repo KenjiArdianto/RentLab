@@ -52,7 +52,7 @@
         <!-- Top bar for language selection -->
         <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-none d-lg-flex">
             <div class="container-fluid justify-content-end">
-                <a class="nav-link py-1 px-3 small" href="#">@lang('app.nav.faq')</a>
+                <a class="nav-link py-1 px-3 small" href="{{ route('faq.index') }}">@lang('app.nav.faq')</a>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle py-1 px-3 small" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-translate"></i> @lang('app.nav.language')
