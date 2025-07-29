@@ -37,6 +37,8 @@ Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang
 
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
+Route::post('/landing/search', [LandingController::class, 'search'])->name('landing.search');
+
 Auth::routes();
 
 Route::get('/verify-otp', [OtpController::class, 'showForm'])->name('otp.verify.form');
@@ -202,5 +204,3 @@ Route::get('/', function () {
 Route::post('/process-payment', [PembayaranController::class, 'createCheckoutInvoice'])->name('payment.process');
 Route::get('/payment-success', [PembayaranController::class, 'success'])->name('payment.success');
 Route::get('/payment-failed', [PembayaranController::class, 'failed'])->name('payment.failed');
-Route::post('/landing/search', [LandingController::class, 'search'])->name('landing.search');
-Route::post('/lang', LanguageController::class);
