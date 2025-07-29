@@ -74,10 +74,12 @@ class PembayaranController extends Controller
     public function createCheckoutInvoice(CreateCheckoutInvoiceRequest $request) // <-- 3. Gunakan CreateCheckoutInvoiceRequest
     {
         // Validasi sudah otomatis berjalan, ambil data yang bersih
+        // dd($request->all());
         $validated = $request->validated();
 
         $selectedCartIds = $validated['cart_ids'];
 
+        // $user = Auth::user();
         $user = User::find(1);
 
         if (!$user) {
@@ -93,19 +95,18 @@ class PembayaranController extends Controller
             return back()->with('error', 'Item keranjang tidak valid atau bukan milik Anda.');
         }
 
-        $totalAmount = 0;
+        // KODE BARU (YANG MENJUMLAHKAN SUBTOTAL)
+
+        // Langsung jumlahkan kolom 'subtotal' dari semua item keranjang yang dipilih
+        $totalAmount = $cartItems->sum('subtotal');
+
         $transactionsToCreate = [];
         $commonExternalId = 'RENTAL-' . time() . '-' . $user->id;
 
         Log::info("MEMBUAT TRANSAKSI & INVOICE dengan external_id: [{$commonExternalId}]");
 
+        // Loop ini tetap dibutuhkan untuk mempersiapkan data transaksi
         foreach ($cartItems as $cartItem) {
-            $startDate = new \DateTime($cartItem->start_date);
-            $endDate = new \DateTime($cartItem->end_date);
-            $duration = $startDate->diff($endDate)->days + 1;
-            $subtotal = $cartItem->vehicle->price * $duration;
-            $totalAmount += $subtotal;
-
             $transactionsToCreate[] = [
                 'vehicle_id' => $cartItem->vehicle_id,
                 'user_id' => $user->id,
@@ -137,7 +138,7 @@ class PembayaranController extends Controller
                 'success_redirect_url' => route('payment.success', ['locale' => app()->getLocale()]),
                 'failure_redirect_url' => route('payment.failed', ['locale' => app()->getLocale()]),
                 'payer_email' => $user->email,
-                'invoice_duration' => 60,
+                'invoice_duration' => 120,
             ]);
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
@@ -206,7 +207,7 @@ class PembayaranController extends Controller
     {
         $title = __('payment.title.success');
         $message = __('payment.status.success_message');
-        $homeUrl = route('checkout', ['locale' => app()->getLocale()]);
+        $homeUrl = route('vehicle.display', ['locale' => app()->getLocale()]);
         $buttonText = __('payment.buttons.back_to_home');
 
         return "
@@ -222,7 +223,7 @@ class PembayaranController extends Controller
     {
         $title = __('payment.title.failed');
         $message = __('payment.status.failed_message');
-        $homeUrl = route('checkout', ['locale' => app()->getLocale()]);
+        $homeUrl = route('vehicle.display', ['locale' => app()->getLocale()]);
         $buttonText = __('payment.buttons.try_again');
 
         return "

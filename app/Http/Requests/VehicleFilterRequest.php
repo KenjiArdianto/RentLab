@@ -45,8 +45,8 @@ class VehicleFilterRequest extends FormRequest
             'max_price'       => ['nullable', 'numeric', 'gte:min_price'], // max_price harus lebih besar atau sama dengan min_price
 
             // Filter tanggal
-            'start_date'      => ['nullable', 'date'],
-            'end_date'        => ['nullable', 'date', 'after_or_equal:start_date'], // end_date harus setelah atau sama dengan start_date
+            'start_date'      => ['nullable', 'required_with:end_date', 'date', 'after_or_equal:today', 'before:end_date'],
+            'end_date'        => ['nullable','required_with:start_date', 'date', 'after:start_date'], // end_date harus setelah atau sama dengan start_date
 
             // Filter pencarian
             'search'          => ['nullable', 'string', 'max:100'], // Batasi panjang string pencarian

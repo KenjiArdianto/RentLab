@@ -23,6 +23,7 @@ use App\Http\Controllers\AdminVehicleTransmissionController;
 use App\Http\Controllers\AdminLocationController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminUserReviewController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminLogsController;
 use Illuminate\Http\Request;
 use App\Http\Middleware\SetLocale;
@@ -33,11 +34,11 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\PembayaranController;
 
 
-Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch'); 
+Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
 
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
-Route::post('/landing/search', [LandingController::class, 'search'])->name('landing.search');
+Route::get('/landing/search', [LandingController::class, 'search'])->name('landing.search');
 
 Auth::routes();
 
@@ -46,7 +47,7 @@ Route::post('/verify-otp', [OtpController::class, 'verify'])->name('otp.verify')
 Route::get('/resent-verify-otp',[OtpController::class,'resentOTP'])->name('resend.otp');
 
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);  
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 Route::middleware(['auth', EnsureUserHasDetails::class])->group(function () {
     Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
@@ -65,16 +66,16 @@ Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete
 Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
 Route::get('/catalog', [VehicleController::class, 'catalog'])->name('vehicle.catalog');
 
-Route::get('/vehicle/{id}', [VehicleController::class,'show'])->name("vehicle.detail"); 
+Route::get('/vehicle/{id}', [VehicleController::class,'show'])->name("vehicle.detail");
 
 
-Route::get('/cart', [CartController::class,'index'])->name('cart'); 
+Route::get('/cart', [CartController::class,'index'])->name('cart');
 
 
-Route::delete('/cart/{id}/destroy', [CartController::class,'destroy'])->name("cart.destroy"); 
-    
+Route::delete('/cart/{id}/destroy', [CartController::class,'destroy'])->name("cart.destroy");
+
 // input
-Route::post('/cart/store', [CartController::class,'store'])->name('cart.store'); 
+Route::post('/cart/store', [CartController::class,'store'])->name('cart.store');
 
 
 Route::get('/cart-item-count', [CartController::class, 'getCartItemCount'])->name('cart.itemCount');
@@ -195,7 +196,7 @@ Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])
 // Tolong disatuinuse App\Http\Controllers\LanguageController;
 use App\Http\Controllers\BookingHistoryController;
 use App\Http\Controllers\UserReviewController;
-use App\Http\Controllers\LanguageController;
+// use App\Http\Controllers\LanguageController;
 
 Route::get('/', function () {
     $defaultLocale = config('app.fallback_locale', 'id');
@@ -209,7 +210,7 @@ Route::get('/payment-success', [PembayaranController::class, 'success'])->name('
 Route::get('/payment-failed', [PembayaranController::class, 'failed'])->name('payment.failed');
 
 Route::get('/booking-history', [BookingHistoryController::class, 'index'])
-    //->middleware('auth') 
+    //->middleware('auth')
     ->name('booking.history');
 
 Route::post('/booking/{transaction}/cancel', [BookingHistoryController::class, 'cancel'])->name('booking.cancel');
@@ -222,4 +223,4 @@ Route::post('/reviews/{transaction}', [UserReviewController::class, 'store'])
     //->middleware('auth')
     ->name('reviews.store');
 
-Route::post('/lang', LanguageController::class);
+// Route::post('/lang', LanguageController::class, );

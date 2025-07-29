@@ -1,7 +1,7 @@
 @props(['href', 'vehicle_item'])
 
 <a href="{{ $href }}" class="text-decoration-none d-block h-100">
-    <div class="card h-100">
+    <div class="card h-100 pb-2">
         <img src="{{ $vehicle_item->main_image }}" class="card-img-top" alt="{{ $vehicle_item->vehicleName->name }}">
 
         <div class="card-body d-flex flex-column p-2">
@@ -10,19 +10,22 @@
             </h5>
 
             <div class="d-flex align-items-baseline mt-1">
-                <p class="vehicle-card-price text-primary fw-bold">
+                <p class="vehicle-card-price text-primary fw-bold mb-2">
                     {{ 'Rp ' . number_format($vehicle_item->price, 0, ',', '.') }}
                 </p>
                 {{-- Menerjemahkan "/hari" --}}
-                <p class="text-muted ms-1" style="font-size: 0.8em;">@lang('app.card.per_day')</p>
+                <p class="text-muted ms-1 mb-2" style="font-size: 0.8em;">@lang('app.card.per_day')</p>
             </div>
 
             {{-- Kategori dan detail lainnya diasumsikan sudah diterjemahkan dari Controller --}}
             <div class="vehicle-card-details text-muted">
-                <p class="mb-2">
+                {{-- <p class="mb-2">
                     @foreach($vehicle_item->vehicleCategories as $kategori)
                         {{ $kategori->category }}{{ !$loop->last ? ', ' : '' }}
                     @endforeach
+                </p> --}}
+                <p class="m-0">
+                    {{ $vehicle_item->year }}
                 </p>
             </div>
 

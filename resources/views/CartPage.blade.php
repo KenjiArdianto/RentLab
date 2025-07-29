@@ -97,9 +97,10 @@
 
                     <div class="col-12 col-md-2 d-flex justify-content-center justify-items-center pe-md-3">
 
-                        <form id="paymentForm" action="{{ route('cart.processPayment') }}" method="GET"
+                        <form id="paymentForm" action="{{ route('payment.process') }}" method="POST"
                             style="width: 90%; height: 40px;">
-                            <input type="hidden" name="selected_cart_ids" id="selectedCartIds">
+                            @csrf
+                            <div id="cartIdsContainer"></div>
                             <button type="submit" class="btn btn-primary my-3 my-md-0"
                                 style="height: 100%; width: 100%;">
                                 {{__('cart.PaymentButton')}}
@@ -157,7 +158,7 @@
                         subtotalDisplayElement.innerText = `Rp.${subtotal.toLocaleString('id-ID')},00`;
                     }
                 }
-                
+
                 checkbox.dataset.price = subtotal;
             }
 
@@ -174,10 +175,10 @@
             //     if (isNaN(subtotal)) {
             //         console.error("Data subtotal is missing or invalid for calculation.", checkbox);
             //         // Set to 0 or handle error appropriately if subtotal is not available
-            //         checkbox.dataset.price = 0; 
+            //         checkbox.dataset.price = 0;
             //         return;
             //     }
-                
+
             //     // Find the parent element to update the displayed subtotal
             //     const parentItem = checkbox.closest('.cart-item-container-desktop') || checkbox.closest('.cart-responsive-item');
             //     if (parentItem) {
@@ -186,7 +187,7 @@
             //             subtotalDisplayElement.innerText = `Rp.${subtotal.toLocaleString('id-ID')},00`;
             //         }
             //     }
-                
+
             //     // Crucially, set the data-price for the checkbox, which updateCartSummary will read
             //     checkbox.dataset.price = subtotal;
             // }
@@ -257,7 +258,18 @@
                 }
 
 
-                document.getElementById('selectedCartIds').value = JSON.stringify(selectedIds);
+                const container = document.getElementById('cartIdsContainer');
+                // Kosongkan ID lama setiap kali ada perubahan
+                container.innerHTML = '';
+
+                // Buat input baru untuk setiap ID yang dipilih
+                selectedIds.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'cart_ids[]'; // <-- Nama ini penting agar terbaca sebagai array di Laravel
+                    input.value = id;
+                    container.appendChild(input);
+                });
             }
 
 
@@ -277,6 +289,25 @@
 
             synchronizeCheckboxes();
             updateCartSummary();
+            const paymentForm = document.getElementById('paymentForm');
+
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', function(event) {
+                    // Temukan tombol submit di dalam form
+                    const submitButton = paymentForm.querySelector('button[type="submit"]');
+
+                    if (submitButton) {
+                        // Nonaktifkan tombol
+                        submitButton.disabled = true;
+
+                        // Ubah teks dan tambahkan ikon spinner
+                        submitButton.innerHTML = `
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Memproses...
+                        `;
+                    }
+                });
+            }
         });
     </script>
 

@@ -15,14 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');;
             // $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade'); 
+            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
             $table->date('start_date');
             $table->date('end_date');
+            $table->decimal('external_id')->nullable();
             $table->decimal('subtotal', 10, 2)->nullable();
             $table->timestamps();
         });
 
-        
+
     }
 
     /**
