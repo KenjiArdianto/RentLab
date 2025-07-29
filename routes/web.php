@@ -2,12 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
-// use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OtpController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\UserDetailController;
 use App\Http\Middleware\EnsureUserHasDetails;
+use App\Http\Middleware\EnsureUserAuthenticateAsUser;
+use App\Http\Middleware\EnsureUserAuthenticateAsAdmin;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
@@ -35,7 +36,15 @@ Route::post('/complete-user-detail',[UserDetailController::class,'store'])->name
 // Route::post('/complete-user-detail', [UserDetailController::class, 'store']);
 
 
-Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+// Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 Route::post('/profile',[ProfileController::class,'change'])->name('change.profile');
 Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
 Route::get('/coba',[ProfileController::class,'coba']);
+
+Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
+    Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+});
+
+Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
+    Route::get('/coba',[ProfileController::class,'coba']);
+});

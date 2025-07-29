@@ -1,14 +1,13 @@
 <?php
 
 namespace App\Http\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-// use Closure;
-use Illuminate\Support\Facades\Auth;
 
-class EnsureUserHasDetails
+class EnsureUserAuthenticateAsUser
 {
     /**
      * Handle an incoming request.
@@ -17,11 +16,9 @@ class EnsureUserHasDetails
      */
     public function handle(Request $request, Closure $next): Response
     {
-        
-        if (Auth::user()->role !== 'admin' && (!Auth::user()->detail)) {
-            return redirect()->route('complete.user.detail');
+        if(!Auth::check() || Auth::user()->role!=='user'){
+            abort(403,'bukan user ga usah maksa');
         }
-
         return $next($request);
     }
 }

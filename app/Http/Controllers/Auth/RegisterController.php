@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -32,39 +33,32 @@ class RegisterController extends Controller
 
     use RegistersUsers;
     public function register(Request $request)
-{
-    // return "hi";
-    $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => ['required', 'string', 'min:8', 'confirmed'],
-    ]);
-    
-    // Check if a user with this email already exists (for edge cases)
-    if (User::where('email', $request->email)->exists()) {
-        return back()->withErrors(['email' => 'Email is already registered.']);
+    {    
+        // Check if a user with this email already exists (for edge cases)
+        if (User::where('email', $request->email)->exists()) {
+            return back()->withErrors(['email' => 'Email is already registered.']);
+        }
+
+
+        $otp = rand(100000, 999999);
+
+        // Store data in session temporarily
+        session([
+            'temp_user' => [
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+
+                'otp' => $otp,
+            ],
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
+        
+        // Send OTP
+        Mail::to($request->email)->send(new SendOTP($otp));
+        
+        return redirect()->route('otp.verify.form')->with('success', 'OTP has been sent to your email.');
     }
-
-
-    $otp = rand(100000, 999999);
-
-    // Store data in session temporarily
-    session([
-        'temp_user' => [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-
-            'otp' => $otp,
-        ],
-        'otp_expires_at' => now()->addMinutes(5),
-    ]);
-    
-    // Send OTP
-    Mail::to($request->email)->send(new SendOTP($otp));
-    
-    return redirect()->route('otp.verify.form')->with('success', 'OTP has been sent to your email.');
-}
 
 
 

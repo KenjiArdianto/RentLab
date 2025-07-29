@@ -22,7 +22,6 @@ class GoogleController extends Controller
 
         // Check if user already exists
         $user = User::where('email', $googleUser->getEmail())->first();
-
         if (!$user) {
             // Create new user
             $user = User::create([
