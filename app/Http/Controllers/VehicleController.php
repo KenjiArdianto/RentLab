@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\UserReview;
-use App\Http\Requests\VehicleFilterRequest; // <-- 1. Gunakan Form Request ini
-use App\Models\Advertisement;
 use App\Models\Vehicle;
 use App\Models\VehicleImage;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Advertisement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\VehicleFilterRequest;
+use Illuminate\Database\Eloquent\Builder;
 
 class VehicleController extends Controller
 {
@@ -64,6 +64,7 @@ class VehicleController extends Controller
                 'end_date' => $item->end_date,
             ];
         });
+    
 
         $rating = DB::table('user_reviews')
         ->join('transactions', 'user_reviews.transaction_id', '=', 'transactions.id')

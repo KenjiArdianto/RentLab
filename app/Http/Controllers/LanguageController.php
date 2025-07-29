@@ -11,9 +11,11 @@ class LanguageController extends Controller
     public function switchLang(Request $request, $lang)
     {
         // Only allow supported locales
+        
         if (in_array($lang, ['en', 'id'])) {
             Session::put('locale', $lang);
             App::setLocale($lang); // Optional: useful if used immediately
+            // dd(Session::get('locale'));
         }
 
         return redirect()->back();

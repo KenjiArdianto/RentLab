@@ -18,8 +18,11 @@ return new class extends Migration
             $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade'); 
             $table->date('start_date');
             $table->date('end_date');
+            $table->decimal('subtotal', 10, 2)->nullable();
             $table->timestamps();
         });
+
+        
     }
 
     /**
@@ -27,6 +30,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
+        // Schema::dropIfExists('carts');
+        Schema::table('carts', function (Blueprint $table) {
+            $table->dropColumn('subtotal');
+        });
     }
 };

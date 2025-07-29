@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\UserReview;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Generator as FakerGenerator;
@@ -36,7 +37,8 @@ class DatabaseSeeder extends Seeder
             CartSeeder::class,
             UserReviewSeeder::class,
             // TransactionSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
+            UserReviewSeeder::class,
 
         ]);
     }

@@ -1,8 +1,3 @@
-@php
-    $currLang = session()->get('lang', 'en');
-    app()->setLocale($currLang);
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

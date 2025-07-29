@@ -53,6 +53,45 @@
         <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-none d-lg-flex">
             <div class="container-fluid justify-content-end">
                 <a class="nav-link py-1 px-3 small" href="{{ route('faq.index') }}">@lang('app.nav.faq')</a>
+                {{-- <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle py-1 px-3 small" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate"></i> @lang('app.nav.language')
+                    </a>
+
+                    @php
+                        $available_locales = ['en' => 'English', 'id' => 'Bahasa Indonesia'];
+                    @endphp
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach ($available_locales as $locale_code => $locale_name)
+                            @if ($locale_code !== app()->getLocale())
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('lang.switch', ['lang' => $locale_code]) }}">
+                                        {{ $locale_name }}
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div> --}}
+
+                {{-- <!-- Language Dropdown Selector (Bootstrap-styled, right of Home button) -->
+                <div class="position-absolute top-50 start-50 translate-middle navbar-language" style="margin-left: 120px;">
+                    <form method="GET" action="" id="langForm">
+                        <select name="locale" class="form-select form-select-sm" onchange="changeLanguage(this)">
+                            <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>{{ __('app.nav.english') }}</option>
+                            <option value="id" {{ app()->getLocale() == 'id' ? 'selected' : '' }}>Indonesia</option>
+                        </select>
+                    </form>
+                </div>
+
+                <script>
+                    function changeLanguage(select) {
+                        const lang = select.value;
+                        window.location.href = `{{ url('lang') }}/${lang}`;
+                    }
+                </script> --}}
+                {{-- lama --}}
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle py-1 px-3 small" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-translate"></i> @lang('app.nav.language')
@@ -108,7 +147,7 @@
 
                     <!-- Right-side Icons -->
                     <ul class="navbar-nav flex-row align-items-center">
-                        <li class="nav-item"><a class="nav-link p-2 px-4" href="#" title="@lang('app.nav.cart')"><i class="bi bi-cart fs-4"></i></a></li>
+                        <li class="nav-item"><a class="nav-link p-2 px-4" href="{{ route('cart') }}" title="@lang('app.nav.cart')"><i class="bi bi-cart fs-4"></i></a></li>
                         <li class="nav-item d-none d-lg-inline-block"><a class="nav-link p-2 px-4" href="#" title="@lang('app.nav.transactions')"><i class="bi bi-receipt fs-4"></i></a></li>
                         <li class="nav-item d-none d-lg-inline-block"><a class="nav-link p-2 px-4" href="#" title="@lang('app.nav.account')"><i class="bi bi-person-circle fs-4"></i></a></li>
                     </ul>

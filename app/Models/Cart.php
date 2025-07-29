@@ -13,7 +13,8 @@ class Cart extends Model
         "vehicle_id",
         'start_date',
         "end_date",
-        'user_id'
+        'user_id',
+        "subtotal"
     ];
 
     public function user()
