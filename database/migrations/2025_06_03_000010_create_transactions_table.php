@@ -18,9 +18,10 @@ return new class extends Migration
             // $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete();
             $table->date('start_book_date');
-            $table->date('end_book_date');    
+            $table->date('end_book_date');
             $table->date('return_date');
             $table->foreignId('transaction_status_id')->nullable()->constrained('transaction_statuses')->nullOnDelete();
+            $table->string('external_id')->nullable();
             $table->timestamps();
         });
     }

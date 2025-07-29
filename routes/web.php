@@ -28,6 +28,9 @@ use Illuminate\Http\Request;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Routing\Middleware;
 use App\Http\Controllers\LanguageController;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
+use App\Http\Controllers\PembayaranController;
 
 
 Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch'); 
@@ -149,8 +152,6 @@ Route::post('/admin/locations/{location}/destroy', [AdminLocationController::cla
 
 
     // Ini nanti mau diupdate
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Str;
 
 Route::get('/faq', function (Request $request) {
     $searchTerm = trim($request->input('search'));
@@ -180,3 +181,23 @@ Route::get('/faq', function (Request $request) {
     ]);
 
 })->name('faq.index');
+
+
+// Rute untuk mengganti bahasa
+
+// Rute untuk webhook Xendit (di luar grup)
+Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])->name('payment.callback');
+
+// 1. Mengarahkan dari halaman utama (root) LANGSUNG ke halaman checkout dengan bahasa default.
+
+// Tolong disatuin
+// Route::get('/', function () {
+//     $defaultLocale = config('app.fallback_locale', 'id');
+//     return redirect()->route('checkout', ['locale' => $defaultLocale]);
+// });
+
+// RUTE UNTUK FITUR PEMBAYARAN
+// Route::match(['get', 'post'], '/checkout', [PembayaranController::class, 'show'])->name('checkout');
+Route::post('/process-payment', [PembayaranController::class, 'createCheckoutInvoice'])->name('payment.process');
+Route::get('/payment-success', [PembayaranController::class, 'success'])->name('payment.success');
+Route::get('/payment-failed', [PembayaranController::class, 'failed'])->name('payment.failed');
