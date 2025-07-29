@@ -9,5 +9,5 @@ Route::get('/', function () {
 });
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
-
+Route::post('/landing/search', [LandingController::class, 'search'])->name('landing.search');
 Route::post('/lang', LanguageController::class);

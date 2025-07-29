@@ -106,7 +106,7 @@
                                 </div>
                             @endif
 
-                            <form id="rentalForm" action="{{ route('vehicle.display') }}" method="GET">
+                            <form id="rentalForm" action="{{ route('vehicle.display', ['locale' => app()->getLocale()]) }}" method="GET">
                                 <div class="date_inputs">
                                     <div class="date_input_group">
                                         <span class="icon_calendar">

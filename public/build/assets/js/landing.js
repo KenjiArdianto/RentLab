@@ -1,9 +1,4 @@
-// Menunggu seluruh konten halaman dimuat sebelum menjalankan skrip
 document.addEventListener('DOMContentLoaded', function() {
-
-    // =================================================================
-    // BAGIAN TOGGLE MOTOR/MOBIL
-    // =================================================================
     const vehicle_toggle = document.getElementById('vehicle_toggle');
     const jenis_kendaraan_input = document.getElementById('jenis_kendaraan_input');
 
@@ -12,12 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
             jenis_kendaraan_input.value = vehicle_toggle.checked ? 'mobil' : 'motor';
         }
         vehicle_toggle.addEventListener('change', update_vehicle_selection);
-        update_vehicle_selection(); // Panggil saat awal untuk sinkronisasi
+        update_vehicle_selection();
     }
 
-    // =================================================================
-    // BAGIAN KALENDER (FLATPICKR) & VALIDASI TOMBOL
-    // =================================================================
     const tanggal_mulai_input = document.getElementById('tanggal_mulai');
     const tanggal_selesai_input = document.getElementById('tanggal_selesai');
     const cari_sekarang_btn = document.getElementById('cari_sekarang_btn');
@@ -52,10 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         check_tanggal_valid();
     }
-    
-    // =================================================================
-    // BAGIAN CAROUSEL TESTIMONIAL
-    // =================================================================
     const testimonial_carousel = document.querySelector('#testimonialCarousel');
     if (testimonial_carousel) {
         new bootstrap.Carousel(testimonial_carousel, {
