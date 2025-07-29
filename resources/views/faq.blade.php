@@ -3,17 +3,16 @@
     app()->setLocale($currLang);
 @endphp
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('faq.title') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('build/assets/CSS/faq.css') }}">
-</head>
 <x-layout>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ __('faq.title') }}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('build/assets/CSS/faq.css') }}">
+    </head>
+    
     <div class="container pt-4 pb-5">
         <h1 class="text-center mb-4">{{ __('faq.header') }}</h1>
 
@@ -28,7 +27,6 @@
             </div>
         </form>
 
-        {{-- Pesan ini sekarang 100% dikontrol oleh server --}}
         @if($noResults)
             <div class="no-results-message">
                 {{ __('faq.no_results') }}
@@ -43,7 +41,7 @@
                             {{ $faq['question'] }}
                         </button>
                     </h2>
-                    <div id="collapse{{$faq['id']}}" class="accordion-collapse collapse" aria-labelledby="heading{{$faq['id']}}">
+                    <div id="collapse{{$faq['id']}}" class="accordion-collapse collapse" aria-labelledby="heading{{$faq['id']}}" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
                             {!! $faq['answer'] !!}
                         </div>
@@ -53,9 +51,12 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-    
-    {{-- SEMUA SCRIPT CUSTOM DIHAPUS, karena sudah ditangani server & Bootstrap default --}}
+    <x-slot name="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+        <script>
+            console.log("Halaman FAQ dan script Bootstrap telah dimuat.");
+        </script>
+    </x-slot>
+
 </x-layout>
-</html>
