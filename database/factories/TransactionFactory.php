@@ -29,7 +29,7 @@ class TransactionFactory extends Factory
             'start_book_date'  => $startDate->format('Y-m-d'),
             'end_book_date'    => $endDate->format('Y-m-d'),
             'return_date'      => $returnDate ? $returnDate->format('Y-m-d') : null,
-            'status'           => $this->faker->numberBetween(1, 6),    // Random status ID (1–7)
+            'transaction_status_id'=> $this->faker->numberBetween(1, 6),    // Random status ID (1–7)
         ];
     }
 }

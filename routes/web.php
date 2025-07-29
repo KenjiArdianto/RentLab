@@ -193,6 +193,9 @@ Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])
 // 1. Mengarahkan dari halaman utama (root) LANGSUNG ke halaman checkout dengan bahasa default.
 
 // Tolong disatuinuse App\Http\Controllers\LanguageController;
+use App\Http\Controllers\BookingHistoryController;
+use App\Http\Controllers\UserReviewController;
+use App\Http\Controllers\LanguageController;
 
 Route::get('/', function () {
     $defaultLocale = config('app.fallback_locale', 'id');
@@ -204,3 +207,19 @@ Route::get('/', function () {
 Route::post('/process-payment', [PembayaranController::class, 'createCheckoutInvoice'])->name('payment.process');
 Route::get('/payment-success', [PembayaranController::class, 'success'])->name('payment.success');
 Route::get('/payment-failed', [PembayaranController::class, 'failed'])->name('payment.failed');
+
+Route::get('/booking-history', [BookingHistoryController::class, 'index'])
+    //->middleware('auth') 
+    ->name('booking.history');
+
+Route::post('/booking/{transaction}/cancel', [BookingHistoryController::class, 'cancel'])->name('booking.cancel');
+
+Route::get('/receipt/{transaction}/download', [BookingHistoryController::class, 'downloadReceipt'])
+    //->middleware('auth')
+    ->name('receipt.download');
+
+Route::post('/reviews/{transaction}', [UserReviewController::class, 'store'])
+    //->middleware('auth')
+    ->name('reviews.store');
+
+Route::post('/lang', LanguageController::class);

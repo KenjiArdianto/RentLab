@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserReview;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UserReviewSeeder extends Seeder
 {
@@ -14,7 +15,26 @@ class UserReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        DB::table('user_reviews')->insert([
+            [
+                'transaction_id' => 5,
+                'user_id' => 1,
+                'admin_id' => 1,
+                'rate' => 5,
+                'comment' => 'Pengguna sangat kooperatif dan mengembalikan kendaraan tepat waktu.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'transaction_id' => 8,
+                'user_id' => 1,
+                'admin_id' => 1,
+                'rate' => 5,
+                'comment' => 'Pengguna sangat kooperatif, kendaraan tetap bersih dan mengembalikan kendaraan tepat waktu.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+        ]);
         UserReview::insert([
             ['admin_id' => 1,
             'user_id'=>1,
