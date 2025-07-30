@@ -10,6 +10,7 @@ use App\Models\Advertisement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VehicleFilterRequest;
+use App\Models\Location;
 use Illuminate\Database\Eloquent\Builder;
 
 class VehicleController extends Controller
@@ -47,9 +48,16 @@ class VehicleController extends Controller
     public function show(string $id)
     {
         //
-        $idVehicle = Vehicle::with('vehicleCategories')->findOrFail($id);
-        $getVehicleByIdsINCarts = Cart::where('user_id', 1 )->where('vehicle_id', $id)->get(); #nunggu id user hasil login, codingan di bawah
-        // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get(); 
+        $idVehicle = Vehicle::with([
+            'vehicleCategories',
+            'vehicleName',
+            'vehicleType',
+            'vehicleTransmission',
+            'location' // Ini akan mengambil data lokasi
+        ])->findOrFail($id);
+
+        $getVehicleByIdsINCarts = Cart::where('user_id', 1)->where('vehicle_id', $id)->get();
+        // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get();
 
         $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
             $query->where('vehicle_id', $id);
@@ -64,7 +72,7 @@ class VehicleController extends Controller
                 'end_date' => $item->end_date,
             ];
         });
-    
+
 
         $rating = DB::table('user_reviews')
         ->join('transactions', 'user_reviews.transaction_id', '=', 'transactions.id')
@@ -76,7 +84,7 @@ class VehicleController extends Controller
         ->groupBy('vehicles.id')
         ->first();
 
-        return view('DetailPage', compact('rating','idVehicle', 'getVehicleByIdsINCarts', 'getCommentByIdVehicle', 'cartDateRanges', 'getVehicleimagesById'));
+        return view('DetailPage', compact('rating', 'idVehicle', 'getVehicleByIdsINCarts', 'getCommentByIdVehicle', 'cartDateRanges', 'getVehicleimagesById'));
     }
 
     /**
@@ -102,7 +110,7 @@ class VehicleController extends Controller
     {
         //
     }
-    
+
     /**
      * Mengambil kategori mobil dari file bahasa.
      */
@@ -130,7 +138,7 @@ class VehicleController extends Controller
             $bufferStartDate = $userStartDate->copy()->subDay();
             $bufferEndDate = $userEndDate->copy()->addDay();
 
-            $query->whereHas('transactions', function ($subQuery) use ($bufferStartDate, $bufferEndDate) {
+            $query->whereDoesntHave('transactions', function ($subQuery) use ($bufferStartDate, $bufferEndDate) {
                 $subQuery
                     ->whereIn('transaction_status_id', [1, 2, 3])
                     ->where(function ($dateQuery) use ($bufferStartDate, $bufferEndDate) {
@@ -163,10 +171,8 @@ class VehicleController extends Controller
                     $subQuery->whereIn('transmission', $transmissions);
                 });
             })
-            ->when($filters['Tempat'] ?? null, function ($q, $locations) {
-                $q->whereHas('location', function ($subQuery) use ($locations) {
-                    $subQuery->whereIn('name', $locations);
-                });
+            ->when($filters['Tempat'] ?? null, function ($q, $location_ids) {
+                $q->whereIn('location_id', $location_ids);
             });
 
         return $query;
@@ -182,12 +188,14 @@ class VehicleController extends Controller
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
 
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
+        $locations = Location::orderBy('location')->get();
 
         return view('webview.homescreen', [
             "vehicle" => $vehicle,
             "advertisement" => $advertisement,
             "carCategories" => $this->getCarCategories(),
             "motorcycleCategories" => $this->getMotorcycleCategories(),
+            "locations" => $locations,
         ]);
     }
 
@@ -205,11 +213,13 @@ class VehicleController extends Controller
 
         $this->filter($request, $vehicleQuery); // Panggil private method filter
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
+        $locations = Location::orderBy('location')->get();
 
         return view('webview.catalog', [
             "vehicle" => $vehicle,
             "carCategories" => $this->getCarCategories(),
             "motorcycleCategories" => $this->getMotorcycleCategories(),
+            "locations" => $locations,
         ]);
     }
 

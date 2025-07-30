@@ -97,7 +97,7 @@
 
                     <div class="col-12 col-md-2 d-flex justify-content-center justify-items-center pe-md-3">
 
-                        <form id="paymentForm" action="{{ route('payment.process') }}" method="POST"
+                        <form id="paymentForm" action="{{ route('checkout.show') }}" method="POST"
                             style="width: 90%; height: 40px;">
                             @csrf
                             <div id="cartIdsContainer"></div>
