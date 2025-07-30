@@ -46,7 +46,20 @@ class LandingTest extends TestCase
      * @test
      * @dataProvider languageProvider
      */
-    public function tc2_guest_can_see_login_and_register_buttons(string $lang): void
+    public function tc2_testimonial_slider_is_visible(string $lang): void
+    {
+        App::setLocale($lang);
+        $response = $this->withSession(['lang' => $lang])->get(route('landing.index'));
+
+        $response->assertSee(__('landing.testimonials_title'));
+        $response->assertSee(__('landing.testimonial_1_author'));
+    }
+
+    /**
+     * @test
+     * @dataProvider languageProvider
+     */
+    public function tc3_guest_can_see_login_and_register_buttons(string $lang): void
     {
         App::setLocale($lang);
         $response = $this->withSession(['lang' => $lang])->get(route('landing.index'));
@@ -63,7 +76,7 @@ class LandingTest extends TestCase
      * @test
      * @dataProvider languageProvider
      */
-    public function tc3_authenticated_user_sees_profile_dropdown(string $lang): void
+    public function tc4_authenticated_user_sees_profile_dropdown(string $lang): void
     {
         App::setLocale($lang);
         $response = $this->actingAs($this->user)->withSession(['lang' => $lang])->get(route('landing.index'));
@@ -72,18 +85,7 @@ class LandingTest extends TestCase
         $response->assertDontSee(__('landing.login'));
     }
 
-    /**
-     * @test
-     * @dataProvider languageProvider
-     */
-    public function tc4_testimonial_slider_is_visible(string $lang): void
-    {
-        App::setLocale($lang);
-        $response = $this->withSession(['lang' => $lang])->get(route('landing.index'));
-
-        $response->assertSee(__('landing.testimonials_title'));
-        $response->assertSee(__('landing.testimonial_1_author'));
-    }
+    
 
     /**
      * @test
@@ -118,20 +120,7 @@ class LandingTest extends TestCase
     /**
      * @test
      */
-    public function tc8_search_form_validation_passes_with_valid_data(): void
-    {
-        $formData = ['start_book_date' => now()->addDay()->format('Y-m-d'), 'end_book_date' => now()->addDays(2)->format('Y-m-d'), 'vehicle_type' => 'motorcycle'];
-        $this->withoutExceptionHandling();
-        $response = $this->post(route('landing.search'), $formData);
-        $response->assertSessionHasNoErrors();
-        // $response->assertRedirect();
-        $response->assertRedirect(route('search.results.page', $formData));
-    }
-
-    /**
-     * @test
-     */
-    public function tc9_search_form_validation_fails_with_invalid_date_format(): void
+    public function tc8_search_form_validation_fails_with_invalid_date_format(): void
     {
         $formData = ['start_book_date' => 'ini-bukan-tanggal', 'end_book_date' => now()->addDays(2)->format('Y-m-d'), 'vehicle_type' => 'car'];
         $response = $this->post(route('landing.search'), $formData);
@@ -141,7 +130,7 @@ class LandingTest extends TestCase
     /**
      * @test
      */
-    public function tc10_search_form_validation_fails_without_vehicle_type(): void
+    public function tc9_search_form_validation_fails_without_vehicle_type(): void
     {
         $formData = ['start_book_date' => now()->addDay()->format('Y-m-d'), 'end_book_date' => now()->addDays(2)->format('Y-m-d')];
         $response = $this->post(route('landing.search'), $formData);
@@ -151,12 +140,29 @@ class LandingTest extends TestCase
     /**
      * @test
      */
-    public function tc11_language_switcher_sets_session_correctly(): void
+    public function tc10_search_form_validation_fails_with_past_date(): void
     {
-        $this->withSession(['lang' => 'en']);
-        $response = $this->post('/lang', ['lang' => 'id']);
-        $response->assertRedirect();
-        $this->assertEquals('id', session('lang'));
+        $formData = [
+            'start_book_date' => now()->subDay()->format('Y-m-d'),
+            'end_book_date'   => now()->addDays(2)->format('Y-m-d'),
+            'vehicle_type'    => 'car',
+        ];
+
+        $response = $this->post(route('landing.search'), $formData);
+        $response->assertSessionHasErrors('start_book_date');
+    }
+
+    /**
+     * @test
+     */
+    public function tc11_search_form_validation_passes_with_valid_data(): void
+    {
+        $formData = ['start_book_date' => now()->addDay()->format('Y-m-d'), 'end_book_date' => now()->addDays(2)->format('Y-m-d'), 'vehicle_type' => 'motorcycle'];
+        $this->withoutExceptionHandling();
+        $response = $this->post(route('landing.search'), $formData);
+        $response->assertSessionHasNoErrors();
+        // $response->assertRedirect();
+        $response->assertRedirect(route('search.results.page', $formData));
     }
 
     /**
@@ -173,15 +179,12 @@ class LandingTest extends TestCase
     /**
      * @test
      */
-    public function tc13_search_form_validation_fails_with_past_date(): void
+    public function tc13_language_switcher_sets_session_correctly(): void
     {
-        $formData = [
-            'start_book_date' => now()->subDay()->format('Y-m-d'),
-            'end_book_date'   => now()->addDays(2)->format('Y-m-d'),
-            'vehicle_type'    => 'car',
-        ];
-
-        $response = $this->post(route('landing.search'), $formData);
-        $response->assertSessionHasErrors('start_book_date');
+        $this->withSession(['lang' => 'en']);
+        $response = $this->post('/lang', ['lang' => 'id']);
+        $response->assertRedirect();
+        $this->assertEquals('id', session('lang'));
     }
+
 }
