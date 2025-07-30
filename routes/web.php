@@ -27,9 +27,7 @@ Route::get('/resent-verify-otp',[OtpController::class,'resentOTP'])->name('resen
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);  
 
-Route::middleware(['auth', EnsureUserHasDetails::class])->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-});
+
 Route::get('/complete-user-detail',[UserDetailController::class,'show'])->name('complete.user.detail');
 Route::post('/complete-user-detail',[UserDetailController::class,'store'])->name('post.user.detail');
 // Route::get('/complete-user-detail', [UserDetailController::class, 'show'])->name('complete.user.detail');
@@ -41,6 +39,9 @@ Route::post('/profile',[ProfileController::class,'change'])->name('change.profil
 Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
 Route::get('/coba',[ProfileController::class,'coba']);
 
+Route::middleware(['auth', EnsureUserHasDetails::class])->group(function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
 Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
     Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 });
