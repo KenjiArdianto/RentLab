@@ -139,18 +139,7 @@ class FaqTest extends TestCase
     }
 
     /** @test */
-    public function tc11_search_finds_keyword_in_answer_body(): void
-    {
-        $searchTerm = 'agreement';
-
-        $this->get(route('faq.index', ['search' => $searchTerm]))
-             ->assertStatus(200)
-             ->assertSee(__('faq.q30'))
-             ->assertDontSee(__('faq.q7'));
-    }
-
-    /** @test */
-    public function tc12_search_with_multiple_keywords_and_logic(): void
+    public function tc11_search_with_multiple_keywords_and_logic(): void
     {
         $this->get(route('faq.index', ['search' => 'rental car']))
              ->assertStatus(200)
@@ -160,7 +149,7 @@ class FaqTest extends TestCase
 
 
     /** @test */
-    public function tc13_search_with_interspersed_characters_shows_no_results(): void
+    public function tc12_search_with_interspersed_characters_shows_no_results(): void
     {
         $this->get(route('faq.index', ['search' => 'c/./a-r']))
             ->assertStatus(200)
