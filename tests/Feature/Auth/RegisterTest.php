@@ -7,6 +7,9 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Contracts\User as ProviderUser;
+use Mockery;
 
 class RegisterTest extends TestCase
 {
@@ -90,6 +93,35 @@ class RegisterTest extends TestCase
         ]);
         $otp->assertSessionHasErrors('otp');
     }
+
+    /** @test */
+    public function successful_google_attempt(){
+        // Fake Google user
+        $googleUser=Mockery::mock(ProviderUser::class);
+        $googleUser->shouldReceive('getId')->andReturn('123456789');
+        $googleUser->shouldReceive('getEmail')->andReturn($this->email);
+        $googleUser->shouldReceive('getName')->andReturn($this->username);
+
+        // Fake the Socialite driver
+         Socialite::shouldReceive('driver')
+        ->with('google')
+        ->andReturnSelf();
+        Socialite::shouldReceive('stateless')
+            ->andReturnSelf();
+        Socialite::shouldReceive('user')
+            ->andReturn($googleUser);
+
+        // Assert user created & logged in
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'testuser@gmail.com',
+            'name' => 'Test User',
+        ]);
+
+
+    }
+
+
 
 
 
