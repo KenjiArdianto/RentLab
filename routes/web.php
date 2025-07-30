@@ -23,6 +23,8 @@ use App\Http\Controllers\AdminVehicleTransmissionController;
 use App\Http\Controllers\AdminLocationController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminUserReviewController;
+use App\Http\Middleware\EnsureUserAuthenticateAsUser;
+use App\Http\Middleware\EnsureUserAuthenticateAsAdmin;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminLogsController;
 use Illuminate\Http\Request;
@@ -58,10 +60,18 @@ Route::post('/complete-user-detail',[UserDetailController::class,'store'])->name
 // Route::post('/complete-user-detail', [UserDetailController::class, 'store']);
 
 
-Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+// Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 Route::post('/profile',[ProfileController::class,'change'])->name('change.profile');
 Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
 // Route::get('/coba',[ProfileController::class,'coba']);
+
+Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
+    Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+});
+
+Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
+    Route::get('/coba',[ProfileController::class,'coba']);
+});
 
 Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
 Route::get('/catalog', [VehicleController::class, 'catalog'])->name('vehicle.catalog');

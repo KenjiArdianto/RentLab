@@ -38,7 +38,7 @@ class LoginTest extends TestCase
 
     /** @test */
     public function successful_login_attempt(){
-        $response = $this->post('/login',[
+        $response = $this->from($this->redirectUrl)->post('/login',[
             'email'=>$this->email,
             'password'=>$this->password,
         ]);

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserDetail;
 use App\Models\User;
@@ -13,10 +13,10 @@ use Illuminate\Validation\Rules\Exists;
 class ProfileController extends Controller
 {
     //
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
     public function index(){
         // if(Auth::user()->role!=='admin'){
         //     abort(403,'Anjing lu bukan admin! jangan gw hack gua plis');

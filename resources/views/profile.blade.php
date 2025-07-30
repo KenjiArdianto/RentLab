@@ -248,6 +248,107 @@
       background-repeat: no-repeat;
     }
 
+    .hiddenMenu{
+      height: 500px;
+      width: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hiddenMenu div{
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .unAuthHiddenMenu {
+  background-color: #111827;
+  padding: 40px 30px;
+  border-radius: 30px;
+  width: 90%;
+  max-width: 400px;
+  margin: 50px auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.unAuthHiddenMenu h1 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 100px;
+}
+
+.unAuthHiddenMenu .auth-btn {
+  display: block;
+  text-decoration: none;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.unAuthHiddenMenu .auth-btn.login {
+  background-color: #3b82f6;
+}
+
+.unAuthHiddenMenu .auth-btn.login:hover {
+  background-color: #2563eb;
+}
+
+.unAuthHiddenMenu .auth-btn.register {
+  background-color: #10b981;
+}
+
+.unAuthHiddenMenu .auth-btn.register:hover {
+  background-color: #059669;
+}
+
+
+.unUserDetailHiddenMenu {
+  background-color: #111827;
+  padding: 40px 30px;
+  border-radius: 30px;
+  width: 90%;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.unUserDetailHiddenMenu h1 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 80px;
+}
+
+.unUserDetailHiddenMenu button {
+  width: 100%;
+  padding: 12px 20px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.unUserDetailHiddenMenu button:first-of-type {
+  background-color: white;
+  color: #111827;
+  border: 2px solid #111827;
+}
+
+.unUserDetailHiddenMenu button:nth-of-type(2),
+.unUserDetailHiddenMenu button:nth-of-type(3) {
+  background-color: #dc2626;
+  color: white;
+  border: 2px solid #f87171;
+}
+
     .profile-image-popup:hover{
       opacity: 60%;
     }
@@ -288,18 +389,54 @@
   <div class="bg-popup" onclick="closePopup()">
     
     <div class="profile-popup" onclick="event.stopPropagation()">
-      
-      <label class="profile-image-popup">
-          <input type="file" id="uploadProfileImage" accept="image/*" style="display: none;" name="profilePicture">
-      </label>
-      <div class="seperator-popup"></div>
-      <div class="buttons-popup">
-        <div class="popup-button" style="border-radius: 0 0 0 50px"><p style="margin: auto;">Cancel</p></div>
-        <div class="popup-button"><p style="margin: auto;">Delete</p></div>
-        <div class="popup-button" style="border-radius: 0 0 50px 0"><p style="margin: auto;">Confirm</p></div>
-      </div>
+
+
+        <label class="profile-image-popup">
+            <input type="file" id="uploadProfileImage" accept="image/*" style="display: none;" name="profilePicture">
+        </label>
+        <div class="seperator-popup"></div>
+        <div class="buttons-popup">
+          <div class="popup-button" style="border-radius: 0 0 0 50px"><p style="margin: auto;">Cancel</p></div>
+          <div class="popup-button"><p style="margin: auto;">Delete</p></div>
+          <div class="popup-button" style="border-radius: 0 0 50px 0"><p style="margin: auto;">Confirm</p></div>
+        </div>
+        
+
+        <div class="hiddenMenu" style="display: none;">
+          <div class="unAuthHiddenMenu" style="display: none;">
+            <h1>Introduce Yourself</h1>
+
+            <a href="{{ route('login') }}" class="auth-btn login">
+              Login
+            </a>
+
+            <a href="{{ route('register') }}" class="auth-btn register">
+              Register
+            </a>
+          </div>
+          <div class="unUserDetailHiddenMenu" style="display: none">
+            <h1 style="color: white">Let's complete what you left</h1>
+            <button onclick="window.location.href='{{ route('complete.user.detail') }}'">Complete user details</button>
+            <button id="btn-DeleteAcc" onclick="event.preventDefault();document.getElementById('deleteAcc-form').submit();">Delete Account</button>
+            <form id="deleteAcc-form" action="{{ route('delete.profile') }}" method="POST" class="d-none">
+              @csrf
+            </form>
+            <button id="btn-logout" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Log Out</button>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+              @csrf
+            </form>
+          </div>
+        
+        </div>
+
     </div>
   </div>
+      
+      
+  
+
+  
+
   <div class="card">
 
     <div class="header">
@@ -319,25 +456,25 @@
     </div>
 
     <div class="content">
-      <div class="name">{{ Auth::user()->name }} <span class="status">Verified</span></div>
-      <div class="email">{{ Auth::user()->email }}</div>
+      <div class="name">{{ Auth::user()->name??'' }} <span class="status">Verified</span></div>
+      <div class="email">{{ Auth::user()->email??'' }}</div>
 
       <div class="info-grid">
-        <div><span>First Name</span>{{ Auth::user()->detail->fname }}</div>
-        <div><span>Last Name</span>{{ Auth::user()->detail->lname }}</div>
-        <div><span>Phone Number</span>{{ Auth::user()->detail->phoneNumber }}</div>
-        <div><span>Date Of Birth</span>{{ Auth::user()->detail->dateOfBirth }}</div>
+        <div><span>First Name</span>{{ Auth::user()->detail->fname??'' }}</div>
+        <div><span>Last Name</span>{{ Auth::user()->detail->lname??'' }}</div>
+        <div><span>Phone Number</span>{{ Auth::user()->detail->phoneNumber??'' }}</div>
+        <div><span>Date Of Birth</span>{{ Auth::user()->detail->dateOfBirth??'' }}</div>
       </div>
 
       <div class="form-section">
         <div class="input-group">
           <div style="flex:1">
             <label>Name</label>
-            <input type="text" value="{{ Auth::user()->detail->fname }}" name="fname" id="fname">
+            <input type="text" value="{{ Auth::user()->detail->fname??'' }}" name="fname" id="fname">
           </div>
           <div style="flex:1">
             <label>Surname</label>
-            <input type="text" value="{{ Auth::user()->detail->lname }}" name="lname" id="lname">
+            <input type="text" value="{{ Auth::user()->detail->lname??'' }}" name="lname" id="lname">
           </div>
         </div>
 
@@ -345,7 +482,7 @@
           <label>Email address</label>
           <div class="email-group">
             <span class="email-icon">📧</span>
-            <input type="email" value="{{ Auth::user()->email }}" name="email" id="email" readonly>
+            <input type="email" value="{{ Auth::user()->email??'' }}" name="email" id="email" readonly>
           </div>
           <div class="verified-text">Verified 2 Jan, 2025</div>
         </div>
@@ -353,7 +490,7 @@
         <div>
           <div class="username-input">
             <span>Username </span>
-            <input type="text" value="{{ Auth::user()->name }}" name="username" id="username">
+            <input type="text" value="{{ Auth::user()->name??'' }}" name="username" id="username">
           </div>
         </div>
 
@@ -361,7 +498,7 @@
           <label>Phone Number</label>
           <div class="email-group">
             <span class="email-icon">📞</span>
-            <input type="text" value="{{ Auth::user()->detail->phoneNumber }}" name="phoneNumber" id="phoneNumber">
+            <input type="text" value="{{ Auth::user()->detail->phoneNumber??'' }}" name="phoneNumber" id="phoneNumber">
           </div>
         </div>
 
@@ -369,7 +506,7 @@
           <label>ID Card Number</label>
           <div class="email-group">
             <span class="email-icon">🪪</span>
-            <input type="text" value="{{ Auth::user()->detail->idcardNumber }}" name="idCardNumber" id="idCardNumber">
+            <input type="text" value="{{ Auth::user()->detail->idcardNumber??'' }}" name="idCardNumber" id="idCardNumber">
           </div>
         </div>
 
@@ -377,7 +514,7 @@
         <div class="input-group">
           <div style="flex:1">
             <label>Date of Birth</label>
-            <input type="date" placeholder="dd/mm/yyyy" name="dateOfBirth" id="dateOfBirth" value="{{ Auth::user()->detail->dateOfBirth }}">
+            <input type="date" placeholder="dd/mm/yyyy" name="dateOfBirth" id="dateOfBirth" value="{{ Auth::user()->detail->dateOfBirth??'' }}">
           </div>
           <div style="flex:1">
             <label>ID Card Picture</label>
@@ -405,35 +542,50 @@
 //loading image
 
     window.onload = function () {
-        
-        const profilePath = @json(Auth::user()->detail->profilePicture);
-        const defaultProfile = "{{ asset('storage/profile/defaultProfile.png') }}";
-        const profileUrl = profilePath ? "{{ asset('storage') }}/" + profilePath : defaultProfile;
+      const isLoggedIn=@json(Auth::check());
+      const hasDetail = @json(optional(Auth::user())->detail !== null);
+      if(!isLoggedIn || !hasDetail){
+        console.log(!hasDetail)
+        document.querySelector('div.bg-popup').classList.add('active');
+        document.querySelector('div.card').style.opacity="30%";
+        document.querySelector('label.profile-image-popup').style.display="none";
+        document.querySelector('div.seperator-popup').style.display="none";
+        document.querySelector('div.buttons-popup').style.display="none";
+        document.querySelector('div.hiddenMenu').style.display="flex";
+        if(!isLoggedIn){
+          document.querySelector('div.unAuthHiddenMenu').style.display="flex"
+        }else{
+          document.querySelector('div.unUserDetailHiddenMenu').style.display="flex";
+        }
+      }
+      const profilePath = @json(Auth::check()?optional(Auth::user()->detail)->profilePicture:null);
+      const defaultProfile = "{{ asset('storage/profile/defaultProfile.png') }}";
+      const profileUrl = profilePath ? "{{ asset('storage') }}/" + profilePath : defaultProfile;
 
-        const profileAvatar = document.querySelector('div.avatar');
-        if (profileAvatar) {
-            profileAvatar.style.backgroundImage = `url('${profileUrl}')`;
-            profileAvatar.style.backgroundSize = 'cover';
-            profileAvatar.style.backgroundPosition = 'center';
-        }
-        const profilePopup = document.querySelector('label.profile-image-popup');
-        if (profileAvatar) {
-            profileAvatar.style.backgroundImage = `url('${profileUrl}')`;
-            profileAvatar.style.backgroundSize = 'cover';
-            profileAvatar.style.backgroundPosition = 'center';
-        }
+      const profileAvatar = document.querySelector('div.avatar');
+      if (profileAvatar) {
+          profileAvatar.style.backgroundImage = `url('${profileUrl}')`;
+          profileAvatar.style.backgroundSize = 'cover';
+          profileAvatar.style.backgroundPosition = 'center';
+      }
+      const profilePopup = document.querySelector('label.profile-image-popup');
+      if (profileAvatar) {
+          profileAvatar.style.backgroundImage = `url('${profileUrl}')`;
+          profileAvatar.style.backgroundSize = 'cover';
+          profileAvatar.style.backgroundPosition = 'center';
+      }
 
-        // ID card picture
-        const idCardPath = @json(Auth::user()->detail->idcardPicture);
-        if (idCardPath) {
-            const idCardUrl = "{{ asset('storage') }}/" + idCardPath;
-            const idCardLabel = document.querySelector('label.imageOfIdCard');
-            if (idCardLabel) {
-                idCardLabel.style.backgroundImage = `url('${idCardUrl}')`;
-                idCardLabel.style.backgroundSize = 'cover';
-                idCardLabel.style.backgroundPosition = 'center';
-            }
-        }
+      // ID card picture
+      const idCardPath = @json(Auth::check()?optional(Auth::user()->detail)->idcardPicture:null);
+      if (idCardPath) {
+          const idCardUrl = "{{ asset('storage') }}/" + idCardPath;
+          const idCardLabel = document.querySelector('label.imageOfIdCard');
+          if (idCardLabel) {
+              idCardLabel.style.backgroundImage = `url('${idCardUrl}')`;
+              idCardLabel.style.backgroundSize = 'cover';
+              idCardLabel.style.backgroundPosition = 'center';
+          }
+      }
     };
 
 
@@ -523,7 +675,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
     popupbuttons[x].addEventListener('click',function(){
       if(x==0){
         const defaultProfile = "{{ asset('storage/profile/defaultProfile.png') }}";
-        const profilePath = @json(Auth::user()->detail->profilePicture);
+        const profilePath = @json(Auth::check()?optional(Auth::user()->detail)->profilePicture:null);
         const profileUrl = profilePath ? "{{ asset('storage') }}/" + profilePath : defaultProfile;
         document.querySelector('.avatar').style.backgroundImage = `url("${profileUrl}")`;
         document.querySelector('.profile-image-popup').style.backgroundImage=document.querySelector('.avatar').style.backgroundImage;
@@ -564,8 +716,13 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
   });
 
   function closePopup(){
-    document.querySelector('.bg-popup').classList.remove('active');
-    document.querySelector('.card').style.opacity="100%";
+    const isLoggedIn=@json(Auth::check());
+    const hasDetail = @json(optional(Auth::user())->detail !== null);
+    if(isLoggedIn && hasDetail){
+      document.querySelector('.bg-popup').classList.remove('active');
+      document.querySelector('.card').style.opacity="100%";
+    }
+    
   }
 
   //showing idcard
