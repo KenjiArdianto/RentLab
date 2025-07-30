@@ -32,7 +32,7 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {    
         // Check if a user with this email already exists (for edge cases)
         if (User::where('email', $request->email)->exists()) {

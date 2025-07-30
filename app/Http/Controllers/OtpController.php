@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\OTPUserRequest;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -33,11 +35,11 @@ class OtpController extends Controller
             return redirect()->back()->withErrors(['otp' => 'Session expired. Please register again'])->with('time',0);
         }
         if (now()->addMinutes(4)->lt(session('otp_expires_at'))) {
-            Log::channel('authlog')->warning('OTP resend throttled: too frequent', [
-                'email' => session('temp_user')['email'],
-                'ip' => request()->ip(),
-                'time' => now(),
-            ]);
+            // Log::channel('authlog')->warning('OTP resend throttled: too frequent', [
+            //     'email' => session('temp_user')['email'],
+            //     'ip' => request()->ip(),
+            //     'time' => now(),
+            // ]);
             return redirect()->back()->withErrors(['otp' => 'Please wait before resending more OTP !'])->with('time',now()->addMinutes(4)->diffInSeconds(session('otp_expires_at')));
         }
         $temp = session('temp_user');
@@ -54,26 +56,26 @@ class OtpController extends Controller
         ]);
         return redirect()->back()->with(['success'=> 'OTP has been resent','time'=>$time]);
     }
-    public function verify(Request $request)
+    public function verify(OTPUserRequest $request)
     {
-        $request->validate(['otp' => 'required']);
+        // $request->validate(['otp' => 'required']);
         //logs for fuzzing inputs
-        function isFuzzingAttempt($input)
-        {
-            return strlen($input) > 100 ||        // overly long input
-                preg_match('/[<>{}\[\];]/', $input) || // suspicious chars
-                preg_match('/(union|select|insert|<script|alert|drop|--)/i', $input); // known attack patterns
-        }
-        if (isFuzzingAttempt($request->otp)) {
-            Log::channel('authlog')->alert('Possible fuzzing attempt detected', [
-                'field' => 'otp',
-                'value' => $request->otp,
-                'ip' => $request->ip(),
-                'time' => now(),
-            ]);
+        // function isFuzzingAttempt($input)
+        // {
+        //     return strlen($input) > 100 ||        // overly long input
+        //         preg_match('/[<>{}\[\];]/', $input) || // suspicious chars
+        //         preg_match('/(union|select|insert|<script|alert|drop|--)/i', $input); // known attack patterns
+        // }
+        // if (isFuzzingAttempt($request->otp)) {
+        //     Log::channel('authlog')->alert('Possible fuzzing attempt detected', [
+        //         'field' => 'otp',
+        //         'value' => $request->otp,
+        //         'ip' => $request->ip(),
+        //         'time' => now(),
+        //     ]);
 
-            return back()->withErrors(['otp' => 'Invalid input.']);
-        }
+        //     return back()->withErrors(['otp' => 'Invalid input.']);
+        // }
 
         // ✅ Safely fetch from session (don't remove it yet)
         

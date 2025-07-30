@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserDetailsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\UserDetail;
@@ -27,7 +28,7 @@ class UserDetailController extends Controller
         }
         return view('auth.complete-user-detail');
     }
-    public function store(Request $request){
+    public function store(UserDetailsRequest $request){
         // return "hi";
         $user = Auth::user();
         if (!$user) {
@@ -38,15 +39,6 @@ class UserDetailController extends Controller
         if ($user->detail) {
             return redirect()->route('home')->with('info', 'You have already completed your profile.');
         }
-        $request->validate([
-            'fname' => ['required', 'string', 'max:255'],
-            'lname' => ['required', 'string', 'max:255'],
-            'phoneNumber' => ['required', 'string', 'max:20'],
-            'idcardNumber' => ['required', 'string', 'max:50'],
-            'dateOfBirth' => ['required', 'date'],
-            'idcardPicture' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
-        ]);
-        // return "hi all";
 
         if (UserDetail::where('idcardNumber', $request->idcardNumber)->exists()) {
             return back()->withErrors(['idcard' => 'NIK is already registered.']);

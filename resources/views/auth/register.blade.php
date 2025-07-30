@@ -5,7 +5,7 @@
 <div class="container" >
     <div class="row justify-content-center">
         <div class="col-md-8" style="display: flex;height:100vh;width:100vw;">
-            <div class="card" style="margin: auto; min-width:350px;width:35vw;padding:20px; max-width: 500px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);  border-radius: 10px;">
+            <div class="card" style="margin: auto; min-width:350px;width:35vw;padding:20px; max-width: 500px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);  border-radius: 10px;">
                 {{-- <div class="card-header">{{ __('Register') }}</div> --}}
                 
 
@@ -39,7 +39,7 @@
                                 <div style="width:30px;height:30px;margin:auto; border-radius: 20px; display: flex;">
                                     <img src="{{ asset('build/assets/images/UsernameLogo.png') }}" style="width: 25px; height: 25px; display: flex; justify-content: center; align-items: center; margin: auto;">
                                 </div>
-                                <input placeholder="Username" style="margin: auto; background-color: transparent; border: none;" id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                <input placeholder="Username" style="background-color: transparent !important; margin: auto; border: none;" id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
