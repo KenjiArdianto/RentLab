@@ -6,7 +6,7 @@
     <title>RentLab</title>
 
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Your Vite assets -->
@@ -46,12 +46,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
-
-    <iframe width="425" height="755" src="https://www.youtube.com/embed/3XrzMkmOQQA" title="KAWASAKI CAGO KRICO ESTRIPPER" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
     <header class="sticky-top bg-light shadow-sm">
         <!-- Top bar for language selection -->
-        <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-none d-lg-flex">
+        <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-flex">
             <div class="container-fluid justify-content-end">
                 <a class="nav-link py-1 px-3 small" href="{{ route('faq.index') }}">@lang('app.nav.faq')</a>
                 <div class="nav-item dropdown">

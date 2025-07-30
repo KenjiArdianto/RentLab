@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ __('landing.title') }}</title>
 
-        <link rel="stylesheet" href="{{ asset('build/assets/CSS/landing.css') }}">
+        <link rel="stylesheet" href="{{ asset('landing_assets/CSS/landing.css') }}">
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -110,14 +110,14 @@
                                 <div class="date_inputs">
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
-                                            <img src="{{ asset('build/assets/images/Calender.png') }}" alt="Calendar Icon">
+                                            <img src="{{ asset('landing_assets/images/Calender.png') }}" alt="Calendar Icon">
                                         </span>
                                         <input type="text" class="date_input_field" placeholder="{{ __('landing.start_date_placeholder') }}" id="startBookDate" name="start_book_date" value="{{ $search_data['start_book_date'] ?? '' }}" required>
                                     </div>
                                     <span class="arrow_separator">&#x2194;</span>
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
-                                            <img src="{{ asset('build/assets/images/Calender.png') }}" alt="Calendar Icon">
+                                            <img src="{{ asset('landing_assets/images/Calender.png') }}" alt="Calendar Icon">
                                         </span>
                                         <input type="text" class="date_input_field" placeholder="{{ __('landing.end_date_placeholder') }}" id="endBookDate" name="end_book_date" value="{{ $search_data['end_book_date'] ?? '' }}" required>
                                     </div>
@@ -128,8 +128,8 @@
                                            @if(isset($search_data['vehicle_type']) && $search_data['vehicle_type'] == 'car') checked @endif>
                                     <label for="vehicleToggle" class="vehicle_toggle_track">
                                         <span class="vehicle_toggle_thumb">
-                                            <img src="{{ asset('build/assets/images/Motor.png') }}" alt="Motorcycle" class="motorcycle_icon_img">
-                                            <img src="{{ asset('build/assets/images/Mobil.png') }}" alt="Car" class="car_icon_img">
+                                            <img src="{{ asset('landing_assets/images/Motor.png') }}" alt="Motorcycle" class="motorcycle_icon_img">
+                                            <img src="{{ asset('landing_landing_assets/images/Mobil.png') }}" alt="Car" class="car_icon_img">
                                         </span>
                                         <span class="track_text motorcycle_track_text">{{ __('landing.toggle_motorcycle') }}</span>
                                         <span class="track_text car_track_text">{{ __('landing.toggle_car') }}</span>
@@ -146,7 +146,7 @@
                             <div class="image_placeholder_area">
                                 <div class="outer_circle">
                                     <div class="circle_image_placeholder">
-                                        <img src="{{ asset('build/assets/images/RentLab.png') }}" alt="RentLab Logo" class="rentlab_logo_in_circle">
+                                        <img src="{{ asset('landing_assets/images/RentLab.png') }}" alt="RentLab Logo" class="rentlab_logo_in_circle">
                                     </div>
                                 </div>
                             </div>
@@ -173,19 +173,19 @@
                 <div class="row gy-4">
                     <div class="col-md-4">
                         <div class="feature_item">
-                            <div class="icon_container"><img src="{{ asset('build/assets/images/ArmadaBersih.png') }}" alt="Clean Fleet Icon"></div>
+                            <div class="icon_container"><img src="{{ asset('landing_assets/images/ArmadaBersih.png') }}" alt="Clean Fleet Icon"></div>
                             <h3>{{ __('landing.feature_1') }}</h3>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature_item">
-                            <div class="icon_container"><img src="{{ asset('build/assets/images/HargaKompetitif.png') }}" alt="Competitive Price Icon"></div>
+                            <div class="icon_container"><img src="{{ asset('landing_assets/images/HargaKompetitif.png') }}" alt="Competitive Price Icon"></div>
                             <h3>{{ __('landing.feature_2') }}</h3>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature_item">
-                            <div class="icon_container"><img src="{{ asset('build/assets/images/PelayananRamah.png') }}" alt="Friendly Service Icon"></div>
+                            <div class="icon_container"><img src="{{ asset('landing_assets/images/PelayananRamah.png') }}" alt="Friendly Service Icon"></div>
                             <h3>{{ __('landing.feature_3') }}</h3>
                         </div>
                     </div>
@@ -203,7 +203,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script type="text/javascript" src="{{ asset('build/assets/js/landing.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('landing_assets/js/landing.js') }}"></script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
