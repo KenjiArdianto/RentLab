@@ -27,7 +27,7 @@
                     <a class="navbar-brand fs-3 fw-bold" href="/">RentLab</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
-                    </button>  
+                    </button>
                     <div class="collapse navbar-collapse" id="mainNavbar">
                         <ul class="navbar-nav ms-auto align-items-center">
                             <div class="dropdown me-lg-2">
@@ -106,7 +106,7 @@
                                 </div>
                             @endif
 
-                            <form id="rentalForm" action="{{ route('vehicle.display', ['locale' => app()->getLocale()]) }}" method="GET">
+                            <form id="rentalForm" action="{{ route('landing.search') }}" method="GET"> {{-- ubah di sini ya kalo mau searchnya beda nama routenya -> {{ route('vehicle.display') }} --}}
                                 <div class="date_inputs">
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
@@ -124,7 +124,7 @@
                                 </div>
 
                                 <div class="vehicle_toggle_wrapper">
-                                    <input type="checkbox" id="vehicleToggle" class="vehicle_toggle_checkbox" 
+                                    <input type="checkbox" id="vehicleToggle" class="vehicle_toggle_checkbox"
                                            @if(isset($search_data['vehicle_type']) && $search_data['vehicle_type'] == 'car') checked @endif>
                                     <label for="vehicleToggle" class="vehicle_toggle_track">
                                         <span class="vehicle_toggle_thumb">
@@ -157,13 +157,13 @@
         </section>
 
         <section class="about_section py-5">
-            <div class="container text-center"> 
+            <div class="container text-center">
                 <div class="row justify-content-center">
-                    <div class="col-lg-12"> 
+                    <div class="col-lg-12">
                         <h2 class="section_title">{{ __('landing.about_title') }}</h2>
-                        <p class="lead text-muted">{{ __('landing.about_text') }}</p> 
+                        <p class="lead text-muted">{{ __('landing.about_text') }}</p>
                     </div>
-                </div> 
+                </div>
             </div>
         </section>
 
@@ -176,13 +176,13 @@
                             <div class="icon_container"><img src="{{ asset('build/assets/images/ArmadaBersih.png') }}" alt="Clean Fleet Icon"></div>
                             <h3>{{ __('landing.feature_1') }}</h3>
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="feature_item">
                             <div class="icon_container"><img src="{{ asset('build/assets/images/HargaKompetitif.png') }}" alt="Competitive Price Icon"></div>
                             <h3>{{ __('landing.feature_2') }}</h3>
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="feature_item">
                             <div class="icon_container"><img src="{{ asset('build/assets/images/PelayananRamah.png') }}" alt="Friendly Service Icon"></div>
@@ -190,9 +190,9 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </section>
-        
+
         @include('template.slider')
 
         <footer class="footer text-center py-4">
@@ -204,7 +204,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script type="text/javascript" src="{{ asset('build/assets/js/landing.js') }}"></script>
-    
+
         <script>
             document.addEventListener('DOMContentLoaded', function() {
 
@@ -212,7 +212,7 @@
                     const startDateValue = document.getElementById('startBookDate').value;
                     const endDateValue = document.getElementById('endBookDate').value;
                     const searchButton = document.getElementById('searchNowBtn');
-                    
+
                     if (startDateValue && endDateValue) {
                         searchButton.removeAttribute('disabled');
                     } else {

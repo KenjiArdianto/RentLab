@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('user_details', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id')->constrained("users")->onDelete('cascade');
+            $table->foreignId('user_id')->constrained("users");
             $table->string('fname')->nullable();
             $table->string('lname')->nullable();
             $table->string('phoneNumber')->nullable();
             $table->string('idcardNumber')->nullable();
             $table->date('dateOfBirth')->nullable();
             $table->string('idcardPicture')->nullable();
+            $table->string('profilePicture')->nullable();
+            $table->softDeletes();
         });
     }
 

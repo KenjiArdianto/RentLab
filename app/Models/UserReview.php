@@ -32,4 +32,17 @@ class UserReview extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    protected static function booted()
+    {
+        static::created(function ($userReview) {
+            $transaction = $userReview->transaction;
+
+            // Cek apakah review dari pengguna juga sudah ada
+            if ($transaction && $transaction->vehicleReview) {
+                $transaction->transaction_status_id = 6;
+                $transaction->save();
+            }
+        });
+    }
 }
