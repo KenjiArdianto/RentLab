@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\UserReview;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Faker\Generator as FakerGenerator;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,31 +17,29 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         $this->call([
             // DriverSeeder::class,
             // VehicleSeeder::class,
             // CartSeeder::class,
+            // TransactionSeeder::class,
             // RatingSeeder::class,
             // LogSeeder::class,
+            AdvertisementSeeder::class,
             VehicleNameSeeder::class,
             VehicleTypeSeeder::class,
             VehicleCategorySeeder::class,
             VehicleTransmissionSeeder::class,
             LocationSeeder::class,
+            UserSeeder::class,
             DriverSeeder::class,
             VehicleSeeder::class,
             TransactionStatusSeeder::class,
             TransactionSeeder::class,
-            // UserSeeder::class,
-
-            // CartSeeder::class,
+            CartSeeder::class,
+            UserReviewSeeder::class,
             // TransactionSeeder::class,
-
+            UserSeeder::class,
+            UserReviewSeeder::class,
 
         ]);
     }
