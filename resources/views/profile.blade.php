@@ -10,7 +10,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: #e4d7f5;
+      background: #ffffff;
       font-family: 'Inter', sans-serif;
       
     }
@@ -19,14 +19,14 @@
       opacity: 100%;
       max-width: 480px;
       margin: 40px auto;
-      background: #111827;
+      background: #ffffff;
       border-radius: 16px;
       overflow: hidden;
-      color: white;
+      color: black;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     }
     .header {
-      background: #d1c1e1;
+      background: #d6d6d6;
       height: 120px;
       position: relative;
     }
@@ -34,11 +34,11 @@
       width: 72px;
       height: 72px;
       border-radius: 50%;
-      background: #1f2937;
+      background: #a3a3a3;
       position: absolute;
       left: 20px;
       bottom: -36px;
-      border: 3px solid #111827;
+      border: 3px solid #ffffff;
       cursor: pointer;
       background-position: center;
       background-size: contain;
@@ -63,8 +63,8 @@
     .status {
       display: inline-block;
       font-size: 12px;
-      color: #10b981;
-      background: #064e3b;
+      color: #064e3b;
+      background: #10b981;
       padding: 2px 8px;
       border-radius: 9999px;
       margin-left: 6px;
@@ -77,12 +77,12 @@
       font-size: 13px;
     }
     .info-grid div {
-      color: #d1d5db;
+      color: black;
     }
     .info-grid span {
       display: block;
       font-size: 12px;
-      color: #9ca3af;
+      color: #5e5e5e;
     }
     .form-section {
       display: flex;
@@ -94,7 +94,7 @@
       display: block;
       font-size: 13px;
       margin-bottom: 4px;
-      color: #d1d5db;
+      color: black;
     }
     .input-group {
       display: flex;
@@ -108,8 +108,8 @@
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #374151;
-      background: #1f2937;
-      color: white;
+      background: #f2f3f4;
+      color: #5e5e5e;
       font-size: 14px;
     }
 
@@ -162,7 +162,7 @@
     }
     .username-input span {
       font-size: 14px;
-      color: #9ca3af;
+      color: black;
     }
     .btn-group {
       display: flex;
@@ -177,8 +177,8 @@
       cursor: pointer;
     }
     .cancel-btn {
-      background: transparent;
-      color: #9ca3af;
+      background: #eaeaea;
+      color: #5e5e5e;
     }
     .save-btn {
       background: #2563eb;
