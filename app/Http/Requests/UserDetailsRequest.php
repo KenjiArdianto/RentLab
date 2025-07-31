@@ -58,6 +58,8 @@ class UserDetailsRequest extends FormRequest
             'fname.regex' => 'First name must contain only letters.',
             'lname.regex' => 'Last name must contain only letters.',
             'phoneNumber.required' => 'Phone number is required.',
+            'dateOfBirth.required'=>'Date Of Birth can not be empty',
+            'dateOfBirth.date'=>'Date Of Birth must in form of date',
             'phoneNumber.digits_between' => 'Phone number must be between 8 and 13 digits.',
             'idcardPicture.max' => 'ID card picture must not be larger than 10MB.',
         ];

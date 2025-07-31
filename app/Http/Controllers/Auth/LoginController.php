@@ -61,7 +61,7 @@ class LoginController extends Controller
         }
 
 
-        activity('login_failed')
+        activity('login')
         ->withProperties([
             'email' => $request->email,
             'ip' => $request->ip(),

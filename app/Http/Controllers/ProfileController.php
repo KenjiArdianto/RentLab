@@ -25,32 +25,20 @@ class ProfileController extends Controller
         return view('profile');
     }
 
-    public function change(ProfileRequest $request){
-
+    public function change(ProfileRequest $request)
+    {
         $user = Auth::user();
         $details = $user->detail;
 
-        // ✅ Validate basic fields and files (optional but recommended)
-        $request->validate([
-            'fname' => ['nullable', 'string', 'max:255'],
-            'lname' => ['nullable', 'string', 'max:255'],
-            'phoneNumber' => ['nullable', 'string', 'max:20'],
-            'idcardNumber' => ['nullable', 'string', 'max:50'],
-            'dateOfBirth' => ['nullable', 'date'],
-            'idcardPicture' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
-            'profilePicture' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
-        ]);
-        // return "hi";
-
         // ✅ Update basic info
-        $user->name=$request->username;
+        $user->name=$request->name;
         $user->save();
         
         $details->update([
             'fname' => $request->fname,
             'lname' => $request->lname,
-            'phone_number' => $request->phoneNumber,
-            'idCardNumber' => $request->idCardNumber,
+            'phoneNumber' => $request->phoneNumber,
+            'idcardNumber' => $request->idCardNumber,
             'dateOfBirth' => $request->dateOfBirth,
         ]);
         \activity('profile_update')
