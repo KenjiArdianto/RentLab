@@ -1,3 +1,4 @@
+<x-layout>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -780,3 +781,4 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
 </script>
 
 </html>
+</x-layout>
