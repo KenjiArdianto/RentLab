@@ -67,7 +67,7 @@
         @if ($upcomingCart->isEmpty() && $outdatedCart->isEmpty())
             <div class="text-center py-5">
                 <p class="lead">{{__('cart.CartEmpty')}}</p>
-                <a href="/" class="btn btn-primary">{{__('cart.AddItem')}}</a>
+                <a href="{{ route('vehicle.display') }}" class="btn btn-primary">{{__('cart.AddItem')}}</a>
             </div>
         @endif
 

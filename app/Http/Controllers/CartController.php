@@ -16,10 +16,10 @@ class CartController extends Controller
      */
     public function index()
     {
-        $userId=1;
-            $listCart = Cart::where("user_id", $userId)
-                        ->orderBy('start_date', 'desc')
-                        ->get();
+        $userId=Auth::user()->id;
+        $listCart = Cart::where("user_id", $userId)
+                    ->orderBy('start_date', 'desc')
+                    ->get();
 
 
         $today = Carbon::today();
@@ -38,40 +38,12 @@ class CartController extends Controller
         return view("CartPage", compact('listCart', 'upcomingCart', 'outdatedCart'));
     }
 
-
-    public function create()
-    {
-    }
-
-
     public function store(StoreCartRequest $request)
     {
-        // $vehicleId = $request->input('vehicle_id');
-        // $dateRanges = $request->input('date_ranges');
-        // // $userId = Auth::id(); // ken kalo mau merge dengan login elson, kabari aku
-
-        // $currentCartItemCount = Cart::where('user_id', 1)->count();
-        // $itemsToAdd = count($dateRanges);
-
-        // if (($currentCartItemCount + $itemsToAdd) > 10) {
-        //     return back()->with('error', 'Maksimal 10 item pada Cart. Anda sudah memiliki ' . $currentCartItemCount . ' item.');
-        // }
-
-        // foreach ($dateRanges as $range) {
-        //     Cart::create([
-        //         'vehicle_id' => $vehicleId,
-        //         'start_date' => $range['start_date'],
-        //         'end_date' => $range['end_date'],
-        //         'user_id' => 1, // Gunakan ID pengguna yang sebenarnya
-        //     ]);
-        // }
-
-        // return back()->with('success', 'Tanggal berhasil ditambahkan ke keranjang!');
 
         $vehicleId = $request->input('vehicle_id');
         $dateRanges = $request->input('date_ranges');
-        // $userId = Auth::id() ?? 1; // Gunakan ID pengguna yang sebenarnya atau dummy untuk pengujian
-        $userId=1;
+        $userId=Auth::id();
 
         // Fetch the vehicle to get its price
         $vehicle = Vehicle::find($vehicleId);
@@ -117,92 +89,30 @@ class CartController extends Controller
 
         return back()->with('success', 'Tanggal berhasil ditambahkan ke keranjang!');
     }
-
-    /**
-     * Menampilkan sumber daya yang ditentukan.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Menampilkan formulir untuk mengedit sumber daya yang ditentukan.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Memperbarui sumber daya yang ditentukan dalam penyimpanan.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Menghapus sumber daya yang ditentukan dari penyimpanan.
-     */
     public function destroy(string $id)
     {
-    //     $cartitems=Cart::where('id',$id)->get();
-    //     if($cartitems->user_id != Auth::id()){
-    //         return back()->withError();
-    //     }
-    //     Cart::destroy($id);
-    //     return back();
-    //  ini unComment aja kalo mau merge dngan login
-
+        $cartitems=Cart::where('id',$id)->get();
+        if($cartitems->user_id != Auth::id()){
+            return back()->withError();
+        }
         Cart::destroy($id);
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
     }
 
-    public function clearOutdated(Request $request)
+    public function clearOutdated()
     {
-
         $today = Carbon::today();
-
-        Cart::where('user_id', 1)
+        Cart::where('user_id', Auth::id())
             ->where('start_date', '<', $today)
             ->delete();
 
         return back()->with('success', 'Semua rental kedaluwarsa berhasil dihapus!');
     }
 
-
     public function getCartItemCount()
     {
-        $userId = Auth::id() ?? 1; // Gunakan ID pengguna yang terautentikasi, atau dummy untuk pengujian
+        $userId = Auth::id() ; // Gunakan ID pengguna yang terautentikasi, atau dummy untuk pengujian
         $count = Cart::where('user_id', $userId)->count();
         return response()->json(['count' => $count]);
-    }
-
-    public function processPayment(Request $request)
-    {
-        $selectedCartIdsJson = $request->query('selected_cart_ids');
-
-        if (empty($selectedCartIdsJson)) {
-            return redirect()->back()->with('error', 'Tidak ada item keranjang yang dipilih untuk pembayaran.');
-        }
-
-        $selectedCartIds = json_decode($selectedCartIdsJson);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return redirect()->back()->with('error', 'Data keranjang yang dipilih tidak valid.');
-        }
-
-        // Ambil item keranjang yang dipilih dari database
-        $selectedCartItems = Cart::whereIn('id', $selectedCartIds)
-                                 ->where('user_id', 1)
-                                 ->get();
-
-
-        if ($selectedCartItems->isEmpty()) {
-            return redirect()->back()->with('error', 'cart.WarningPayment');
-        }
-
-        return view('PaymentPage', compact('selectedCartItems'));
     }
 }

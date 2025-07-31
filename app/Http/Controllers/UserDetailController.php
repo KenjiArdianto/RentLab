@@ -24,7 +24,7 @@ class UserDetailController extends Controller
 
         // 2. Check if user already has user details
         if ($user->detail) {
-            return redirect()->route('home')->with('info', 'You have already completed your profile.');
+            return redirect()->route('vehicle.display')->with('info', 'You have already completed your profile.');
         }
         return view('auth.complete-user-detail');
     }
@@ -37,7 +37,7 @@ class UserDetailController extends Controller
 
         // 2. Check if user already has user details
         if ($user->detail) {
-            return redirect()->route('home')->with('info', 'You have already completed your profile.');
+            return redirect()->route('vehicle.display')->with('info', 'You have already completed your profile.');
         }
 
         if (UserDetail::where('idcardNumber', $request->idcardNumber)->exists()) {
@@ -65,7 +65,7 @@ class UserDetailController extends Controller
         Storage::disk('public')->putFileAs('idcard', $image, $filename);
         // return $user;
         // Store data in session temporarily
-        $user->detail()->create([
+        $userDetail=$user->detail()->create([
             'fname'=>$request->fname,
             'lname'=>$request->lname,
             'phoneNumber'=>$request->phoneNumber,
@@ -74,7 +74,7 @@ class UserDetailController extends Controller
             'idcardPicture'=>"idcard/{$filename}",
         ]);
         \activity('user_detail')
-        ->performedOn($user->detail)
+        ->performedOn($userDetail)
         ->causedBy($user)
         ->withProperties([
             'user_id' => $user->id,

@@ -110,8 +110,8 @@
                     <!-- Right-side Icons -->
                     <ul class="navbar-nav flex-row align-items-center">
                         <li class="nav-item"><a class="nav-link p-2 px-4" href="{{ route('cart') }}" title="@lang('app.nav.cart')"><i class="bi bi-cart fs-4"></i></a></li>
-                        <li class="nav-item d-none d-lg-inline-block"><a class="nav-link p-2 px-4" href="#" title="@lang('app.nav.transactions')"><i class="bi bi-receipt fs-4"></i></a></li>
-                        <li class="nav-item d-none d-lg-inline-block"><a class="nav-link p-2 px-4" href="#" title="@lang('app.nav.account')"><i class="bi bi-person-circle fs-4"></i></a></li>
+                        <li class="nav-item d-none d-lg-inline-block"><a class="nav-link p-2 px-4" href="{{ route('booking.history') }}" title="@lang('app.nav.transactions')"><i class="bi bi-receipt fs-4"></i></a></li>
+                        <li class="nav-item d-none d-lg-inline-block"><a class="nav-link p-2 px-4" href="{{ route('view.profile') }}" title="@lang('app.nav.account')"><i class="bi bi-person-circle fs-4"></i></a></li>
                     </ul>
                 </div>
             </div>

@@ -12,12 +12,12 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label for="name" class="form-label">{{ __('checkout.full_name') }}</label>
-                                    <input type="text" class="form-control" id="name" value="{{ $user->name ?? '' }}" readonly>
+                                    <input type="text" class="form-control" id="name" value="{{ Auth::user()->detail->fname.' '.Auth::user()->detail->lname }}" readonly>
                                 </div>
 
                                 <div class="col-12">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" value="{{ $user->email ?? '' }}" readonly>
+                                    <input type="email" class="form-control" id="email" value="{{ $user->email }}" readonly>
                                 </div>
 
                             </div>
