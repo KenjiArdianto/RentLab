@@ -12,7 +12,10 @@ class VehicleReview extends Model
 
     protected $fillable = [
         'comment', 
-        'rate'
+        'rate',
+        'user_id',
+        'vehicle_id',
+        'transaction_id'
     ];
 
     public function transaction()
@@ -28,5 +31,18 @@ class VehicleReview extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($vehicleReview) {
+            $transaction = $vehicleReview->transaction;
+            
+            // Cek apakah review dari admin juga sudah ada
+            if ($transaction && $transaction->userReview->isNotEmpty()) {
+                $transaction->transaction_status_id = 6;
+                $transaction->save();
+            }
+        });
     }
 }

@@ -4,12 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'email_verified_at',
+        'suspended_at',
     ];
 
     /**
@@ -31,6 +34,20 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            if ($user->isForceDeleting()) {
+                $user->detail()->withTrashed()->forceDelete();
+            } else {
+                $user->detail()->delete();
+            }
+        });
+
+        static::restoring(function ($user) {
+            $user->detail()->withTrashed()->restore();
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -44,30 +61,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    public function cart()
+    public function detail()
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasOne(UserDetail::class);
     }
 
-    public function transactions()
+    public function reviews()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(UserReview::class);
     }
-
-    public function userReview()
-    {
-        return $this->hasMany(UserReview::class, 'user_id');
-    }
-
-    public function reviewsModerated()
-    {
-        return $this->hasMany(UserReview::class, 'admin_id');
-    }
-
-    public function vehicleReview()
-    {
-        return $this->hasMany(VehicleReview::class);
-    }
-
 }

@@ -4,11 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'external_id',
+        'vehicle_id',
+        'user_id',
+        'driver_id',
+        'start_book_date',
+        'end_book_date',
+        'return_date',
+        'status',
+    ];
 
     public function transactionStatus()
     {
@@ -37,6 +50,45 @@ class Transaction extends Model
 
     public function vehicleReview()
     {
-        return $this->hasMany(VehicleReview::class);
+        return $this->hasOne(VehicleReview::class);
+    }
+
+    protected function VehiclePrice(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (!$this->vehicle || !$this->vehicle->price) {
+                    return 0;
+                }
+
+                $start = Carbon::parse($this->start_book_date);
+                $end = Carbon::parse($this->end_book_date);
+
+                $days = $start->diffInDays($end);
+
+                $vehiclePrice = $days * $this->vehicle->price;
+
+                return $vehiclePrice;
+            }
+        );
+    }
+
+    protected function driverFee(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->driver_id ? 50000 : 0
+        );
+    }
+
+    protected function totalPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->vehicle_price + $this->driver_fee
+        );
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
     }
 }

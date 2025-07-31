@@ -1,0 +1,347 @@
+/* Existing styles for datepicker remain unchanged */
+
+/* Tanggal yang sudah disimpan (tidak bisa diklik lagi) */
+.datepicker table tr td.disabled,
+.datepicker table tr td.disabled:hover {
+    color: #b0b0b0 !important;
+    background-color: #e9ecef !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Tanggal yang dipilih saat ini: start dan end */
+.datepicker table tr td.range.start,
+.datepicker table tr td.range.end,
+.datepicker table tr td.range.start:hover,
+.datepicker table tr td.range.end:hover {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border-radius: 0.25rem !important;
+    border: 1px solid #0d6efd;
+}
+
+/* Rentang satu hari (start == end) */
+.datepicker table tr td.range.start.end {
+    border-radius: 0.25rem !important;
+}
+
+/* Tanggal-tanggal di antara start dan end */
+.datepicker table tr td.range:not(.start):not(.end),
+.datepicker table tr td.range:not(.start):not(.end):hover {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border-radius: 0 !important;
+    border: none;
+}
+
+/* Ujung kiri (start) pada range panjang */
+.datepicker table tr td.range.start:not(.end) {
+    border-top-left-radius: 0.25rem !important;
+    border-bottom-left-radius: 0.25rem !important;
+    border-right: none;
+}
+
+/* Ujung kanan (end) pada range panjang */
+.datepicker table tr td.range.end:not(.start) {
+    border-top-right-radius: 0.25rem !important;
+    border-bottom-right-radius: 0.25rem !important;
+    border-left: none;
+}
+
+/* Jika hanya satu tanggal yang dipilih (sementara) */
+.datepicker table tr td.range:only-child {
+    border-radius: 0.25rem !important;
+}
+
+/* Pusatkan datepicker di dalam modal */
+#dateRangePicker {
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* Kurangi padding bawah modal */
+.modal-body {
+    padding-bottom: 0.5rem;
+}
+
+/* New styles for thumbnails */
+.thumbnail-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.thumbnail-item.active-thumbnail {
+    border-color: #0d6efd;
+    /* Bootstrap primary blue */
+    padding: 2px;
+}
+
+/* --- Responsive CSS using Media Queries --- */
+
+/* Desktop styles (maintain current layout) */
+.main-content {
+    display: flex;
+    gap: 15px;
+}
+
+.thumbnail-container {
+    width: 11%;
+}
+
+.carousel-section {
+    flex: 2;
+}
+
+.product-details-section {
+    flex: 1;
+}
+
+.detail-card {
+    height: 430px;
+    /* Maintain desktop height */
+}
+
+.review-hr {
+    width: 1100px;
+    /* Maintain desktop width for HR in reviews */
+}
+
+.user-avatar {
+    width: 90px;
+    height: 90px;
+}
+
+/* --- Calendar Styling for "inline" look within the modal --- */
+/* This will target the datepicker instance created within #dateRangePicker */
+#dateRangePicker .datepicker {
+    border: 1px solid #dee2e6;
+    /* Add a subtle border like a card */
+    border-radius: 0.25rem;
+    /* Match Bootstrap's rounded corners */
+    padding: 10px;
+    /* Add some internal padding */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    /* Soft shadow */
+    display: block;
+    /* Ensure it takes up its own space */
+    width: fit-content;
+    /* Make it fit its content */
+    margin: 0 auto;
+    /* Center the calendar horizontally */
+}
+
+/* Adjust header background and color to match Bootstrap primary */
+#dateRangePicker .datepicker-days thead tr:first-child,
+#dateRangePicker .datepicker-months thead tr:first-child,
+#dateRangePicker .datepicker-years thead tr:first-child,
+#dateRangePicker .datepicker-decades thead tr:first-child,
+#dateRangePicker .datepicker-centuries thead tr:first-child {
+    background-color: #0d6efd;
+    /* Bootstrap primary blue */
+    color: white;
+}
+
+#dateRangePicker .datepicker-days thead tr:first-child .datepicker-switch,
+#dateRangePicker .datepicker-months thead tr:first-child .datepicker-switch,
+#dateRangePicker .datepicker-years thead tr:first-child .datepicker-switch,
+#dateRangePicker .datepicker-decades thead tr:first-child .datepicker-switch,
+#dateRangePicker .datepicker-centuries thead tr:first-child .datepicker-switch,
+#dateRangePicker .datepicker-days thead tr:first-child .prev,
+#dateRangePicker .datepicker-months thead tr:first-child .prev,
+#dateRangePicker .datepicker-years thead tr:first-child .prev,
+#dateRangePicker .datepicker-decades thead tr:first-child .prev,
+#dateRangePicker .datepicker-centuries thead tr:first-child .prev,
+#dateRangePicker .datepicker-days thead tr:first-child .next,
+#dateRangePicker .datepicker-months thead tr:first-child .next,
+#dateRangePicker .datepicker-years thead tr:first-child .next,
+#dateRangePicker .datepicker-decades thead tr:first-child .next,
+#dateRangePicker .datepicker-centuries thead tr:first-child .next {
+    color: white !important;
+    /* Ensure navigation arrows and switch text are white */
+}
+
+/* Adjust hovered/active states for prev/next buttons in the header */
+#dateRangePicker .datepicker-days thead tr:first-child .prev:hover,
+#dateRangePicker .datepicker-months thead tr:first-child .prev:hover,
+#dateRangePicker .datepicker-years thead tr:first-child .prev:hover,
+#dateRangePicker .datepicker-decades thead tr:first-child .prev:hover,
+#dateRangePicker .datepicker-centuries thead tr:first-child .prev:hover,
+#dateRangePicker .datepicker-days thead tr:first-child .next:hover,
+#dateRangePicker .datepicker-months thead tr:first-child .next:hover,
+#dateRangePicker .datepicker-years thead tr:first-child .next:hover,
+#dateRangePicker .datepicker-decades thead tr:first-child .next:hover,
+#dateRangePicker .datepicker-centuries thead tr:first-child .next:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Slightly transparent white on hover */
+    border-radius: 0.25rem;
+}
+
+
+/* Mobile styles (for iPhone 12 Pro and similar smaller screens) */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        /* Stack elements vertically */
+        gap: 0;
+        /* Remove gap when stacked */
+    }
+
+    .thumbnail-container {
+        width: 100%;
+        /* Full width for thumbnails */
+        display: flex;
+        /* Make thumbnails horizontal scrollable */
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
+        /* Add some padding for scrollbar */
+        order: 2;
+        /* Move thumbnails below the main carousel */
+    }
+
+    .thumbnail-item {
+        flex: 0 0 auto;
+        /* Prevent items from shrinking */
+        margin-bottom: 15px;
+        width: 80px;
+        /* Adjust thumbnail size for mobile */
+        height: 80px;
+        margin-right: 10px;
+        /* Space between thumbnails */
+    }
+
+    .thumbnail-item img {
+        height: 100% !important;
+        /* Ensure image fills container */
+
+    }
+
+    .carousel-section {
+        flex: none;
+        /* Remove flex property */
+        width: 100%;
+        /* Full width for carousel */
+        order: 1;
+        /* Place carousel at the top */
+    }
+
+    .product-details-section {
+        flex: none;
+        /* Remove flex property */
+        width: 100%;
+        /* Full width for product details */
+        order: 3;
+        /* Place product details below thumbnails */
+        margin-top: 15px;
+        /* Add some space */
+    }
+
+    .detail-card {
+        height: auto;
+        /* Allow height to adjust based on content */
+        max-height: none;
+        /* Remove max-height constraint */
+    }
+
+    .price-section h1 {
+        font-size: 1.5rem !important;
+        /* Adjust font size for mobile */
+    }
+
+    .price-section span {
+        font-size: 0.8rem !important;
+        /* Adjust font size for mobile */
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+        /* Adjust modal margin for smaller screens */
+    }
+
+    .modal-body.row {
+        flex-direction: column;
+        /* Stack modal body content */
+    }
+
+    .modal-body .col-12.col-md-6 {
+        width: 100%;
+        /* Full width for columns in modal */
+        padding-left: var(--bs-gutter-x, 0.75rem);
+        /* Reset padding */
+        padding-right: var(--bs-gutter-x, 0.75rem);
+        /* Reset padding */
+    }
+
+    .modal-body .col-6.ps-0 {
+        padding-left: var(--bs-gutter-x, 0.75rem) !important;
+        /* Ensure padding on left for second column */
+    }
+
+    .add-to-cart-section {
+        flex-direction: column;
+        /* Stack add to cart button */
+        align-items: center;
+        /* Center the button */
+    }
+
+    .add-to-cart-section hr {
+        display: none;
+        /* Hide HR line on mobile */
+    }
+
+    .add-to-cart-section form {
+        width: 100%;
+        /* Make button full width */
+    }
+
+    .user-review-heading {
+        text-align: center;
+        /* Center review heading */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-top: 20px;
+    }
+
+    .review-card {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .review-card .card-body {
+        flex-direction: column;
+        /* Stack review elements vertically */
+        align-items: center;
+        /* Center items in review card */
+    }
+
+    .user-avatar-container {
+        width: 100%;
+        /* Full width for avatar container */
+        justify-content: center !important;
+        /* Center avatar */
+        margin-bottom: 10px;
+    }
+
+    .user-avatar {
+        width: 70px;
+        /* Smaller avatar for mobile */
+        height: 70px;
+    }
+
+    .user-review-content {
+        width: 100%;
+        /* Full width for review content */
+        padding-left: 0 !important;
+        /* Remove left padding */
+        text-align: center;
+        /* Center review text */
+    }
+
+    .review-hr {
+        width: 80% !important;
+        /* Adjust HR width for mobile */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
