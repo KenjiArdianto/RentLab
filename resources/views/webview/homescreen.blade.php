@@ -134,6 +134,26 @@
 
                         <hr>
 
+                        <p class="p-2 pb-1 mb-0 fs-6 fw-semibold">@lang('app.filter.location')</p>
+                        <div class="px-2 mb-3" style="max-height: 200px; overflow-y: auto;">
+                            @php
+                                $activeLocations = request('Tempat', []);
+                            @endphp
+                            @foreach($locations as $location)
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        name="Tempat[]"
+                                        value="{{ $location->id }}"
+                                        id="loc-{{ $location->id }}"
+                                        @checked(in_array($location->id, $activeLocations))>
+                                    <label class="form-check-label" for="loc-{{ $location->id }}">
+                                        {{ $location->location }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+
                         {{-- Filter Jenis Kendaraan (Dinamis dari Controller) --}}
                         <p class="p-2 pb-1 mb-0 fs-6 fw-semibold">@lang('app.filter.vehicle_type')</p>
                         <div id="wrapper-kategori-mobil" class="px-2">
@@ -191,6 +211,7 @@
                             @error('min_price') <div class="text-danger small">{{ $message }}</div> @enderror
                             @error('max_price') <div class="text-danger small">{{ $message }}</div> @enderror
                         </div>
+
 
                         {{-- Tombol Aksi --}}
                         <div class="d-flex p-0 mt-3">

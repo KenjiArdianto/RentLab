@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use  Carbon\Carbon;
 use App\Http\Requests\StoreCartRequest;
 use App\Models\Vehicle;
@@ -18,37 +18,37 @@ class CartController extends Controller
     {
         $userId=1;
             $listCart = Cart::where("user_id", $userId)
-                        ->orderBy('start_date', 'desc') 
+                        ->orderBy('start_date', 'desc')
                         ->get();
 
-        
+
         $today = Carbon::today();
 
         $upcomingCart = Cart::where("user_id", $userId)
                             ->where('start_date', '>=', $today)
-                            ->orderBy('start_date', 'asc') 
+                            ->orderBy('start_date', 'asc')
                             ->get();
 
-        
+
         $outdatedCart = Cart::where("user_id", $userId)
                             ->where('start_date', '<', $today)
-                            ->orderBy('start_date', 'desc') 
+                            ->orderBy('start_date', 'desc')
                             ->get();
 
         return view("CartPage", compact('listCart', 'upcomingCart', 'outdatedCart'));
     }
 
-   
+
     public function create()
     {
     }
 
-    
+
     public function store(StoreCartRequest $request)
     {
         // $vehicleId = $request->input('vehicle_id');
         // $dateRanges = $request->input('date_ranges');
-        // // $userId = Auth::id(); // ken kalo mau merge dengan login elson, kabari aku 
+        // // $userId = Auth::id(); // ken kalo mau merge dengan login elson, kabari aku
 
         // $currentCartItemCount = Cart::where('user_id', 1)->count();
         // $itemsToAdd = count($dateRanges);
@@ -89,7 +89,7 @@ class CartController extends Controller
         foreach ($dateRanges as $range) {
             $startDate = Carbon::parse($range['start_date']);
             $endDate = Carbon::parse($range['end_date']);
-            
+
 
             // Calculate the number of days
             $numberOfDays = $startDate->diffInDays($endDate) +1;
@@ -111,8 +111,8 @@ class CartController extends Controller
                 'start_date' => $range['start_date'],
                 'end_date' => $range['end_date'],
                 'user_id' => $userId,
-                'subtotal' => round($subtotal, 2), // Store the calculated subtotal
-            ]); 
+                'subtotal' => round($subtotal), // Store the calculated subtotal
+            ]);
         }
 
         return back()->with('success', 'Tanggal berhasil ditambahkan ke keranjang!');
@@ -161,12 +161,12 @@ class CartController extends Controller
 
     public function clearOutdated(Request $request)
     {
-        
+
         $today = Carbon::today();
 
         Cart::where('user_id', 1)
             ->where('start_date', '<', $today)
-            ->delete(); 
+            ->delete();
 
         return back()->with('success', 'Semua rental kedaluwarsa berhasil dihapus!');
     }
@@ -181,7 +181,7 @@ class CartController extends Controller
 
     public function processPayment(Request $request)
     {
-        $selectedCartIdsJson = $request->query('selected_cart_ids'); 
+        $selectedCartIdsJson = $request->query('selected_cart_ids');
 
         if (empty($selectedCartIdsJson)) {
             return redirect()->back()->with('error', 'Tidak ada item keranjang yang dipilih untuk pembayaran.');
@@ -195,7 +195,7 @@ class CartController extends Controller
 
         // Ambil item keranjang yang dipilih dari database
         $selectedCartItems = Cart::whereIn('id', $selectedCartIds)
-                                 ->where('user_id', 1) 
+                                 ->where('user_id', 1)
                                  ->get();
 
 

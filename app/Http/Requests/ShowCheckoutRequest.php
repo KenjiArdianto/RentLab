@@ -11,6 +11,7 @@ class ShowCheckoutRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        // Izinkan semua orang untuk mengakses, otorisasi akan ditangani di controller
         return true;
     }
 
@@ -21,9 +22,15 @@ class ShowCheckoutRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'cart_ids'   => 'sometimes|array',
-            'cart_ids.*' => 'integer|exists:carts,id',
-        ];
+        // HANYA terapkan aturan validasi jika metodenya adalah POST
+        if ($this->isMethod('post')) {
+            return [
+                'cart_ids'   => ['required', 'array', 'min:1'],
+                'cart_ids.*' => ['integer', 'exists:carts,id'],
+            ];
+        }
+
+        // Jika metodenya GET (misal: refresh), tidak perlu aturan validasi
+        return [];
     }
 }

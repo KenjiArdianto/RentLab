@@ -86,4 +86,9 @@ class Transaction extends Model
             get: fn () => $this->vehicle_price + $this->driver_fee
         );
     }
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
+    }
 }

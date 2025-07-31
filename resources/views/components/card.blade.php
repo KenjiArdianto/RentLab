@@ -24,9 +24,15 @@
                         {{ $kategori->category }}{{ !$loop->last ? ', ' : '' }}
                     @endforeach
                 </p> --}}
-                <p class="m-0">
-                    {{ $vehicle_item->year }}
-                </p>
+
+                <div class="m-0 d-flex justify-content-between w-100">
+                    <p class="m-0">
+                        {{ $vehicle_item->location->location }}
+                    </p>
+                    <p class="m-0">
+                        {{ $vehicle_item->year }}
+                    </p>
+                </div>
             </div>
 
             <div class="mt-auto pt-2">

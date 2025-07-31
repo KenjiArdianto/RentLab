@@ -211,10 +211,12 @@ use App\Http\Controllers\BookingHistoryController;
 use App\Http\Controllers\UserReviewController;
 // use App\Http\Controllers\LanguageController;
 
-Route::get('/', function () {
-    $defaultLocale = config('app.fallback_locale', 'id');
-    return redirect()->route('checkout', ['locale' => $defaultLocale]);
-});
+// Route::get('/', function () {
+//     $defaultLocale = config('app.fallback_locale', 'id');
+//     return redirect()->route('home', ['locale' => $defaultLocale]);
+// });
+
+Route::match(['get', 'post'], '/checkout', [PembayaranController::class, 'show'])->name('checkout.show');
 
 // RUTE UNTUK FITUR PEMBAYARAN
 // Route::match(['get', 'post'], '/checkout', [PembayaranController::class, 'show'])->name('checkout');

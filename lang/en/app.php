@@ -24,6 +24,7 @@ return [
             'reset' => 'Reset',
             'filter' => 'Apply Filter',
         ],
+        'location' => 'Location',
     ],
 
     // Vehicle Types
@@ -51,5 +52,8 @@ return [
         'empty' => 'No vehicles match your search or filter criteria.',
         'pagination' => 'Showing :first to :last of :total results',
         'showing_for' => 'Showing results for: :term',
+    ],
+    'misc' => [
+        'unknown_location' => 'Unknown location', // <-- TAMBAHKAN INI
     ],
 ];
