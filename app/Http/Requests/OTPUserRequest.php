@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class OTPUserRequest extends FormRequest
 {
@@ -11,7 +14,22 @@ class OTPUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::check() && Auth::user()->role!='admin';
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        \activity('otp_validation_failed')
+            ->withProperties([
+                'ip' => $this->ip(),
+                'user_input' => $this->only(array_keys($validator->errors()->messages())),
+                'errors' => $validator->errors()->messages(),
+                'user_agent' => $this->userAgent(),
+            ])
+            ->log('OTP input failed validation');
+
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
     }
 
     /**

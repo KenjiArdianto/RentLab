@@ -18,21 +18,48 @@ class GoogleController extends Controller
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->stateless()->user();
-        // Check if user already exists
-        $user = User::where('email', $googleUser->getEmail())->first();
-        if (!$user) {
-            // Create new user
-            $user = User::create([
-                'name' => $googleUser->getName(),
-                'email' => $googleUser->getEmail(),
-                'password' =>Hash::make(Str::random(16)), // just a random password
-                'email_verified_at'=>now(),
-            ]);
+        try{
+            $googleUser = Socialite::driver('google')->stateless()->user();
+            // Check if user already exists
+            $user = User::where('email', $googleUser->getEmail())->first();
+            if (!$user) {
+                // Create new user
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'password' =>Hash::make(Str::random(16)), // just a random password
+                    'email_verified_at'=>now(),
+                ]);
+                activity('google_auth')
+                ->causedBy($user)
+                ->withProperties([
+                    'email' => $user->email,
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('New user registered via Google');
+            }
+
+            Auth::login($user);
+            activity('google_auth')
+            ->causedBy($user)
+            ->withProperties([
+                'email' => $user->email,
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User logged in via Google');
+
+            return redirect('/home');
+        }catch(\Exception $e){
+            activity('google_auth')
+            ->withProperties([
+                'error' => $e->getMessage(),
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Google login failed');
+            return back()->withErrors(['google' => 'Google login failed. Please try again.']);
         }
-
-        Auth::login($user);
-
-        return redirect('/home');
     }
 }

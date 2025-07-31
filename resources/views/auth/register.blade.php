@@ -41,12 +41,13 @@
                                 </div>
                                 <input placeholder="Username" style="background-color: transparent !important; margin: auto; border: none;" id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                
                             </div>
+                            @error('name')
+                                <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
 
                         <div class="row mb-3" style="width: 80%;display: flex;margin:auto;">
@@ -55,12 +56,13 @@
                                     <img src="{{ asset('build/assets/images/MailLogo.png') }}" style="width: 25px; height: 20px; display: flex; justify-content: center; align-items: center; margin: auto;">
                                 </div>
                                 <input placeholder="Email" style="margin: auto; background-color: transparent; border: none;" id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                
                             </div>
+                            @error('email')
+                                <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div> 
                         
                         <div class="row mb-3" style="width: 80%;display: flex;margin:auto;">
@@ -70,12 +72,13 @@
                                 </div>
                                 <input placeholder="Password" style="margin: auto; background-color: transparent; border: none;" id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
 
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                
                             </div>
+                            @error('password')
+                                <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
 
                         <div class="row mb-3" style="width: 80%;display: flex;margin:auto;">

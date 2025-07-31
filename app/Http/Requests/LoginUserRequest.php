@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class LoginUserRequest extends FormRequest
 {
@@ -13,6 +15,21 @@ class LoginUserRequest extends FormRequest
     public function authorize(): bool
     {
         return Auth::guest();
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        \activity('login_validation_failed')
+        ->withProperties([
+            'email' => $this->input('email'),
+            'ip' => $this->ip(),
+            'user_agent' => $this->userAgent(),
+            'errors' => $validator->errors()->messages(),
+        ])
+        ->log('Login request validation failed');
+
+        throw (new ValidationException($validator))
+        ->errorBag($this->errorBag)
+        ->redirectTo($this->getRedirectUrl());
     }
 
     /**

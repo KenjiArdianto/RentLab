@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+// use Spatie\Activitylog\Models\Activity;
+use function Spatie\Activitylog\activity;
 
 
 class RegisterUserRequest extends FormRequest
@@ -20,6 +24,26 @@ class RegisterUserRequest extends FormRequest
     public function failedAuthorization()
     {
         throw new AuthorizationException('You are already logged in.');
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        // 🔥 Log the failure
+        \activity('registration_validation_failed')
+            ->withProperties([
+                'email' => $this->input('email'),
+                'ip' => $this->ip(),
+                'errors' => $validator->errors()->messages(),
+                'invalid_input' => collect($this->except(['password', 'password_confirmation']))
+                ->only(array_keys($validator->errors()->messages())),
+                'user_agent' => $this->userAgent(),
+            ])
+            ->log('Validation failed on registration');
+
+        // Let Laravel handle the rest
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
     }
 
     /**

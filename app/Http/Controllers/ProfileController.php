@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserDetail;
 use App\Models\User;
@@ -24,7 +25,7 @@ class ProfileController extends Controller
         return view('profile');
     }
 
-    public function change(Request $request){
+    public function change(ProfileRequest $request){
 
         $user = Auth::user();
         $details = $user->detail;
@@ -52,6 +53,19 @@ class ProfileController extends Controller
             'idCardNumber' => $request->idCardNumber,
             'dateOfBirth' => $request->dateOfBirth,
         ]);
+        \activity('profile_update')
+        ->causedBy(Auth::user())
+        ->performedOn($user->detail)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'changes' => $request->except(['_token', 'profilePicture', 'idcardPicture']), // user inputs
+            'profilePicture_uploaded' => $request->hasFile('profilePicture'),
+            'idcardPicture_uploaded' => $request->hasFile('idcardPicture'),
+            'changed_fields' => $user->detail->getChanges(),
+        ])
+        ->log('User updated profile information.');
+
 
         // ✅ Handle profile picture
         // return $request->has('profilePicture');
@@ -112,6 +126,15 @@ class ProfileController extends Controller
     }
 
     public function delete(Request $request){
+        \activity('account_deleted')
+        ->causedBy(Auth::user())
+        ->performedOn(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+    ->log('User deleted their account.');
+
         Auth::user()->delete();
         Auth::logout();
         $request->session()->invalidate();

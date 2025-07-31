@@ -41,6 +41,16 @@ class UserDetailController extends Controller
         }
 
         if (UserDetail::where('idcardNumber', $request->idcardNumber)->exists()) {
+            \activity('user_detail')
+            ->causedBy($user)
+            ->withProperties([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'ip' => request()->ip(),
+                'submitted' => $request->only(['fname', 'lname', 'phoneNumber', 'idcardNumber', 'dateOfBirth']),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User inputted already used NIK in database');
             return back()->withErrors(['idcard' => 'NIK is already registered.']);
         }
 
@@ -63,7 +73,18 @@ class UserDetailController extends Controller
             'dateOfBirth'=>$request->dateOfBirth,
             'idcardPicture'=>"idcard/{$filename}",
         ]);
-        // return $user->detail();
+        \activity('user_detail')
+        ->performedOn($user->detail)
+        ->causedBy($user)
+        ->withProperties([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'ip' => request()->ip(),
+            'submitted' => $request->only(['fname', 'lname', 'phoneNumber', 'idcardNumber', 'dateOfBirth']),
+            'picture_name' => $filename,
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User completed their profile details');
     
 
     return redirect('/home')->with('success', 'Account created and logged in!');

@@ -636,6 +636,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
       form.appendChild(profilePic);
     }
   }
+  form.style.display="none";
   
   idPic=document.getElementById('uploadIdCard');
   form.appendChild(idPic);

@@ -48,9 +48,26 @@ class LoginController extends Controller
         // This will automatically validate before this line
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials, $request->filled('remember'))) {
+            activity('login')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'email' => $request->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('User logged in successfully');
             $request->session()->regenerate();
             return redirect()->intended($this->redirectPath());
         }
+
+
+        activity('login_failed')
+        ->withProperties([
+            'email' => $request->email,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Login failed: invalid credentials');
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
