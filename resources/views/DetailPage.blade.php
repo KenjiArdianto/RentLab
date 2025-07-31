@@ -212,7 +212,7 @@
                         <div class="col-2 col-md-1 d-flex justify-content-end align-items-center p-0 user-avatar-container">
                             <div class="rounded-circle overflow-hidden p-0 user-avatar">
                                 <img class="w-100 h-100 object-fit-cover"
-                                    src="{{ $comment->user->profile_picture_url ?? asset('images/default_avatar.png') }}"
+                                    src="{{ $comment->user->profilePicture}}" 
                                     alt="User Avatar">
                             </div>
                         </div>
@@ -343,7 +343,12 @@
                     return;
                 }
 
-               
+                //user maksimal memilih 3 rentang tanggal
+                if (selectedDateRanges.length >= MAX_DATE_RANGES) { 
+                    alert(`Anda hanya dapat memilih maksimal ${MAX_DATE_RANGES} rentang tanggal.`);
+                    return;
+                }
+
                 const currentCartCount = await getCartItemCount();
                 const newItemsCount = 1; 
                 const potentialTotal = currentCartCount + newItemsCount + selectedDateRanges.length;

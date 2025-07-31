@@ -68,8 +68,9 @@ Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete
 Route::middleware(['auth', EnsureUserHasDetails::class])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
+Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
-    Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+    // Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 });
 
 Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){

@@ -11,13 +11,11 @@ use App\Models\Vehicle;
 
 class CartController extends Controller
 {
-    /**
-     * Menampilkan daftar sumber daya.
-     */
     public function index()
     {
-        $userId=1;
-            $listCart = Cart::where("user_id", $userId)
+        $userId=Auth::id();
+
+        $listCart = Cart::where("user_id", $userId)
                         ->orderBy('start_date', 'desc') 
                         ->get();
 
@@ -46,32 +44,9 @@ class CartController extends Controller
     
     public function store(StoreCartRequest $request)
     {
-        // $vehicleId = $request->input('vehicle_id');
-        // $dateRanges = $request->input('date_ranges');
-        // // $userId = Auth::id(); // ken kalo mau merge dengan login elson, kabari aku 
-
-        // $currentCartItemCount = Cart::where('user_id', 1)->count();
-        // $itemsToAdd = count($dateRanges);
-
-        // if (($currentCartItemCount + $itemsToAdd) > 10) {
-        //     return back()->with('error', 'Maksimal 10 item pada Cart. Anda sudah memiliki ' . $currentCartItemCount . ' item.');
-        // }
-
-        // foreach ($dateRanges as $range) {
-        //     Cart::create([
-        //         'vehicle_id' => $vehicleId,
-        //         'start_date' => $range['start_date'],
-        //         'end_date' => $range['end_date'],
-        //         'user_id' => 1, // Gunakan ID pengguna yang sebenarnya
-        //     ]);
-        // }
-
-        // return back()->with('success', 'Tanggal berhasil ditambahkan ke keranjang!');
-
         $vehicleId = $request->input('vehicle_id');
         $dateRanges = $request->input('date_ranges');
-        // $userId = Auth::id() ?? 1; // Gunakan ID pengguna yang sebenarnya atau dummy untuk pengujian
-        $userId=1;
+        $userId=Auth::id();
 
         // Fetch the vehicle to get its price
         $vehicle = Vehicle::find($vehicleId);
@@ -91,27 +66,27 @@ class CartController extends Controller
             $endDate = Carbon::parse($range['end_date']);
             
 
-            // Calculate the number of days
+            
             $numberOfDays = $startDate->diffInDays($endDate) +1;
 
-            // Calculate the discount percentage
-            // 5% discount per day, capped at 30% (which means max 6 days for discount)
-            $discountPercentage = min(0.05 * ($numberOfDays-1), 0.30); // 0.05 = 5%, 0.30 = 30%
+            
+            
+            $discountPercentage = min(0.05 * ($numberOfDays-1), 0.30); 
 
-            // Calculate the total price before discount
+            
             $totalPriceBeforeDiscount = $vehicle->price * $numberOfDays;
 
-            // Calculate the subtotal with discount
+            
             $subtotal = $totalPriceBeforeDiscount * (1 - $discountPercentage);
 
-            // dd($subtotal);
+            
 
             Cart::create([
                 'vehicle_id' => $vehicleId,
                 'start_date' => $range['start_date'],
                 'end_date' => $range['end_date'],
                 'user_id' => $userId,
-                'subtotal' => round($subtotal, 2), // Store the calculated subtotal
+                'subtotal' => round($subtotal, 2), 
             ]); 
         }
 
@@ -147,13 +122,11 @@ class CartController extends Controller
      */
     public function destroy(string $id)
     {
-    //     $cartitems=Cart::where('id',$id)->get();
-    //     if($cartitems->user_id != Auth::id()){
-    //         return back()->withError();
-    //     }
-    //     Cart::destroy($id);
-    //     return back();
-    //  ini unComment aja kalo mau merge dngan login
+
+        $cartitems=Cart::where('id',$id)->first();
+        if($cartitems->user_id != Auth::id()){
+            return back()->withError();
+        }
 
         Cart::destroy($id);
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
@@ -163,8 +136,9 @@ class CartController extends Controller
     {
         
         $today = Carbon::today();
+        $userId = Auth::id();
 
-        Cart::where('user_id', 1)
+        Cart::where('user_id', $userId)
             ->where('start_date', '<', $today)
             ->delete(); 
 
@@ -174,13 +148,14 @@ class CartController extends Controller
 
     public function getCartItemCount()
     {
-        $userId = Auth::id() ?? 1; // Gunakan ID pengguna yang terautentikasi, atau dummy untuk pengujian
+        $userId = Auth::id(); // Gunakan ID pengguna yang terautentikasi, atau dummy untuk pengujian
         $count = Cart::where('user_id', $userId)->count();
         return response()->json(['count' => $count]);
     }
 
     public function processPayment(Request $request)
     {
+        
         $selectedCartIdsJson = $request->query('selected_cart_ids'); 
 
         if (empty($selectedCartIdsJson)) {
@@ -195,7 +170,7 @@ class CartController extends Controller
 
         // Ambil item keranjang yang dipilih dari database
         $selectedCartItems = Cart::whereIn('id', $selectedCartIds)
-                                 ->where('user_id', 1) 
+                                 ->where('user_id', Auth::id()) 
                                  ->get();
 
 

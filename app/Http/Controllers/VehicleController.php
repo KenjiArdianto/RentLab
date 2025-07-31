@@ -10,6 +10,7 @@ use App\Models\Advertisement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VehicleFilterRequest;
+use Illuminate\Support\Facades\Auth; 
 use Illuminate\Database\Eloquent\Builder;
 
 class VehicleController extends Controller
@@ -48,8 +49,8 @@ class VehicleController extends Controller
     {
         //
         $idVehicle = Vehicle::with('vehicleCategories')->findOrFail($id);
-        $getVehicleByIdsINCarts = Cart::where('user_id', 1 )->where('vehicle_id', $id)->get(); #nunggu id user hasil login, codingan di bawah
-        // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get(); 
+        $getVehicleByIdsINCarts = Cart::where('user_id', Auth::id())->where('vehicle_id', $id)->get(); #nunggu id user hasil login, codingan di bawah
+         
 
         $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
             $query->where('vehicle_id', $id);
@@ -123,7 +124,7 @@ class VehicleController extends Controller
     {
         $filters = $request->validated();
 
-        // Filter ketersediaan berdasarkan tanggal
+        
         if (isset($filters['start_date']) && isset($filters['end_date'])) {
             $userStartDate = \Carbon\Carbon::parse($filters['start_date']);
             $userEndDate = \Carbon\Carbon::parse($filters['end_date']);
@@ -140,7 +141,7 @@ class VehicleController extends Controller
             });
         }
 
-        // Terapkan filter lainnya
+        
         $query
             ->when($filters['min_price'] ?? null, function ($q, $minPrice) {
                 $q->where('price', '>=', $minPrice);
@@ -203,7 +204,7 @@ class VehicleController extends Controller
             });
         }
 
-        $this->filter($request, $vehicleQuery); // Panggil private method filter
+        $this->filter($request, $vehicleQuery); 
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
 
         return view('webview.catalog', [
