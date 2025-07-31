@@ -180,6 +180,9 @@ class PembayaranController extends Controller
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
 
+            $payment->url = $result->getInvoiceUrl();
+            $payment->save();
+
             // Hapus item dari keranjang setelah berhasil
             Cart::whereIn('id', $selectedCartIds)->where('user_id', $user->id)->delete();
 
@@ -187,7 +190,8 @@ class PembayaranController extends Controller
             DB::commit();
 
             // Arahkan user ke halaman pembayaran Xendit
-            return redirect()->away($result->getInvoiceUrl());
+            Log::info("URL: {$payment->url}");
+            return redirect()->away($payment->url);
 
         } catch (\Exception $e) {
             // Jika terjadi error, batalkan semua query (rollback)

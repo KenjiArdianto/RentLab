@@ -21,6 +21,7 @@ class Payment extends Model
         'paid_at',
         'payment_method',
         'payment_channel',
+        'url',
     ];
 
     /**
