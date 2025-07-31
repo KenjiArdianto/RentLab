@@ -6,6 +6,7 @@ use App\Models\VehicleType;
 use App\Models\VehicleName;
 use App\Models\VehicleTransmission;
 use App\Models\Location;
+use App\Models\Vehicle;
 use App\Models\VehicleImage;
 use App\Models\VehicleCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +21,23 @@ class VehicleFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    protected $model = Vehicle::class; // Sesuaikan dengan model mobil Anda
+
+    // Daftar merek dan model mobil (contoh untuk pasar Indonesia)
+    protected $car_makes_and_models = [
+        'Honda' => ['Civic', 'CR-V', 'HR-V', 'Brio', 'Jazz', 'Accord', 'Mobilio', 'BR-V'],
+        'Toyota' => ['Avanza', 'Innova', 'Fortuner', 'Rush', 'Yaris', 'Camry', 'Agya', 'Calya', 'Raize', 'Vios', 'Corolla Altis'],
+        'Suzuki' => ['Ertiga', 'XL7', 'Baleno', 'Ignis', 'Jimny', 'Carry Pick-up', 'APV'],
+        'Mitsubishi' => ['Pajero Sport', 'Xpander', 'Outlander Sport', 'Triton', 'L300'],
+        'Daihatsu' => ['Xenia', 'Terios', 'Ayla', 'Sigra', 'Rocky', 'Luxio', 'Gran Max'],
+        'Nissan' => ['Livina', 'X-Trail', 'Serena', 'Kicks', 'Magnite'],
+        'Mazda' => ['Mazda 2', 'Mazda 3', 'CX-3', 'CX-5', 'CX-30'],
+        'Hyundai' => ['Creta', 'Palisade', 'Santa Fe', 'Staria', 'Stargazer', 'Ioniq 5'],
+        'Kia' => ['Seltos', 'Sonet', 'Carnival', 'Picanto'],
+        'Wuling' => ['Almaz', 'Cortez', 'Confero', 'Air EV'],
+    ];
+
     public function definition(): array
     {
         $type = VehicleType::inRandomOrder()->value('id');
@@ -45,6 +63,7 @@ class VehicleFactory extends Factory
             'vehicle_transmission_id' => $transmission,
             'engine_cc' => $engine_cc,
             'seats' => $this->faker->numberBetween(2,8),
+            'year' => $this->faker->year(),
             'location_id' => Location::inRandomOrder()->value('id'),
             'main_image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/700/400',
             'price' => $this->faker->numberBetween(100000,500000),
