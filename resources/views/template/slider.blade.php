@@ -10,7 +10,7 @@
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
                                 <div class="testimonial_avatar">
-                                    <img src="{{ asset('build/assets/images/FikriProfile.png') }}" alt="Fikri Luhur Pangestu">
+                                    <img src="{{ asset('landing_assets/images/FikriProfile.png') }}" alt="Aldyansyah Karim">
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -27,7 +27,7 @@
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
                                 <div class="testimonial_avatar">
-                                    <img src="{{ asset('build/assets/images/SitiProfile.png') }}" alt="Siti Aminah">
+                                    <img src="{{ asset('landing_assets/images/SitiProfile.png') }}" alt="Siti Aminah">
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -44,7 +44,7 @@
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
                                 <div class="testimonial_avatar">
-                                    <img src="{{ asset('build/assets/images/BudiProfile.png') }}" alt="Budi Santoso">
+                                    <img src="{{ asset('landing_assets/images/BudiProfile.png') }}" alt="Budi Santoso">
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -61,7 +61,7 @@
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
                                 <div class="testimonial_avatar">
-                                    <img src="{{ asset('build/assets/images/DewiProfile.png') }}" alt="Dewi Lestari">
+                                    <img src="{{ asset('landing_assets/images/DewiProfile.png') }}" alt="Dewi Lestari">
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -78,7 +78,7 @@
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
                                 <div class="testimonial_avatar">
-                                    <img src="{{ asset('build/assets/images/AgusProfile.png') }}" alt="Agus Wijaya">
+                                    <img src="{{ asset('landing_assets/images/AgusProfile.png') }}" alt="Agus Wijaya">
                                 </div>
                             </div>
                             <div class="col-md-8">

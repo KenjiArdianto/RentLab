@@ -67,13 +67,13 @@ body {
 .welcome_card h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; }
 .welcome_card p.sub_heading { color: rgba(255, 255, 255, 0.9); font-size: 1.5rem; }
 .date_inputs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.date_input_group { position: relative; width: calc(50% - 15px); }
+.date_input_group { position: relative; flex: 1.5; }
 .date_input_field { width: 100%; height: 48px; background-color: var(--input_bg_on_image_card); border: 1px solid var(--input_border_on_image_card); border-radius: 8px; padding: 0 1rem 0 3.2rem !important; color: var(--rentlab_white); font-family: var(--font_default); font-size: 0.9rem; }
 .date_input_field:focus { border-color: var(--rentlab_secondary_blue); outline: none; }
 .date_input_field::placeholder { color: var(--placeholder_on_image_card); opacity: 1; }
 .date_input_group .icon_calendar { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); pointer-events: none; z-index: 3;}
 .date_input_group .icon_calendar img { width: 35px; height: 35px; object-fit: contain; }
-.date_inputs .arrow_separator { font-size: 16px; color: var(--placeholder_on_image_card); }
+.date_inputs .arrow_separator { font-size: 16px; color: var(--placeholder_on_image_card); margin: 0.5rem; }
 .welcome_card .btn { height: 48px; font-size: 1rem; font-weight: 600; background-color: var(--rentlab_secondary_blue) !important; border: none; }
 
 .vehicle_toggle_wrapper { margin-bottom: 2rem; display: flex; justify-content: center; height: var(--toggle_final_height); align-items: center; }
@@ -126,21 +126,104 @@ body {
 .testimonial_section .carousel-control-next-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%234A90E2'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e"); }
 .testimonial_section .carousel-inner { padding: 0 40px; }
 
-@media (max-width: 768px) {
-    .welcome_card { padding: 2rem 1.5rem; }
-    .welcome_card h1 { font-size: 1.5rem; }
-    .welcome_card p.sub_heading {font-size: 0.95rem;}
-    .section_title { font-size: 1.8rem; }
-    .testimonial_section .row > div { text-align: center; }
-    .testimonial_avatar { margin-left: auto; margin-right: auto; margin-bottom: 1rem; }
-    .testimonial_text .author { text-align: center; }
-    .testimonial_section .carousel-inner { padding: 0; }
+@media (max-width: 767px) {
+    .hero_section {
+        padding: 40px 0;
+        background-image: linear-gradient(to bottom, var(--rentlab_primary_darkblue) 65%, transparent 35%);
+    }
+
+    .welcome_card {
+        padding: 2rem 1.5rem;
+    }
+
+    .welcome_card h1 {
+        font-size: 1.8rem;
+    }
+
+    .welcome_card p.sub_heading {
+        font-size: 1.1rem;
+    }
+    .date_inputs {
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
+
+    .date_input_group {
+        flex: none;
+        width: 100%; /* Membuat input menjadi lebar penuh */
+        margin-bottom: 1rem; /* Memberi jarak antar input */
+    }
+    
+    .date_inputs .arrow_separator {
+        display: none; /* Sembunyikan panah pemisah di mobile */
+    }
+
+    /* Menghapus margin bawah untuk input tanggal terakhir agar rapi */
+    .date_input_group:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .section_title {
+        font-size: 1.8rem;
+    }
+
+    .about_section .lead {
+        font-size: 1.1rem;
+    }
+
+    .feature_item h3 {
+        font-size: 1.2rem;
+    }
+
+    .testimonial_section .carousel-inner {
+        padding: 0; /* Menghapus padding horizontal di mobile */
+    }
 }
-@media (max-width: 576px) {
-    .welcome_card { padding: 1.5rem 1rem; }
-    .welcome_card h1 { font-size: 1.3rem; }
-    .welcome_card > p.sub_heading { font-size: 0.9rem; }
-    .section_title { font-size: 1.6rem; }
-    .feature_item .icon_container { width: 60px; height: 60px; }
-    .testimonial_text { padding: 1rem; }
+
+/* Untuk Ponsel (Lebar Maksimal 575px - Termasuk iPhone 12 Pro) */
+@media (max-width: 575px) {
+    .hero_section {
+        padding: 30px 0;
+        /* Latar belakang biru dibuat lebih kecil di mobile */
+        background-image: linear-gradient(to bottom, var(--rentlab_primary_darkblue) 55%, transparent 45%);
+    }
+
+    .welcome_card {
+        padding: 1.5rem 1rem; /* Mengurangi padding lebih lanjut */
+    }
+
+    .welcome_card h1 {
+        font-size: 1.6rem; /* Ukuran font judul yang lebih kecil */
+    }
+
+    .welcome_card p.sub_heading {
+        font-size: 1rem;
+    }
+
+    .date_input_field {
+        font-size: 0.9rem; /* Ukuran font input yang nyaman dibaca */
+        height: 46px; /* Tinggi input yang pas */
+    }
+    
+    .date_input_group .icon_calendar img {
+        width: 30px; /* Sedikit memperkecil ikon kalender */
+        height: 30px;
+    }
+
+    .vehicle_toggle_wrapper {
+        margin-bottom: 1.5rem;
+    }
+    
+    .section_title {
+        font-size: 1.6rem;
+    }
+
+    .feature_item .icon_container {
+        width: 200px; /* Perkecil ikon fitur agar tidak terlalu dominan */
+        height: 200px;
+    }
+
+    .testimonial_text {
+        padding: 1rem;
+    }
 }
