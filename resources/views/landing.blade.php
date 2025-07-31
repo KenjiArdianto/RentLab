@@ -192,7 +192,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script type="text/javascript" src="{{ asset('landing_assets/js/landing.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('landing_assets/js/landing.js') }}?v={{ time() }}"></script>
 
     </body>
 </html>

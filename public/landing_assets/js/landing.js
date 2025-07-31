@@ -11,29 +11,37 @@ document.addEventListener('DOMContentLoaded', function() {
             searchButton.setAttribute('disabled', 'true');
         }
     }
+
     const endDatePicker = flatpickr("#endBookDate", {
         altInput: true,
+        static: true,
         altFormat: "d/m/Y",
         dateFormat: "Y-m-d",
         minDate: "today",
         onReady: function(selectedDates, dateStr, instance) {
-            if (instance.altInput) {
-                instance.altInput.placeholder = instance.element.placeholder;
-            }
+            setTimeout(function() {
+                if (instance.altInput) {
+                    instance.altInput.placeholder = instance.element.placeholder;
+                }
+            }, 10);
         },
         onChange: function(selectedDates, dateStr, instance) {
             checkDates();
         }
     });
+
     flatpickr("#startBookDate", {
         altInput: true,
+        static: true,
         altFormat: "d/m/Y",
         dateFormat: "Y-m-d",
         minDate: "today",
         onReady: function(selectedDates, dateStr, instance) {
-            if (instance.altInput) {
-                instance.altInput.placeholder = instance.element.placeholder;
-            }
+            setTimeout(function() {
+                if (instance.altInput) {
+                    instance.altInput.placeholder = instance.element.placeholder;
+                }
+            }, 10);
         },
         onChange: function(selectedDates, dateStr, instance) {
             checkDates();
@@ -45,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
     const vehicleToggle = document.getElementById('vehicleToggle');
     const vehicleTypeInput = document.getElementById('vehicleTypeInput');
 
@@ -55,5 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
             vehicleTypeInput.value = 'motorcycle';
         }
     });
+
     checkDates();
 });

@@ -32,9 +32,9 @@ class LandingController extends Controller
         ]);
 
         $redirect_parameters = [
-            'Tipe_Kendaraan' => $validated_data['vehicle_type'] === 'car' ? 'Car' : 'Motor',
-            'start_book_date' => 'required|date_format:Y-m-d|after_or_equal:today',
-            'end_book_date'   => 'required|date_format:Y-m-d|after_or_equal:start_book_date',
+            'vehicle_type' => $validated_data['vehicle_type'] === 'car' ? 'Car' : 'Motor',
+            'start_book_date' => $validated_data['start_book_date'],
+            'end_book_date'   => $validated_data['end_book_date'],
             'min_price'      => '',
             'max_price'      => '',
         ];
