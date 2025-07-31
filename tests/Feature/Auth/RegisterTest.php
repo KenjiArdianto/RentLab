@@ -103,22 +103,33 @@ class RegisterTest extends TestCase
         $googleUser->shouldReceive('getName')->andReturn($this->username);
 
         // Fake the Socialite driver
-         Socialite::shouldReceive('driver')
-        ->with('google')
-        ->andReturnSelf();
-        Socialite::shouldReceive('stateless')
-            ->andReturnSelf();
-        Socialite::shouldReceive('user')
-            ->andReturn($googleUser);
+        Socialite::shouldReceive('driver->stateless->user')->andReturn($googleUser);
+         
+        // Act: Simulate hitting the Google callback route
+        $response = $this->get('/auth/google/callback');
 
-        // Assert user created & logged in
-        $this->assertAuthenticated();
-        $this->assertDatabaseHas('users', [
-            'email' => 'testuser@gmail.com',
-            'name' => 'Test User',
-        ]);
+        // Assert: Redirect happened, user exists, and is authenticated
+        $response->assertRedirect('/home'); // Or whatever your redirect path is
 
+        $user = User::where('email', $this->email)->first();
+        $this->assertNotNull($user);
+        $this->assertAuthenticatedAs($user);
+        $user->delete();
+    }
 
+    /** @test */
+    public function failed_google_attempt_user_missing_email()
+    {
+        $googleUser = Mockery::mock(ProviderUser::class);
+        $googleUser->shouldReceive('getId')->andReturn('123456789');
+        $googleUser->shouldReceive('getName')->andReturn($this->username);
+        $googleUser->shouldReceive('getEmail')->andReturn(null); // missing email
+
+        Socialite::shouldReceive('driver->stateless->user')->andReturn($googleUser);
+
+        $response = $this->get('/auth/google/callback');
+        $response->assertRedirect('/login');
+        $response->assertSessionHas('error', 'Google account did not provide a valid email.');
     }
 
 

@@ -36,31 +36,33 @@
                         <div class="row mb-3" style="width: 80%;display: flex;margin:auto;">
                             <div class="col-md-6" style="width: 100%;display: flex;border:2px solid black; padding: 3px;border-radius:8px;">
                                 <div style="width:30px;height:30px;margin:auto; border-radius: 20px; display: flex;">
-                                    <img src="{{ asset('build/assets/images/MailLogo.png') }}" style="width: 80%; height: 8 0%; display: flex; justify-content: center; align-items: center; margin: auto;">
+                                    <img src="{{ asset('build/assets/images/MailLogo.png') }}" style="width: 25px; height: 20px; display: flex; justify-content: center; align-items: center; margin: auto;">
                                 </div>
                                 <input placeholder="Email" style="margin: auto; background-color: transparent; border: none;" id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                
                             </div>
+                            @error('email')
+                                <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
 
                         <div class="row mb-3" style="width: 80%;display: flex;margin:auto;">
                             <div class="col-md-6" style="width: 100%;display: flex;border:2px solid black; padding: 3px;border-radius:8px;">
                                 <div style="width:30px;height:30px;margin:auto;  border-radius: 20px; display: flex;">
-                                    <img src="{{ asset('build/assets/images/PasswordLogo.png') }}" style="width: 80%; height: 8 0%; display: flex; justify-content: center; align-items: center; margin: auto;">
+                                    <img src="{{ asset('build/assets/images/PasswordLogo.png') }}" style="width: 25px; height: 20px; display: flex; justify-content: center; align-items: center; margin: auto;">
                                 </div>
                                 <input placeholder="Password" style="margin: auto; background-color: transparent; border: none;" id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                
                             </div>
+                            @error('password')
+                                <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
 
                         <div class="row mb-3" style="padding: 0 10%;">

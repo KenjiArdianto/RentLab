@@ -20,8 +20,7 @@ class BookingHistoryController extends Controller
      */
     public function index(Request $request): View
     {
-        # $userId = Auth::id();
-        $userId = 1;
+        $userId = Auth::id();
         $ongoingStatus = [1, 2, 3];
         $historyStatus = [4, 5, 6, 7];
         $relations = [
@@ -68,7 +67,7 @@ class BookingHistoryController extends Controller
 
     public function show(Transaction $transaction)
     {
-        // if (Auth::id() != $transaction->user_id) { abort(403); }
+        if (Auth::id() != $transaction->user_id) { abort(403); }
 
         $transaction->load(['user', 'vehicle', 'vehicle.vehicleName', 'vehicle.vehicleType', 'vehicle.vehicleTransmission', 'driver']);
         return view('booking-detail', compact('transaction'));
@@ -76,9 +75,9 @@ class BookingHistoryController extends Controller
 
     public function downloadReceipt(Transaction $transaction)
     {
-        // if (Auth::id() != $transaction->user_id) {
-        //     abort(403, 'Unauthorized Action');
-        // }
+        if (Auth::id() != $transaction->user_id) {
+            abort(403, 'Unauthorized Action');
+        }
 
         $transaction->load(['user', 'vehicle', 'vehicle.vehicleName', 'vehicle.vehicleType']);
         $data = [
@@ -92,10 +91,9 @@ class BookingHistoryController extends Controller
     public function cancel(Transaction $transaction)
     {
         
-        // if (1 != $transaction->user_id) {
-        // // if (Auth::id() != $transaction->user_id) { 
-        //     abort(403, 'AKSI TIDAK DIIZINKAN');
-        // }
+        if (Auth::id() != $transaction->user_id) { 
+            abort(403, 'AKSI TIDAK DIIZINKAN');
+        }
 
         if (!in_array($transaction->transaction_status_id, [1, 2])) {
             return back()->with('error', __('booking-history.cancel_massage'));

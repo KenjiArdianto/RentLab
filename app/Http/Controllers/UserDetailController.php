@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserDetailsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\UserDetail;
@@ -23,11 +24,11 @@ class UserDetailController extends Controller
 
         // 2. Check if user already has user details
         if ($user->detail) {
-            return redirect()->route('home')->with('info', 'You have already completed your profile.');
+            return redirect()->route('vehicle.display')->with('info', 'You have already completed your profile.');
         }
         return view('auth.complete-user-detail');
     }
-    public function store(Request $request){
+    public function store(UserDetailsRequest $request){
         // return "hi";
         $user = Auth::user();
         if (!$user) {
@@ -36,19 +37,20 @@ class UserDetailController extends Controller
 
         // 2. Check if user already has user details
         if ($user->detail) {
-            return redirect()->route('home')->with('info', 'You have already completed your profile.');
+            return redirect()->route('vehicle.display')->with('info', 'You have already completed your profile.');
         }
-        $request->validate([
-            'fname' => ['required', 'string', 'max:255'],
-            'lname' => ['required', 'string', 'max:255'],
-            'phoneNumber' => ['required', 'string', 'max:20'],
-            'idcardNumber' => ['required', 'string', 'max:50'],
-            'dateOfBirth' => ['required', 'date'],
-            'idcardPicture' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
-        ]);
-        // return "hi all";
 
         if (UserDetail::where('idcardNumber', $request->idcardNumber)->exists()) {
+            \activity('user_detail')
+            ->causedBy($user)
+            ->withProperties([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'ip' => request()->ip(),
+                'submitted' => $request->only(['fname', 'lname', 'phoneNumber', 'idcardNumber', 'dateOfBirth']),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User inputted already used NIK in database');
             return back()->withErrors(['idcard' => 'NIK is already registered.']);
         }
 
@@ -63,7 +65,7 @@ class UserDetailController extends Controller
         Storage::disk('public')->putFileAs('idcard', $image, $filename);
         // return $user;
         // Store data in session temporarily
-        $user->detail()->create([
+        $userDetail=$user->detail()->create([
             'fname'=>$request->fname,
             'lname'=>$request->lname,
             'phoneNumber'=>$request->phoneNumber,
@@ -71,7 +73,18 @@ class UserDetailController extends Controller
             'dateOfBirth'=>$request->dateOfBirth,
             'idcardPicture'=>"idcard/{$filename}",
         ]);
-        // return $user->detail();
+        \activity('user_detail')
+        ->performedOn($userDetail)
+        ->causedBy($user)
+        ->withProperties([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'ip' => request()->ip(),
+            'submitted' => $request->only(['fname', 'lname', 'phoneNumber', 'idcardNumber', 'dateOfBirth']),
+            'picture_name' => $filename,
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User completed their profile details');
     
 
     return redirect('/home')->with('success', 'Account created and logged in!');

@@ -1,114 +1,112 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@lang('payment.title.checkout') - RentLab</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    {{-- Menambahkan ikon Bootstrap untuk spinner --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-    </style>
-</head>
-<body>
+<x-layout>
     <div class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-7">
+        <form id="finalPaymentForm" action="{{ route('payment.process') }}" method="POST">
+            @csrf
 
-                <h2 class="mb-4 text-center">@lang('payment.title.checkout')</h2>
+            <div class="row g-5">
+                {{-- KOLOM KIRI: Detail Tagihan & Item --}}
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="mb-3">{{ __('checkout.billing_details') }}</h4>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="name" class="form-label">{{ __('checkout.full_name') }}</label>
+                                    <input type="text" class="form-control" id="name" value="{{ Auth::user()->detail->fname.' '.Auth::user()->detail->lname }}" readonly>
+                                </div>
 
-                @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
+                                <div class="col-12">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" value="{{ $user->email }}" readonly>
+                                </div>
 
-                {{-- FIX: Menambahkan ID pada form untuk referensi JavaScript --}}
-                <form id="paymentForm" action="{{ route('payment.process', ['locale' => app()->getLocale()]) }}" method="POST">
-                    @csrf
-
-                    @if($cartItems->isNotEmpty())
-                        {{-- Kirim kembali ID keranjang yang dipilih --}}
-                        @foreach($selectedCartIds as $id)
-                            <input type="hidden" name="cart_ids[]" value="{{ $id }}">
-                        @endforeach
-
-                        <!-- Order Summary Card -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">@lang('payment.summary.heading')</h5>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                {{-- Loop melalui setiap item di keranjang --}}
-                                @foreach($cartItems as $item)
-                                    <li class="list-group-item d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="my-0">{{ $item->vehicle->vehicleName->name }}</h6>
-                                            <small class="text-muted">
-                                                {{ $item->duration }} hari &times; Rp {{ number_format($item->vehicle->price) }}
-                                            </small>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-3">{{ __('checkout.items_to_checkout') }}</h4>
+                    <div class="list-group">
+                        @forelse ($cartItems as $item)
+                            <div class="list-group-item list-group-item-action mb-3 border rounded shadow-sm">
+                                <div class="row align-items-center">
+                                    <div class="col-3 col-lg-2">
+                                        {{-- Ganti dengan path gambar yang benar --}}
+                                        <img src="{{ $item->vehicle->main_image }}" class="img-fluid rounded" alt="{{ $item->vehicle->vehicleName->name }}">
+                                    </div>
+                                    <div class="col-9 col-lg-10">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">{{ $item->vehicle->vehicleName->name }}</h5>
+                                            <span class="fw-bold fs-5 text-nowrap">Rp{{ number_format($item->subtotal, 0, ',', '.') }}</span>
                                         </div>
-                                        <span class="text-muted">Rp {{ number_format($item->subtotal) }}</span>
+                                        <p class="mb-1 text-muted">{{ $item->vehicle->vehicleType->type }} | {{ $item->vehicle->vehicleTransmission->transmission }}</p>
+                                        <small>{{ \Carbon\Carbon::parse($item->start_date)->isoFormat('D MMM YYYY') }} &rarr; {{ \Carbon\Carbon::parse($item->end_date)->isoFormat('D MMM YYYY') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- Input tersembunyi untuk setiap item yang akan di-checkout --}}
+                            <input type="hidden" name="cart_ids[]" value="{{ $item->id }}">
+                        @empty
+                            <div class="alert alert-warning" role="alert">
+                                {{ __('checkout.no_items') }}
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- KOLOM KANAN: Ringkasan Pesanan (Sticky di Desktop) --}}
+                <div class="col-md-5 col-lg-4">
+                    <div class="position-sticky" style="top: 2rem;">
+                        <div class="card shadow-sm">
+                            <div class="card-header py-3">
+                                <h4 class="my-0 fw-normal">{{ __('checkout.summary') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        {{ __('checkout.subtotal') }} ({{ $cartItems->count() }} {{ __('checkout.items') }})
+                                        <span>Rp{{ number_format($totalAmount, 0, ',', '.') }}</span>
                                     </li>
-                                @endforeach
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        {{ __('checkout.service_fee') }}
+                                        <span>Rp0</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-top fw-bold">
+                                        <span>Total</span>
+                                        <span class="fs-5">Rp{{ number_format($totalAmount, 0, ',', '.') }}</span>
+                                    </li>
+                                </ul>
 
-                                <li class="list-group-item d-flex justify-content-between bg-light">
-                                    <strong class="fs-5">@lang('payment.summary.total')</strong>
-                                    <strong class="fs-5 text-primary">Rp {{ number_format($totalAmount) }}</strong>
-                                </li>
-                            </ul>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+                                    <i class="bi bi-shield-check-fill me-2"></i>
+                                    {{ __('checkout.pay_now') }}
+                                </button>
+                                <small class="d-block text-center text-muted mt-2">
+                                    <i class="bi bi-lock-fill"></i> {{ __('checkout.secure_payment') }}
+                                </small>
+                            </div>
                         </div>
-
-                        <div class="alert alert-info small">
-                            Anda akan diarahkan ke halaman pembayaran yang aman milik Xendit untuk memilih metode pembayaran (Virtual Account, QRIS, dll).
-                        </div>
-
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                @lang('payment.buttons.pay_now')
-                            </button>
-                        </div>
-                    @else
-                        <div class="alert alert-warning text-center">
-                            Keranjang Anda kosong.
-                        </div>
-                    @endif
-                </form>
-
+                    </div>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    {{-- =================================================================== --}}
-    {{-- FIX: Menambahkan JavaScript untuk mencegah double submission        --}}
-    {{-- =================================================================== --}}
+    {{-- Script untuk menampilkan spinner pada tombol saat form disubmit --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const paymentForm = document.getElementById('paymentForm');
-
+        document.addEventListener('DOMContentLoaded', function () {
+            const paymentForm = document.getElementById('finalPaymentForm');
             if (paymentForm) {
-                paymentForm.addEventListener('submit', function(event) {
-                    // Temukan tombol submit di dalam form
+                paymentForm.addEventListener('submit', function (event) {
                     const submitButton = paymentForm.querySelector('button[type="submit"]');
-
                     if (submitButton) {
-                        // Nonaktifkan tombol
                         submitButton.disabled = true;
-
-                        // Ubah teks dan tambahkan ikon spinner
                         submitButton.innerHTML = `
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            Memproses...
+                            {{ __('checkout.processing') }}...
                         `;
                     }
                 });
             }
         });
     </script>
-</body>
-</html>
+</x-layout>

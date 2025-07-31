@@ -24,6 +24,7 @@ return [
             'reset' => 'Atur Ulang',
             'filter' => 'Terapkan Filter',
         ],
+        'location' => 'Lokasi',
     ],
 
     // Tipe Kendaraan
@@ -51,5 +52,8 @@ return [
         'empty' => 'Tidak ada kendaraan yang sesuai dengan filter atau pencarian Anda.',
         'pagination' => 'Menampilkan :first hingga :last dari :total hasil',
         'showing_for' => 'Menampilkan hasil untuk: :term',
+    ],
+    'misc' => [
+        'unknown_location' => 'Lokasi tidak diketahui', // <-- TAMBAHKAN INI
     ],
 ];

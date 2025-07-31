@@ -456,24 +456,29 @@
     </div>
 
     <div class="content">
-      <div class="name">{{ Auth::user()->name??'' }} <span class="status">Verified</span></div>
-      <div class="email">{{ Auth::user()->email??'' }}</div>
+      <div class="name">{{ Auth::user()->name??'~' }} <span class="status">Verified</span></div>
+      <div class="email">{{ Auth::user()->email??'~' }}</div>
 
       <div class="info-grid">
-        <div><span>First Name</span>{{ Auth::user()->detail->fname??'' }}</div>
-        <div><span>Last Name</span>{{ Auth::user()->detail->lname??'' }}</div>
-        <div><span>Phone Number</span>{{ Auth::user()->detail->phoneNumber??'' }}</div>
-        <div><span>Date Of Birth</span>{{ Auth::user()->detail->dateOfBirth??'' }}</div>
+        <div><span>First Name</span>{{ Auth::user()->detail->fname??'~' }}</div>
+        <div><span>Last Name</span>{{ Auth::user()->detail->lname??'~' }}</div>
+        <div><span>Phone Number</span>{{ Auth::user()->detail->phoneNumber??'~' }}</div>
+        <div><span>Date Of Birth</span>{{ Auth::user()->detail->dateOfBirth??'~' }}</div>
       </div>
 
       <div class="form-section">
         <div class="input-group">
           <div style="flex:1">
-            <label>Name</label>
+            <label>First Name</label>
             <input type="text" value="{{ Auth::user()->detail->fname??'' }}" name="fname" id="fname">
+            @error('fname')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+            @enderror
           </div>
           <div style="flex:1">
-            <label>Surname</label>
+            <label>Last Name</label>
             <input type="text" value="{{ Auth::user()->detail->lname??'' }}" name="lname" id="lname">
           </div>
         </div>
@@ -484,14 +489,19 @@
             <span class="email-icon">📧</span>
             <input type="email" value="{{ Auth::user()->email??'' }}" name="email" id="email" readonly>
           </div>
-          <div class="verified-text">Verified 2 Jan, 2025</div>
+          <div class="verified-text">Verified {{ Auth::user()->detail->dateOfBirth??'' }}</div>
         </div>
 
         <div>
           <div class="username-input">
             <span>Username </span>
-            <input type="text" value="{{ Auth::user()->name??'' }}" name="username" id="username">
+            <input type="text" value="{{ Auth::user()->name??'' }}" name="username" id="username" class="@error('name') is-invalid @enderror">
           </div>
+          @error('name')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+          @enderror
         </div>
 
         <div>
@@ -500,6 +510,11 @@
             <span class="email-icon">📞</span>
             <input type="text" value="{{ Auth::user()->detail->phoneNumber??'' }}" name="phoneNumber" id="phoneNumber">
           </div>
+          @error('phoneNumber')
+            <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+            </span>
+          @enderror
         </div>
 
         <div>
@@ -508,6 +523,11 @@
             <span class="email-icon">🪪</span>
             <input type="text" value="{{ Auth::user()->detail->idcardNumber??'' }}" name="idCardNumber" id="idCardNumber">
           </div>
+          @error('idCardNumber')
+            <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+            </span>
+          @enderror
         </div>
 
 
@@ -515,16 +535,26 @@
           <div style="flex:1">
             <label>Date of Birth</label>
             <input type="date" placeholder="dd/mm/yyyy" name="dateOfBirth" id="dateOfBirth" value="{{ Auth::user()->detail->dateOfBirth??'' }}">
+            @error('dateOfBirth')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+            @enderror
           </div>
           <div style="flex:1">
             <label>ID Card Picture</label>
             {{-- <input type="file" style="border: none; cursor: pointer;"> --}}
-            <button id="buttonIdCard" style="width: 100%"> Show Image </button>
+            <button id="buttonIdCard" style="width: 100%">Show Image</button>
+            @error('idcardPicture')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+            @enderror
           </div>
         </div>
 
         <label class="imageOfIdCard" for="uploadIdCard">
-          <input type="file" id="uploadIdCard" accept="image/*" style="display: none;" name="idcardPicture">
+          <input type="file" id="uploadIdCard" accept="image/*" style="display: none;" name="idcardPicture">            
         </label>
 
       </div>
@@ -619,7 +649,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
   
   form.appendChild(makePostElement('text','fname','fname'));
   form.appendChild(makePostElement('text','lname','lname'));
-  form.appendChild(makePostElement('text','username','username'));
+  form.appendChild(makePostElement('text','username','name'));
   form.appendChild(makePostElement('text','phoneNumber','phoneNumber'));
   form.appendChild(makePostElement('text','idCardNumber','idCardNumber'));
   form.appendChild(makePostElement('date','dateOfBirth','dateOfBirth'));
@@ -636,6 +666,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
       form.appendChild(profilePic);
     }
   }
+  form.style.display="none";
   
   idPic=document.getElementById('uploadIdCard');
   form.appendChild(idPic);

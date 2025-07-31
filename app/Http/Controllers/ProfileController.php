@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserDetail;
 use App\Models\User;
@@ -24,34 +25,35 @@ class ProfileController extends Controller
         return view('profile');
     }
 
-    public function change(Request $request){
-
+    public function change(ProfileRequest $request)
+    {
         $user = Auth::user();
         $details = $user->detail;
 
-        // ✅ Validate basic fields and files (optional but recommended)
-        $request->validate([
-            'fname' => ['nullable', 'string', 'max:255'],
-            'lname' => ['nullable', 'string', 'max:255'],
-            'phoneNumber' => ['nullable', 'string', 'max:20'],
-            'idcardNumber' => ['nullable', 'string', 'max:50'],
-            'dateOfBirth' => ['nullable', 'date'],
-            'idcardPicture' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
-            'profilePicture' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:100000'],
-        ]);
-        // return "hi";
-
         // ✅ Update basic info
-        $user->name=$request->username;
+        $user->name=$request->name;
         $user->save();
         
         $details->update([
             'fname' => $request->fname,
             'lname' => $request->lname,
-            'phone_number' => $request->phoneNumber,
-            'idCardNumber' => $request->idCardNumber,
+            'phoneNumber' => $request->phoneNumber,
+            'idcardNumber' => $request->idCardNumber,
             'dateOfBirth' => $request->dateOfBirth,
         ]);
+        \activity('profile_update')
+        ->causedBy(Auth::user())
+        ->performedOn($user->detail)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'changes' => $request->except(['_token', 'profilePicture', 'idcardPicture']), // user inputs
+            'profilePicture_uploaded' => $request->hasFile('profilePicture'),
+            'idcardPicture_uploaded' => $request->hasFile('idcardPicture'),
+            'changed_fields' => $user->detail->getChanges(),
+        ])
+        ->log('User updated profile information.');
+
 
         // ✅ Handle profile picture
         // return $request->has('profilePicture');
@@ -112,6 +114,15 @@ class ProfileController extends Controller
     }
 
     public function delete(Request $request){
+        \activity('account_deleted')
+        ->causedBy(Auth::user())
+        ->performedOn(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+    ->log('User deleted their account.');
+
         Auth::user()->delete();
         Auth::logout();
         $request->session()->invalidate();
