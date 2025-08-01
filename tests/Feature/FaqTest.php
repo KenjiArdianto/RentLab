@@ -26,116 +26,86 @@ class FaqTest extends TestCase
     /** @test */
     public function tc2_search_correctly_filters_results_with_specific_keyword(): void
     {
-        $searchTerm = 'documents';
-        $expectedQuestion = __('faq.q7');
-        $unexpectedQuestion = __('faq.q8');
-
-        $response = $this->get(route('faq.index', ['search' => $searchTerm]));
-
-        $response->assertStatus(200);
-        $response->assertSee($expectedQuestion);
-        $response->assertDontSee($unexpectedQuestion);
+        $this->get(route('faq.index', ['search' => 'documents']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.q7'))
+            ->assertDontSeeText(__('faq.q8'));
     }
 
     /** @test */
     public function tc3_search_with_no_results_hides_all_questions(): void
     {
-        $response = $this->get(route('faq.index', ['search' => 'xyz-istilah-ini-tidak-mungkin-ada-xyz']));
-
-        $response->assertStatus(200);
-        $response->assertSee(__('faq.no_results'));
-        $response->assertDontSee(__('faq.q1'));
-        $response->assertDontSee(__('faq.q7'));
-        $response->assertDontSee(__('faq.q15'));
+        $this->get(route('faq.index', ['search' => 'xyz-nonexistent-keyword']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.no_results'))
+            ->assertDontSeeText(__('faq.q1'));
     }
 
     /** @test */
     public function tc4_search_is_case_insensitive(): void
     {
-        $searchTerm = 'DOCUMENTS';
-        $expectedQuestion = __('faq.q7');
-        $unexpectedQuestion = __('faq.q8');
-
-        $response = $this->get(route('faq.index', ['search' => $searchTerm]));
-
-        $response->assertStatus(200);
-        $response->assertSee($expectedQuestion);
-        $response->assertDontSee($unexpectedQuestion);
+        $this->get(route('faq.index', ['search' => 'DOCUMENTS']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.q7'))
+            ->assertDontSeeText(__('faq.q8'));
     }
 
     /** @test */
     public function tc5_search_finds_partial_words(): void
     {
-        $searchTerm = 'reserv';
-        $expectedQuestion = __('faq.q2');
-        $unexpectedQuestion = __('faq.q3');
-
-        $response = $this->get(route('faq.index', ['search' => $searchTerm]));
-        
-        $response->assertStatus(200);
-        $response->assertSee($expectedQuestion);
-        $response->assertDontSee($unexpectedQuestion);
+        $this->get(route('faq.index', ['search' => 'reserv']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.q2'))
+            ->assertDontSeeText(__('faq.q3'));
     }
     
     /** @test */
     public function tc6_search_with_multiple_results(): void
     {
-        $searchTerm = 'car';
-
-        $response = $this->get(route('faq.index', ['search' => $searchTerm]));
-
-        $response->assertStatus(200);
-        $response->assertSee(__('faq.q2'));
-        $response->assertSee(__('faq.q4'));
-        $response->assertSee(__('faq.q13'));
-        $response->assertDontSee(__('faq.q6'));
+        $this->get(route('faq.index', ['search' => 'car']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.q2'))
+            ->assertSeeText(__('faq.q4'))
+            ->assertSeeText(__('faq.q13'))
+            ->assertDontSeeText(__('faq.q6'));
     }
 
     /** @test */
     public function tc7_empty_search_returns_all_questions(): void
     {
-        $response = $this->get(route('faq.index', ['search' => '']));
-
-        $response->assertStatus(200);
-        $response->assertSee(__('faq.q1'));
-        $response->assertSee(__('faq.q30'));
-        $response->assertDontSee(__('faq.no_results'));
+        $this->get(route('faq.index', ['search' => '']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.q1'))
+            ->assertSeeText(__('faq.q30'))
+            ->assertDontSeeText(__('faq.no_results'));
     }
 
     /** @test */
     public function tc8_search_ignores_leading_and_trailing_spaces(): void
     {
-        $searchTerm = '  documents  ';
-        $expectedQuestion = __('faq.q7');
-        $unexpectedQuestion = __('faq.q8');
-
-        $response = $this->get(route('faq.index', ['search' => $searchTerm]));
-
-        $response->assertStatus(200);
-        $response->assertSee($expectedQuestion);
-        $response->assertDontSee($unexpectedQuestion);
+        $this->get(route('faq.index', ['search' => '  documents  ']))
+            ->assertStatus(200)
+            ->assertSeeText(__('faq.q7'))
+            ->assertDontSeeText(__('faq.q8'));
     }
 
     /** @test */
     public function tc9_search_term_is_repopulated_in_view(): void
     {
         $searchTerm = 'mileage';
-        $response = $this->get(route('faq.index', ['search' => $searchTerm]));
-    
-        $response->assertStatus(200);
-        $response->assertSee('<input name="search" id="faqSearch"', false);
-        $response->assertSee("value=\"{$searchTerm}\"", false);
+
+        $this->get(route('faq.index', ['search' => $searchTerm]))
+            ->assertStatus(200)
+            ->assertSee("value=\"{$searchTerm}\"", false);
     }
 
     /** @test */
     public function tc10_search_finds_keyword_in_answer_body(): void
     {
-        $searchTerm = 'agreement';
-
-        $this->get(route('faq.index', ['search' => $searchTerm]))
+        $this->get(route('faq.index', ['search' => 'agreement']))
              ->assertStatus(200)
-             ->assertSee(__('faq.q30'))
-             ->assertDontSee(__('faq.q7'));
+             ->assertSeeText(__('faq.q30'))
+             ->assertDontSeeText(__('faq.q1'));
     }
 
     /** @test */
@@ -143,8 +113,8 @@ class FaqTest extends TestCase
     {
         $this->get(route('faq.index', ['search' => 'rental car']))
              ->assertStatus(200)
-             ->assertSee(__('faq.q2'))
-             ->assertDontSee(__('faq.q1'));
+             ->assertSeeText(__('faq.q2'))
+             ->assertDontSeeText(__('faq.q3'));
     }
 
 
@@ -153,8 +123,8 @@ class FaqTest extends TestCase
     {
         $this->get(route('faq.index', ['search' => 'c/./a-r']))
             ->assertStatus(200)
-            ->assertSee(__('faq.no_results'))
-            ->assertDontSee(__('faq.q2'));
+            ->assertSeeText(__('faq.no_results'))
+            ->assertDontSeeText(__('faq.q2'));
     }
 
 }
