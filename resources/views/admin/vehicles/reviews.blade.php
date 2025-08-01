@@ -6,16 +6,6 @@
     use Illuminate\Support\Str;
 @endphp
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>ini error {{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <div class="text-center fw-bold fs-3 mb-2">
     {{ __('admin_tables.vehicle') }} #{{ $vehicle->id }}
 </div>
@@ -125,11 +115,9 @@
     </table>
 </div>
 
-<div class="container">
+<div class="container d-flex justify-content-center my-4">
     {{ $reviews->onEachSide(5)->links('pagination::bootstrap-5') }}
 </div>
-
-<x-admin.feedback-modal/>
 
 <script>
     function updateCharCount(textarea, counterId) {

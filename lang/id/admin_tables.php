@@ -51,4 +51,9 @@ return [
     'reviews' => 'Ulasan',
     'comment' => 'Komentar',
     'rating' => 'Penilaian',
+
+    'payment' => 'Pembayaran',
+    'payments' => 'Pembayaran',
+    'payment_id' => 'ID Pembayaran',
+    'price' => 'Biaya',
 ];

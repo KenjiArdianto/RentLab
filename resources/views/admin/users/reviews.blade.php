@@ -85,11 +85,10 @@
     </table>
 </div>
 
-<div class="container">
+<div class="container d-flex justify-content-center my-4">
     {{ $reviews->onEachSide(5)->links('pagination::bootstrap-5') }}
 </div>
 
-<x-admin.feedback-modal/>
 
 <!-- JS for responsive font and comment truncation -->
 <script>

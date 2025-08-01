@@ -51,4 +51,10 @@ return [
     'reviews' => 'Reviews',
     'comment' => 'Comment',
     'rating' => 'Rating',
+
+    'payment' => 'Payment',
+    'payments' => 'Payments',
+    'payment_id' => 'Payment ID',
+    'price' => 'Price',
+
 ];

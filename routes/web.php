@@ -116,6 +116,7 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::get('/admin/transactions',[AdminTransactionController::class, 'index'])->name('admin.transactions');
     Route::post('/admin/transactions/{transaction}', [AdminTransactionController::class, 'update'])->name('admin.transactions.update');
 
+    Route::get('/admin/payments', [AdminPaymentController::class, 'index'])->name('admin.payments');
 
     Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
     Route::post('/admin/vehicles/store', [AdminVehicleController::class, 'store'])->name('admin.vehicles.store');

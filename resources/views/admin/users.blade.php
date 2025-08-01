@@ -2,16 +2,6 @@
 
 @section('content')
     
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>ini error {{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <form action="{{ route('admin.users') }}" method="GET">
     <div class="container-fluid justify-content-between align-items-center mb-4">
         <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.users') }}" aria-label="Search">
@@ -135,6 +125,8 @@
     </div>
 @endforeach
 
-<x-admin.feedback-modal/>
+<div class="container d-flex justify-content-center my-4">
+    {{ $users->onEachSide(5)->links('pagination::bootstrap-5') }}
+</div>
 
 @endsection

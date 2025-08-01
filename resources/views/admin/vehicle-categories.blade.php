@@ -46,12 +46,8 @@
     @endforeach
 </div>
 
-<div class="container">
+<div class="container d-flex justify-content-center my-4">
     {{ $vehicleCategories->onEachSide(5)->links('pagination::bootstrap-5') }}
 </div>
-
-
-<x-admin.feedback-modal/>
-
 
 @endsection
