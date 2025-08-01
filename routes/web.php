@@ -36,6 +36,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\BookingHistoryController;
 use App\Http\Controllers\UserReviewController;
+use App\Http\Controllers\FaqController;
 
 Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
 
@@ -157,38 +158,7 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
 
 });
 
-
-    // Ini nanti mau diupdate
-
-Route::get('/faq', function (Request $request) {
-    $searchTerm = trim($request->input('search'));
-    $allFaqs = [];
-
-    for ($i = 1; $i <= 30; $i++) {
-        if (Lang::has('faq.q'.$i) && Lang::has('faq.a'.$i)) {
-            $allFaqs[] = [ 'id' => $i, 'question' => __('faq.q'.$i), 'answer' => __('faq.a'.$i) ];
-        }
-    }
-
-    $filteredFaqs = $allFaqs;
-    $noResults = false;
-    if (!empty($searchTerm)) {
-        $filteredFaqs = array_filter($allFaqs, function ($faq) use ($searchTerm) {
-            return Str::contains(strtolower($faq['question']), strtolower($searchTerm));
-        });
-
-        if (count($filteredFaqs) === 0) {
-            $noResults = true;
-        }
-    }
-
-    return view('faq', [
-        'faqs' => $filteredFaqs,
-        'noResults' => $noResults,
-    ]);
-
-})->name('faq.index');
-
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
 // Rute untuk mengganti bahasa
 
@@ -213,4 +183,3 @@ Route::get('/faq', function (Request $request) {
 Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::class])->group(function(){
     Route::get('/coba',[ProfileController::class,'coba']);
 });
-
