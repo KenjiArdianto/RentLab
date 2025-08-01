@@ -1,3 +1,4 @@
+<x-layout>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +11,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: #e4d7f5;
+      background: #ffffff;
       font-family: 'Inter', sans-serif;
       
     }
@@ -19,14 +20,14 @@
       opacity: 100%;
       max-width: 480px;
       margin: 40px auto;
-      background: #111827;
+      background: #ffffff;
       border-radius: 16px;
       overflow: hidden;
-      color: white;
+      color: black;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     }
     .header {
-      background: #d1c1e1;
+      background: #d6d6d6;
       height: 120px;
       position: relative;
     }
@@ -34,11 +35,11 @@
       width: 72px;
       height: 72px;
       border-radius: 50%;
-      background: #1f2937;
+      background: #a3a3a3;
       position: absolute;
       left: 20px;
       bottom: -36px;
-      border: 3px solid #111827;
+      border: 3px solid #ffffff;
       cursor: pointer;
       background-position: center;
       background-size: contain;
@@ -63,8 +64,8 @@
     .status {
       display: inline-block;
       font-size: 12px;
-      color: #10b981;
-      background: #064e3b;
+      color: #064e3b;
+      background: #10b981;
       padding: 2px 8px;
       border-radius: 9999px;
       margin-left: 6px;
@@ -77,12 +78,12 @@
       font-size: 13px;
     }
     .info-grid div {
-      color: #d1d5db;
+      color: black;
     }
     .info-grid span {
       display: block;
       font-size: 12px;
-      color: #9ca3af;
+      color: #5e5e5e;
     }
     .form-section {
       display: flex;
@@ -94,7 +95,7 @@
       display: block;
       font-size: 13px;
       margin-bottom: 4px;
-      color: #d1d5db;
+      color: black;
     }
     .input-group {
       display: flex;
@@ -108,8 +109,8 @@
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #374151;
-      background: #1f2937;
-      color: white;
+      background: #f2f3f4;
+      color: #5e5e5e;
       font-size: 14px;
     }
 
@@ -162,7 +163,7 @@
     }
     .username-input span {
       font-size: 14px;
-      color: #9ca3af;
+      color: black;
     }
     .btn-group {
       display: flex;
@@ -177,8 +178,8 @@
       cursor: pointer;
     }
     .cancel-btn {
-      background: transparent;
-      color: #9ca3af;
+      background: #eaeaea;
+      color: #5e5e5e;
     }
     .save-btn {
       background: #2563eb;
@@ -456,24 +457,29 @@
     </div>
 
     <div class="content">
-      <div class="name">{{ Auth::user()->name??'' }} <span class="status">Verified</span></div>
-      <div class="email">{{ Auth::user()->email??'' }}</div>
+      <div class="name">{{ Auth::user()->name??'~' }} <span class="status">Verified</span></div>
+      <div class="email">{{ Auth::user()->email??'~' }}</div>
 
       <div class="info-grid">
-        <div><span>First Name</span>{{ Auth::user()->detail->fname??'' }}</div>
-        <div><span>Last Name</span>{{ Auth::user()->detail->lname??'' }}</div>
-        <div><span>Phone Number</span>{{ Auth::user()->detail->phoneNumber??'' }}</div>
-        <div><span>Date Of Birth</span>{{ Auth::user()->detail->dateOfBirth??'' }}</div>
+        <div><span>First Name</span>{{ Auth::user()->detail->fname??'~' }}</div>
+        <div><span>Last Name</span>{{ Auth::user()->detail->lname??'~' }}</div>
+        <div><span>Phone Number</span>{{ Auth::user()->detail->phoneNumber??'~' }}</div>
+        <div><span>Date Of Birth</span>{{ Auth::user()->detail->dateOfBirth??'~' }}</div>
       </div>
 
       <div class="form-section">
         <div class="input-group">
           <div style="flex:1">
-            <label>Name</label>
+            <label>First Name</label>
             <input type="text" value="{{ Auth::user()->detail->fname??'' }}" name="fname" id="fname">
+            @error('fname')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+            @enderror
           </div>
           <div style="flex:1">
-            <label>Surname</label>
+            <label>Last Name</label>
             <input type="text" value="{{ Auth::user()->detail->lname??'' }}" name="lname" id="lname">
           </div>
         </div>
@@ -484,14 +490,19 @@
             <span class="email-icon">📧</span>
             <input type="email" value="{{ Auth::user()->email??'' }}" name="email" id="email" readonly>
           </div>
-          <div class="verified-text">Verified 2 Jan, 2025</div>
+          <div class="verified-text">Verified {{ Auth::user()->detail->dateOfBirth??'' }}</div>
         </div>
 
         <div>
           <div class="username-input">
             <span>Username </span>
-            <input type="text" value="{{ Auth::user()->name??'' }}" name="username" id="username">
+            <input type="text" value="{{ Auth::user()->name??'' }}" name="username" id="username" class="@error('name') is-invalid @enderror">
           </div>
+          @error('name')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+          @enderror
         </div>
 
         <div>
@@ -500,6 +511,11 @@
             <span class="email-icon">📞</span>
             <input type="text" value="{{ Auth::user()->detail->phoneNumber??'' }}" name="phoneNumber" id="phoneNumber">
           </div>
+          @error('phoneNumber')
+            <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+            </span>
+          @enderror
         </div>
 
         <div>
@@ -508,6 +524,11 @@
             <span class="email-icon">🪪</span>
             <input type="text" value="{{ Auth::user()->detail->idcardNumber??'' }}" name="idCardNumber" id="idCardNumber">
           </div>
+          @error('idCardNumber')
+            <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+            </span>
+          @enderror
         </div>
 
 
@@ -515,16 +536,26 @@
           <div style="flex:1">
             <label>Date of Birth</label>
             <input type="date" placeholder="dd/mm/yyyy" name="dateOfBirth" id="dateOfBirth" value="{{ Auth::user()->detail->dateOfBirth??'' }}">
+            @error('dateOfBirth')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+            @enderror
           </div>
           <div style="flex:1">
             <label>ID Card Picture</label>
             {{-- <input type="file" style="border: none; cursor: pointer;"> --}}
-            <button id="buttonIdCard" style="width: 100%"> Show Image </button>
+            <button id="buttonIdCard" style="width: 100%">Show Image</button>
+            @error('idcardPicture')
+              <span class="invalid-feedback" style=" margin:0; display: flex;" role="alert">
+                  <strong style="font-size: 12px; color: red; font-weight: bold;">{{ $message }}</strong>
+              </span>
+            @enderror
           </div>
         </div>
 
         <label class="imageOfIdCard" for="uploadIdCard">
-          <input type="file" id="uploadIdCard" accept="image/*" style="display: none;" name="idcardPicture">
+          <input type="file" id="uploadIdCard" accept="image/*" style="display: none;" name="idcardPicture">            
         </label>
 
       </div>
@@ -619,7 +650,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
   
   form.appendChild(makePostElement('text','fname','fname'));
   form.appendChild(makePostElement('text','lname','lname'));
-  form.appendChild(makePostElement('text','username','username'));
+  form.appendChild(makePostElement('text','username','name'));
   form.appendChild(makePostElement('text','phoneNumber','phoneNumber'));
   form.appendChild(makePostElement('text','idCardNumber','idCardNumber'));
   form.appendChild(makePostElement('date','dateOfBirth','dateOfBirth'));
@@ -636,6 +667,7 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
       form.appendChild(profilePic);
     }
   }
+  form.style.display="none";
   
   idPic=document.getElementById('uploadIdCard');
   form.appendChild(idPic);
@@ -749,3 +781,4 @@ document.querySelector('button.save-btn').addEventListener('click',function(){
 </script>
 
 </html>
+</x-layout>

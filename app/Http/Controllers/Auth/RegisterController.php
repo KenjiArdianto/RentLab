@@ -32,12 +32,30 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {    
         // Check if a user with this email already exists (for edge cases)
         if (User::where('email', $request->email)->exists()) {
+            activity('registration')
+            ->causedBy(Auth::user()) // will be null here, it's fine
+            ->withProperties([
+                'email' => $request->email,
+                'name' => $request->name,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('Failed registration ! email is already registered');
             return back()->withErrors(['email' => 'Email is already registered.']);
         }
+        activity('registration')
+        ->causedBy(Auth::user()) // will be null here, it's fine
+        ->withProperties([
+            'email' => $request->email,
+            'name' => $request->name,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('OTP sent for registration');
 
 
         $otp = rand(100000, 999999);

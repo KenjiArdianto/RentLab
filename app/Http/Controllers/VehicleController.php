@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VehicleFilterRequest;
 use App\Models\Location;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
@@ -56,7 +57,7 @@ class VehicleController extends Controller
             'location' // Ini akan mengambil data lokasi
         ])->findOrFail($id);
 
-        $getVehicleByIdsINCarts = Cart::where('user_id', 1)->where('vehicle_id', $id)->get();
+        $getVehicleByIdsINCarts = Cart::where('user_id', Auth::user()->id)->where('vehicle_id', $id)->get();
         // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get();
 
         $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {

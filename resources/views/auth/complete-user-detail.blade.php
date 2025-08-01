@@ -64,7 +64,7 @@
                         <div class="row mb-3" style="width: 80%;display: flex;margin: auto;">
                             <div class="col-md-6" style="width: 100%;display: flex;border:2px solid black; padding: 3px 5px;border-radius:8px;">
                                 <div style="margin:auto; flex: 6; font-weight: bold;">ID Card Number </div>
-                                <input placeholder="First Name" style="flex:11;margin: auto; background-color: transparent; border: none;" id="idcardNumber" type="text" class="form-control @error('idcardNumber') is-invalid @enderror" name="idcardNumber" required autocomplete="NIK">
+                                <input placeholder="ID Card Number" style="flex:11;margin: auto; background-color: transparent; border: none;" id="idcardNumber" type="text" class="form-control @error('idcardNumber') is-invalid @enderror" name="idcardNumber" required autocomplete="NIK">
                             </div>
                         </div>
 
