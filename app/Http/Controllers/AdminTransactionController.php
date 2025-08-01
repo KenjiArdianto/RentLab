@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use App\Models\UserReview;
 use Illuminate\Http\Request;
 use App\Http\Requests\AdminTransactionUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class AdminTransactionController extends Controller
 {
@@ -108,8 +109,19 @@ class AdminTransactionController extends Controller
 
         
         // dd($request->all());
+        
 
         $transactions = $query->paginate(100)->appends(['search' => $search]);;
+        \activity('admin_transaction_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'filters' => $request->query('search'),
+            'result_count' => $transactions->total(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin viewed transaction list' . ($request->has('search') ? ' with filters' : ''));
+        
         return view('admin.transactions', compact('transactions'));
     }
 
@@ -155,6 +167,16 @@ class AdminTransactionController extends Controller
         // dd($transaction);
 
         if ($request->status === $transaction->transaction_status_id) {
+            \activity('admin_transaction_update_skipped')
+            ->causedBy(Auth::user())
+            ->performedOn($transaction)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'submitted_status' => $request->status,
+                'current_status' => $transaction->transaction_status_id,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin tried to update transaction #$transaction->id but status remained unchanged");
                 return back()->with('error', "Status Not Changed");
         }
         else if ($request->comment) {
@@ -170,11 +192,33 @@ class AdminTransactionController extends Controller
                 'comment' => $request->comment,
                 'rate' => $request->rating
             ]);
+            \activity('admin_transaction_reviewed')
+            ->causedBy(Auth::user())
+            ->performedOn($transaction)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'new_status' => $request->status,
+                'comment' => $request->comment,
+                'rating' => $request->rating,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin submitted review for transaction #$transaction->id");
             return back()->with('success', "Transaction #$transaction->id review submitted successfully.");
         }
         else {
             $transaction->transaction_status_id = $request->status;
             $transaction->save();
+
+            \activity('admin_transaction_status_updated')
+            ->causedBy(Auth::user())
+            ->performedOn($transaction)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'new_status' => $request->status,
+                'previous_status' => $transaction->getOriginal('transaction_status_id'),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin updated transaction #$transaction->id status");
 
             return back()->with('success', "Transaction #$transaction->id status updated successfully.");
         }

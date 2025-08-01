@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Location;
 use App\Models\Vehicle;
 use App\Models\VehicleCategory;
+use App\Models\VehicleImage;
 use App\Models\VehicleType;
 use App\Models\VehicleName;
 use App\Models\VehicleTransmission;
 use App\Models\VehicleReview;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use App\Http\Requests\AdminVehicleStoreRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 class AdminVehicleController extends Controller
 {
@@ -106,7 +110,18 @@ class AdminVehicleController extends Controller
     
         $vehicles = $query
             ->with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'vehicleCategories', 'location', 'vehicleReview', 'transactions', 'vehicleImages'])
-            ->paginate(100)->appends(['search' => $search]);;
+            ->paginate(100)->appends(['search' => $search]);
+
+        activity('admin_vehicle_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'search_query' => $search,
+            'result_count' => $vehicles->total(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin viewed vehicle list' . ($request->has('search') ? ' with filters' : ''));
+
 
         return view('admin.vehicles', compact('vehicles', 'vehicleTypes', 'vehicleNames', 'vehicleTransmissions', 'locations', 'categories'));
     }
@@ -261,6 +276,8 @@ class AdminVehicleController extends Controller
             $vehicle->location_id = $request->location_id;
         }
 
+        // dd($request->all());
+
         if ($request->hasFile('main_image') && $request->file('main_image')->isValid()) {
             $vehicleUpdated = true;
 
@@ -285,17 +302,17 @@ class AdminVehicleController extends Controller
             $newPath = 'assets/' . $fileName;
 
             if ($request->image1_id) {
-                $img = VehicleImage::find($image1_id);
+                $img = VehicleImage::find($request->image1_id);
                 if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                    if ($img->image && File::exists(public_path($img->image))) {
+                        File::delete(public_path($img->image));
                     }
-                    $img->update(['image_path' => $newPath]);
+                    $img->update(['image' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
             } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                $vehicle->vehicleImages()->create(['image' => $newPath]);
             }
         }
 
@@ -307,18 +324,18 @@ class AdminVehicleController extends Controller
             $request->file('image2')->move(public_path('assets'), $fileName);
             $newPath = 'assets/' . $fileName;
 
-            if ($request->$image2_id) {
-                $img = VehicleImage::find($image2_id);
+            if ($request->image2_id) {
+                $img = VehicleImage::find($request->image2_id);
                 if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                    if ($img->image && File::exists(public_path($img->image))) {
+                        File::delete(public_path($img->image));
                     }
-                    $img->update(['image_path' => $newPath]);
+                    $img->update(['image' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
             } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                $vehicle->vehicleImages()->create(['image' => $newPath]);
             }
         }
 
@@ -330,18 +347,19 @@ class AdminVehicleController extends Controller
             $request->file('image3')->move(public_path('assets'), $fileName);
             $newPath = 'assets/' . $fileName;
 
-            if ($request->$image3_id) {
-                $img = VehicleImage::find($image3_id);
+
+            if ($request->image3_id) {
+                $img = VehicleImage::find($request->image3_id);
                 if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                    if ($img->image && File::exists(public_path($img->image))) {
+                        File::delete(public_path($img->image));
                     }
-                    $img->update(['image_path' => $newPath]);
+                    $img->update(['image' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
             } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                $vehicle->vehicleImages()->create(['image' => $newPath]);
             }
         }
 
@@ -353,18 +371,18 @@ class AdminVehicleController extends Controller
             $request->file('image4')->move(public_path('assets'), $fileName);
             $newPath = 'assets/' . $fileName;
 
-            if ($request->$image4_id) {
-                $img = VehicleImage::find($image4_id);
+            if ($request->image4_id) {
+                $img = VehicleImage::find($request->image4_id);
                 if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                    if ($img->image && File::exists(public_path($img->image))) {
+                        File::delete(public_path($img->image));
                     }
-                    $img->update(['image_path' => $newPath]);
+                    $img->update(['image' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
             } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                $vehicle->vehicleImages()->create(['image' => $newPath]);
             }
         }
 

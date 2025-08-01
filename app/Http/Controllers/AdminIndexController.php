@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminIndexController extends Controller
 {
@@ -84,6 +85,24 @@ class AdminIndexController extends Controller
                 'color' => 'info'
             ],
         ];
+        \activity('admin_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'object_counts' => [
+                'users' => $userCount,
+                'drivers' => $driverCount,
+                'transactions' => $transactionCount,
+                'vehicles' => $vehicleCount,
+                'vehicle_types' => $vehicleTypeCount,
+                'vehicle_names' => $vehicleNameCount,
+                'vehicle_transmissions' => $vehicleTransmissionCount,
+                'vehicle_categories' => $vehicleCategoryCount,
+                'locations' => $locationCount,
+            ],
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('Admin accessed the dashboard');
 
         return view('admin.index', compact('counts'));
     }

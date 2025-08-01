@@ -99,7 +99,7 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     })->name('admin.logs');
 
 
-    Route::get('/admin/users}',[AdminUserController::class, 'index'])->name('admin.users');
+    Route::get('/admin/users',[AdminUserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users/suspend-selected',[AdminUserController::class, 'suspendSelected'])->name('admin.users.suspendSelected');
     Route::post('/admin/users/suspend/{user}',[AdminUserController::class, 'suspend'])->name('admin.users.suspend');
     Route::post('/admin/users/unsuspend-selected',[AdminUserController::class, 'unsuspendSelected'])->name('admin.users.unsuspendSelected');

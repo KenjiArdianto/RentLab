@@ -6,6 +6,8 @@ use App\Models\Vehicle;
 use App\Models\VehicleReview;
 use Illuminate\Http\Request;
 use App\Http\Requests\AdminVehicleReviewRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\AdminVehicleUpdateRequest;
 
 class AdminVehicleReviewController extends Controller
 {
