@@ -42,6 +42,7 @@ Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
 Route::get('/landing/search', [LandingController::class, 'search'])->name('landing.search');
 
+Route::get('/', [VehicleController::class, 'display']);
 Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
 Route::get('/catalog', [VehicleController::class, 'catalog'])->name('vehicle.catalog');
 Route::get('/vehicle/{id}', [VehicleController::class,'show'])->name("vehicle.detail");

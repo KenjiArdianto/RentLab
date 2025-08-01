@@ -19,6 +19,18 @@ class EnsureUserHasDetails
     {
         
         if (Auth::user()->role !== 'admin' && (!Auth::user()->detail)) {
+            \activity('middleware_access_denied')
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'user_id'     => optional(Auth::user())->id,
+                    'user_email'  => optional(Auth::user())->email,
+                    'role'        => optional(Auth::user())->role,
+                    'requested_url' => $request->fullUrl(),
+                    'method'      => $request->method(),
+                    'ip'          => $request->ip(),
+                    'user_agent'  => $request->userAgent(),
+                ])
+                ->log('Access denied: user needs user detail to access this page!');
             return redirect()->route('complete.user.detail');
         }
 
