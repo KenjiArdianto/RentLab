@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;    
+use Illuminate\Http\Request;   
+use App\Http\Requests\LoginUserRequest; 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -37,6 +41,38 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+    }
+
+    public function login(LoginUserRequest $request)
+    {
+        // This will automatically validate before this line
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            activity('login')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'email' => $request->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('User logged in successfully');
+            $request->session()->regenerate();
+            return redirect()->intended($this->redirectPath());
+        }
+
+
+        activity('login')
+        ->withProperties([
+            'email' => $request->email,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Login failed: invalid credentials');
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+            'password' => 'The provided credentials do not match our records.',
+        ])->withInput();
     }
 
     protected function authenticated(Request $request, $user)

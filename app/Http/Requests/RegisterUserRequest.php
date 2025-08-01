@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+// use Spatie\Activitylog\Models\Activity;
+use function Spatie\Activitylog\activity;
 
 
 class RegisterUserRequest extends FormRequest
@@ -22,28 +26,72 @@ class RegisterUserRequest extends FormRequest
         throw new AuthorizationException('You are already logged in.');
     }
 
+    protected function failedValidation(Validator $validator)
+    {
+        // 🔥 Log the failure
+        \activity('registration_validation_failed')
+            ->withProperties([
+                'email' => $this->input('email'),
+                'ip' => $this->ip(),
+                'errors' => $validator->errors()->messages(),
+                'invalid_input' => collect($this->except(['password', 'password_confirmation']))
+                ->only(array_keys($validator->errors()->messages())),
+                'user_agent' => $this->userAgent(),
+            ])
+            ->log('Validation failed on registration');
+
+        // Let Laravel handle the rest
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:15',
+                'regex:/^(?=.*[A-Za-z])[A-Za-z0-9._-]{3,15}$/'
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'regex:/^[\w.+-]+@gmail\.com$/i' // Must be Gmail
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:25',
+                'regex:/^[\x21-\x7E]{8,25}$/', // ASCII 33–126
+                'confirmed'
+            ],
         ];
     }
+
     public function messages()
     {
         return [
             'name.required' => 'Please enter your full name.',
+            'name.regex' => 'Name must be 3-15 characters, can include alphanumeric, dots, underscores, hyphens',
             'email.required' => 'We need your email address.',
             'email.email' => 'That is not a valid email address.',
             'password.required' => 'Don’t forget your password!',
             'password.min' => 'Password must be at least 8 characters.',
+            'password.max' => 'Password must not exceed 25 characters.',
+            'password.regex' => 'Password must contain only ASCII characters.',
             'password.confirmed' => 'Password confirmation does not match.',
+            'email.regex' => 'Only @gmail.com addresses are accepted.',
         ];
     }
 }

@@ -43,8 +43,8 @@ class PembayaranController extends Controller
             return redirect()->route('cart')->with('info', 'Silakan pilih item dari keranjang Anda.');
         }
 
-        // $user = Auth::user();
-        $user = User::find(1); // Tetap gunakan ini untuk testing
+        $user = Auth::user();
+        // $user = User::find(1); // Tetap gunakan ini untuk testing
 
         if (!$user) {
             return redirect()->route('login')->with('error', 'Silakan login untuk melanjutkan.');
@@ -74,19 +74,13 @@ class PembayaranController extends Controller
      */
     public function createCheckoutInvoice(CreateCheckoutInvoiceRequest $request) // <-- 3. Gunakan CreateCheckoutInvoiceRequest
     {
-        // Validasi sudah otomatis berjalan, ambil data yang bersih
-        // dd($request);
         $validated = $request->validated();
-
         $selectedCartIds = $validated['cart_ids'];
 
-        // $user = Auth::user();
-        $user = User::find(1);
-
+        $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Anda harus login untuk melanjutkan pembayaran.');
+            return redirect()->route(route: 'login')->with('error', 'Anda harus login untuk melanjutkan pembayaran.');
         }
-
         $cartItems = Cart::with('vehicle')
             ->where('user_id', $user->id)
             ->whereIn('id', $selectedCartIds)
@@ -179,6 +173,7 @@ class PembayaranController extends Controller
             ]);
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
+            // dd($result);
 
             $payment->url = $result->getInvoiceUrl();
             $payment->save();
