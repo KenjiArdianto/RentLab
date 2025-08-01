@@ -8,6 +8,19 @@
   <title>User Profile UI</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        /* Hapus bayangan internal yang kadang ditambahkan browser */
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+
+        /* Opsional: Jika warna teks juga berubah (misalnya jadi hitam), atur kembali */
+        -webkit-text-fill-color: #000 !important;
+
+        /* Paksa transisi agar perubahan warna tidak terlihat aneh */
+        transition: background-color 5000s ease-in-out 0s;
+    }
     body {
       margin: 0;
       padding: 0;
@@ -230,7 +243,7 @@
     }
 
     .profile-popup{ 
-      background: #111827;
+      background: #a3a3a3;
       margin:auto;
       border-radius: 50px;
       display:flex;
@@ -262,13 +275,12 @@
       flex-direction: column;
     }
     .unAuthHiddenMenu {
-  background-color: #111827;
+  background-color: #a3a3a3;
   padding: 40px 30px;
   border-radius: 30px;
   width: 90%;
   max-width: 400px;
   margin: 50px auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   text-align: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -309,13 +321,13 @@
 
 
 .unUserDetailHiddenMenu {
-  background-color: #111827;
+  background-color: #a3a3a3;
   padding: 40px 30px;
   border-radius: 30px;
   width: 90%;
   max-width: 400px;
   margin: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  /* box-shadow: 0 8px 24px rgba(0,0,0,0.3); */
   text-align: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
