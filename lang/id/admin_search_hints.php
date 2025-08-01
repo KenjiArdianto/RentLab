@@ -11,5 +11,7 @@ return [
     'vehicle_names' => 'Cari Nama Kendaraan',
     'vehicle_transmissions' => 'Cari Transmisi Kendaraan',
     'vehicle_categories' => 'Cari Kategori Kendaraan',
-    'locations' => 'Cari Lokasi', 
+    'locations' => 'Cari Lokasi',  
+    'logs' => 'Format: Attribute1=Value1,Attribute2=Value2 ex: id_log=1,dibuat_pada=2025-08-01_10:00:00',
+    'payments' => 'Format: Attribute1=Value1,Attribute2=Value2 ex: id_pembayaran=1,metode_pembayaran=EWALLET',
 ];

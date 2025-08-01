@@ -23,7 +23,7 @@
     <form action="{{ route('admin.vehicles.reviews', $vehicle->id) }}" method="GET">
         <input name="search" class="form-control border-dark mx-auto my-2" style="width: 50%;"
                placeholder="{{ __('admin_search_hints.vehicle_reviews') }}"
-               aria-label="Search">
+               aria-label="Search" value="{{ request('search') }}">
     </form>
 </div>
 

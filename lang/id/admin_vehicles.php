@@ -12,6 +12,8 @@ return [
     'hint_engine_cc' => 'Masukkan kapasitas mesin dalam CC (misal: 1500).',
     'placeholder_seats' => 'misal: 5',
     'hint_seats' => 'Masukkan jumlah kursi.',
+    'placeholder_year' => 'misal: 2005',
+    'hint_year' => 'Masukkan tahun kendaraan.',
     'placeholder_price' => 'misal: 250000',
     'hint_price' => 'Masukkan harga dalam IDR.',
     'choose_location' => '-- Pilih Lokasi --',

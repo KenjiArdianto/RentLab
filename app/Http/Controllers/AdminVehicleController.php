@@ -146,6 +146,7 @@ class AdminVehicleController extends Controller
             'vehicle_transmission_id'=> $request->vehicle_transmission_id,
             'engine_cc'              => $request->engine_cc,
             'seats'                  => $request->seats,
+            'year'                   => $request->year,
             'price'                  => $request->price,
             'location_id'            => $request->location_id,
             'main_image'             => null,  // Set default null
@@ -295,6 +296,16 @@ class AdminVehicleController extends Controller
             $vehicleUpdated = true;
 
             $vehicle->seats = $request->seats;
+        }
+
+        if ($request->year != $vehicle->year) {
+            $changes['year'] = [
+                'old' => $vehicle->year,
+                'new' => $request->year,
+            ];
+            $vehicleUpdated = true;
+
+            $vehicle->year = $request->year;
         }
 
         if ($request->price != $vehicle->price) {
@@ -448,6 +459,7 @@ class AdminVehicleController extends Controller
         }
 
         if ($vehicleUpdated) {
+            $vehicle->save();
             \activity('admin_vehicle_update_successful')
             ->causedBy(Auth::user())
             ->performedOn($vehicle)

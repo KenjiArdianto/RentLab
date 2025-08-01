@@ -4,7 +4,7 @@
     
 <form action="{{ route('admin.users') }}" method="GET">
     <div class="container-fluid justify-content-between align-items-center mb-4">
-        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.users') }}" aria-label="Search">
+        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.users') }}" aria-label="Search" value="{{ request('search') }}">
     </div> 
     <div class="container-fluid d-flex justify-content-center mb-4">
         <select name="filter" class="form-select w-auto ms-3" onchange="this.form.submit()">

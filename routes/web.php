@@ -14,6 +14,7 @@ use App\Http\Middleware\EnsureUserHasDetails;
 use App\Http\Controllers\AdminIndexController;
 use App\Http\Controllers\AdminDriverController;
 use App\Http\Controllers\AdminTransactionController;
+use App\Http\Controllers\AdminPaymentController;
 use App\Http\Controllers\AdminVehicleController;
 use App\Http\Controllers\AdminVehicleReviewController;
 use App\Http\Controllers\AdminVehicleTypeController;
@@ -93,11 +94,7 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::get('/admin',[AdminIndexController::class, 'index'])->name('admin.index');
 
 
-
-    Route::get('/admin/logs', function () {
-        return view('admin.logs');
-    })->name('admin.logs');
-
+    Route::get('/admin/logs',[AdminLogsController::class, 'index'])->name('admin.logs');
 
     Route::get('/admin/users',[AdminUserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users/suspend-selected',[AdminUserController::class, 'suspendSelected'])->name('admin.users.suspendSelected');

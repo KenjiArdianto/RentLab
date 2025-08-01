@@ -4,7 +4,7 @@
 
 <div class="container-fluid justify-content-between align-items-center mb-4">
     <form action="{{ route('admin.vehicles') }}" method="GET">
-        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.vehicle_types') }}" aria-label="Search">
+        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.vehicles') }}" aria-label="Search" value="{{ request('search') }}">
         
     </form>
 </div>  
@@ -78,6 +78,13 @@
                         <dd class="col-sm-9">
                             <input type="number" name="seats" class="form-control" placeholder="{{ __('admin_vehicles.placeholder_seats') }}" value="{{ old('seats') }}" required>
                             <small class="text-muted">{{ __('admin_vehicles.hint_seats') }}</small>
+                        </dd>
+
+                        {{-- Year --}}
+                        <dt class="col-sm-3">{{ __('admin_tables.year') }}</dt>
+                        <dd class="col-sm-9">
+                            <input type="number" name="year" class="form-control" placeholder="{{ __('admin_vehicles.placeholder_year') }}" value="{{ old('year') }}" required>
+                            <small class="text-muted">{{ __('admin_vehicles.hint_year') }}</small>
                         </dd>
 
                         {{-- Price --}}

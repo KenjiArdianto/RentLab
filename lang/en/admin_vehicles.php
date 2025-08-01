@@ -12,6 +12,8 @@ return [
     'hint_engine_cc' => 'Enter the engine capacity in CC (e.g., 1500).',
     'placeholder_seats' => 'e.g., 5',
     'hint_seats' => 'Enter the number of passenger seats.',
+    'placeholder_year' => 'e.g., 2005',
+    'hint_year' => 'Enter the year of the vehicle.',
     'placeholder_price' => 'e.g., 250000',
     'hint_price' => 'Enter the price in IDR.',
     'choose_location' => '-- Choose Location --',
