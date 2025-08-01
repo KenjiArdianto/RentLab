@@ -1,8 +1,3 @@
-@php
-    $currLang = session()->get('lang', 'en');
-    app()->setLocale($currLang);
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +6,7 @@
     <title>{{ __('faq.title') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('build/assets/CSS/faq.css') }}">
+    <link rel="stylesheet" href="{{ asset('faq_assets/css/faq.css') }}">
 </head>
 <x-layout>
     <div class="container pt-4 pb-5">
@@ -20,7 +15,7 @@
         <form class="d-flex justify-content-start align-items-center mb-4" role="search" method="GET" action="{{ route('faq.index') }}">
             <div class="p-1 d-flex flex-row justify-content-start align-items-center form-control border-primary ps-3 pe-3 w-100 rounded-4 search-container">
                 <label for="faqSearch" class="search-icon-label">
-                    <img src="{{ asset('build/assets/icons8-search-50.png') }}" alt="" width="20" height="20">
+                    <img src="{{ asset('faq_assets/images/SearchLogo.png') }}" alt="" width="20" height="20">
                 </label>
                 <div class="container-fluid p-0">
                     <input name="search" id="faqSearch" class="container-fluid border-0 search-input-inner pe-0 ps-3" type="search" placeholder="{{ __('faq.search_placeholder') }}" aria-label="Search" value="{{ request('search') }}">

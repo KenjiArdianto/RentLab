@@ -34,6 +34,7 @@ use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\FaqController;
 
 
 Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
@@ -166,12 +167,6 @@ Route::post('/admin/locations/store', [AdminLocationController::class, 'store'])
 Route::post('/admin/locations/{location}/update', [AdminLocationController::class, 'update'])->name('admin.locations.update');
 Route::post('/admin/locations/{location}/destroy', [AdminLocationController::class, 'destroy'])->name('admin.locations.destroy');
 
-
-    // Ini nanti mau diupdate
-
-Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
-
-
 // Rute untuk mengganti bahasa
 
 // Rute untuk webhook Xendit (di luar grup)
@@ -212,3 +207,5 @@ Route::post('/reviews/{transaction}', [UserReviewController::class, 'store'])
     ->name('reviews.store');
 
 // Route::post('/lang', LanguageController::class, );
+
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
