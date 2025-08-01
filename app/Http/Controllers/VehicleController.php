@@ -13,6 +13,8 @@ use App\Http\Requests\VehicleFilterRequest;
 use App\Models\Location;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Transaction;
+
 
 class VehicleController extends Controller
 {
@@ -85,7 +87,24 @@ class VehicleController extends Controller
         ->groupBy('vehicles.id')
         ->first();
 
-        return view('DetailPage', compact('rating', 'idVehicle', 'getVehicleByIdsINCarts', 'getCommentByIdVehicle', 'cartDateRanges', 'getVehicleimagesById'));
+    
+    $bookedTransactionDates = Transaction::where('vehicle_id', $id)
+    ->where('transaction_status_id', '<', 7)
+    ->select('start_book_date as start_date', 'end_book_date as end_date')
+    ->get();
+
+    $allBookedDates = $bookedTransactionDates;
+
+
+    return view('DetailPage', compact(
+            'rating', 
+            'idVehicle', 
+            'getVehicleByIdsINCarts', 
+            'getCommentByIdVehicle', 
+            'cartDateRanges', 
+            'getVehicleimagesById',
+            'allBookedDates' 
+        ));
     }
 
     /**

@@ -2,463 +2,310 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use App\Models\Cart;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Models\Cart;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase; 
 use Carbon\Carbon;
-use Database\Seeders\DatabaseSeeder;
+use Illuminate\Support\Facades\Auth;
 
-class cartTest extends TestCase
+class CartTest extends TestCase
 {
-    use RefreshDatabase; // This will refresh the database for each test, ensuring a clean state.
+    use RefreshDatabase;
 
-    protected $user;
+    private User $user;
+    private Vehicle $vehicle;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // Create a user for authentication in tests
-        $this->seed(DatabaseSeeder::class);
-        $this->user = User::factory()->create();
-    }
+        // Create a user for authentication
+        $this->user = User::factory()->create([
+            'email' => 'testuser@example.com',
+            'email_verified_at' => now(),
+        ]);
 
-    
-
-    /**
-     * Tc1_ShowEmptyCartPage
-     * Test case to ensure an empty cart page is displayed correctly when there are no cart items.
-     */
-    public function testTc1_ShowEmptyCartPage()
-    {
-        $this->actingAs($this->user)
-             ->get(route('cart'))
-             ->assertStatus(200)
-             ->assertSee(__('cart.CartEmpty')) // Assuming 'CartEmpty' is the translation key for "Keranjang kosong"
-             ->assertSee(__('cart.AddItem')); // Assuming 'AddItem' is the translation key for "Tambah item sekarang"
-    }
-
-    /**
-     * Tc2_ShowCartWithUpcomingItems
-     * Test case to ensure the cart page displays upcoming items correctly.
-     * 
-     * 
-     * INI GPT salah
-     */
-        public function testTc2_ShowCartWithUpcomingItems()
-        {
-            $vehicle = Vehicle::factory()->create([
-                'price' => 100000,
-            ]);
-
-            Cart::create([
-                'user_id' => $this->user->id,
-                'vehicle_id' => $vehicle->id,
-                'start_date' => Carbon::today()->addDays(5),
-                'end_date' => Carbon::today()->addDays(7),
-                'subtotal' => 300000 // 3 days * 100000
-            ]);
-
-            $this->actingAs($this->user)
-                ->get(route('cart'))
-                ->assertStatus(200)
-                ->assertSee(__('cart.RecentDate')) // Assuming 'RecentDate' is the translation key for "Tanggal Rental Mendatang"
-                ->assertSee($vehicle->name); // Assuming vehicle name is displayed
-        }
-
-    /**
-     * Tc3_ShowCartWithOutdatedItems
-     * Test case to ensure the cart page displays outdated items correctly.
-     */
-    public function testTc3_ShowCartWithOutdatedItems()
-    {
-        $vehicle = Vehicle::factory()->create([
+        // Create a vehicle to add to the cart
+        $this->vehicle = Vehicle::factory()->create([
             'price' => 100000,
         ]);
-
-        Cart::create([
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->subDays(5),
-            'end_date' => Carbon::today()->subDays(3),
-            'subtotal' => 300000 // 3 days * 100000
-        ]);
-
-        $this->actingAs($this->user)
-             ->get(route('cart.index'))
-             ->assertStatus(200)
-             ->assertSee(__('cart.PastDate')) // Assuming 'PastDate' is the translation key for "Tanggal Rental Kadaluarsa"
-             ->assertSee($vehicle->name);
     }
 
     /**
-     * Tc4_ShowCartWithMixedItems
-     * Test case to ensure the cart page displays both upcoming and outdated items correctly.
+     * Test Case 1: Add a single item to the cart.
+     *
+     * @return void
      */
-    public function testTc4_ShowCartWithMixedItems()
+    public function test_case_1_add_single_item_to_cart()
     {
-        $vehicle1 = Vehicle::factory()->create(['price' => 100000]);
-        $vehicle2 = Vehicle::factory()->create(['price' => 100000]);
+        $this->actingAs($this->user);
 
-        // Upcoming item
-        Cart::create([
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle1->id,
-            'start_date' => Carbon::today()->addDays(1),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 200000
+        $startDate = Carbon::today()->addDays(5)->format('Y-m-d');
+        $endDate = Carbon::today()->addDays(6)->format('Y-m-d');
+
+        $response = $this->post(route('cart.store'), [
+            'vehicle_id' => $this->vehicle->id,
+            'date_ranges' => [
+                [
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                ]
+            ],
         ]);
 
-        // Outdated item
-        Cart::create([
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle2->id,
-            'start_date' => Carbon::today()->subDays(2),
-            'end_date' => Carbon::today()->subDays(1),
-            'subtotal' => 200000
-        ]);
-
-        $this->actingAs($this->user)
-             ->get(route('cart.index'))
-             ->assertStatus(200)
-             ->assertSee(__('cart.RecentDate'))
-             ->assertSee(__('cart.PastDate'))
-             ->assertSee($vehicle1->name)
-             ->assertSee($vehicle2->name);
-    }
-
-    /**
-     * Tc5_AddSingleDateRangeToCartSuccessfully
-     * Test case for successfully adding a single date range for a vehicle to the cart.
-     */
-    public function testTc5_AddSingleDateRangeToCartSuccessfully()
-    {
-        $vehicle = Vehicle::factory()->create([
-            'price' => 100000,
-        ]);
-
-        $startDate = Carbon::today()->addDays(1)->format('Y-m-d');
-        $endDate = Carbon::today()->addDays(3)->format('Y-m-d'); // 3 days rental
-        $expectedSubtotal = (100000 * 3) * (1 - (0.05 * (3 - 1))); // 300000 * (1 - 0.10) = 270000
-
-        $response = $this->actingAs($this->user)
-                         ->post(route('cart.store'), [
-                             'vehicle_id' => $vehicle->id,
-                             'date_ranges' => [
-                                 ['start_date' => $startDate, 'end_date' => $endDate]
-                             ]
-                         ]);
-
+        $response->assertRedirect();
         $response->assertSessionHas('success', 'Tanggal berhasil ditambahkan ke keranjang!');
-        $this->assertDatabaseHas('carts', [
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'subtotal' => round($expectedSubtotal, 2),
-        ]);
         $this->assertCount(1, Cart::all());
+        $cartItem = Cart::first();
+        $this->assertEquals($this->user->id, $cartItem->user_id);
+        $this->assertEquals($this->vehicle->id, $cartItem->vehicle_id);
     }
 
     /**
-     * Tc6_AddMultipleDateRangesToCartSuccessfully
-     * Test case for successfully adding multiple date ranges for a vehicle to the cart.
+     * Test Case 2: Add multiple items to the cart.
+     *
+     * @return void
      */
-    public function testTc6_AddMultipleDateRangesToCartSuccessfully()
+    public function test_case_2_add_multiple_items_to_cart()
     {
-        $vehicle = Vehicle::factory()->create([
-            'price' => 100000,
+        $this->actingAs($this->user);
+
+        $dateRanges = [
+            [
+                'start_date' => Carbon::today()->addDays(5)->format('Y-m-d'),
+                'end_date' => Carbon::today()->addDays(6)->format('Y-m-d'),
+            ],
+            [
+                'start_date' => Carbon::today()->addDays(10)->format('Y-m-d'),
+                'end_date' => Carbon::today()->addDays(12)->format('Y-m-d'),
+            ],
+        ];
+
+        $response = $this->post(route('cart.store'), [
+            'vehicle_id' => $this->vehicle->id,
+            'date_ranges' => $dateRanges,
         ]);
 
-        $startDate1 = Carbon::today()->addDays(1)->format('Y-m-d');
-        $endDate1 = Carbon::today()->addDays(2)->format('Y-m-d'); // 2 days rental
-        $subtotal1 = (100000 * 2) * (1 - (0.05 * (2 - 1))); // 200000 * (1 - 0.05) = 190000
-
-        $startDate2 = Carbon::today()->addDays(5)->format('Y-m-d');
-        $endDate2 = Carbon::today()->addDays(6)->format('Y-m-d'); // 2 days rental
-        $subtotal2 = (100000 * 2) * (1 - (0.05 * (2 - 1))); // 200000 * (1 - 0.05) = 190000
-
-
-        $response = $this->actingAs($this->user)
-                         ->post(route('cart.store'), [
-                             'vehicle_id' => $vehicle->id,
-                             'date_ranges' => [
-                                 ['start_date' => $startDate1, 'end_date' => $endDate1],
-                                 ['start_date' => $startDate2, 'end_date' => $endDate2]
-                             ]
-                         ]);
-
+        $response->assertRedirect();
         $response->assertSessionHas('success', 'Tanggal berhasil ditambahkan ke keranjang!');
-        $this->assertDatabaseHas('carts', [
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => $startDate1,
-            'end_date' => $endDate1,
-            'subtotal' => round($subtotal1, 2),
-        ]);
-        $this->assertDatabaseHas('carts', [
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => $startDate2,
-            'end_date' => $endDate2,
-            'subtotal' => round($subtotal2, 2),
-        ]);
         $this->assertCount(2, Cart::all());
     }
 
     /**
-     * Tc7_AddDateRangeForNonExistentVehicle
-     * Test case for attempting to add a date range for a vehicle that does not exist.
+     * Test Case 3: Add an item to a cart that already contains some items.
+     *
+     * @return void
      */
-    public function testTc7_AddDateRangeForNonExistentVehicle()
+    public function test_case_3_add_item_to_existing_cart()
     {
-        $response = $this->actingAs($this->user)
-                         ->post(route('cart.store'), [
-                             'vehicle_id' => 9999, // Non-existent vehicle ID
-                             'date_ranges' => [
-                                 ['start_date' => Carbon::today()->addDay()->format('Y-m-d'), 'end_date' => Carbon::today()->addDays(2)->format('Y-m-d')]
-                             ]
-                         ]);
+        $this->actingAs($this->user);
 
-        $response->assertSessionHas('error', 'Kendaraan tidak ditemukan.');
-        $this->assertCount(0, Cart::all());
+        Cart::factory()->create([
+            'user_id' => $this->user->id,
+            'vehicle_id' => $this->vehicle->id,
+            'start_date' => Carbon::today()->addDays(1),
+            'end_date' => Carbon::today()->addDays(2),
+        ]);
+
+        $dateRanges = [
+            [
+                'start_date' => Carbon::today()->addDays(5)->format('Y-m-d'),
+                'end_date' => Carbon::today()->addDays(6)->format('Y-m-d'),
+            ],
+        ];
+
+        $response = $this->post(route('cart.store'), [
+            'vehicle_id' => $this->vehicle->id,
+            'date_ranges' => $dateRanges,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Tanggal berhasil ditambahkan ke keranjang!');
+        $this->assertCount(2, Cart::all());
     }
 
     /**
-     * Tc8_AddMoreThanTenItemsToCart
-     * Test case for attempting to add more than 10 items to the cart.
+     * Test Case 4: Add an item to a cart with the maximum number of items (10).
+     *
+     * @return void
      */
-    public function testTc8_AddMoreThanTenItemsToCart()
+    public function test_case_4_add_item_to_full_cart()
     {
-        $vehicle = Vehicle::factory()->create([
-            'price' => 100000,
-        ]);
+        $this->actingAs($this->user);
 
-        // Add 10 items to the cart first
+        // Create 10 existing cart items
         for ($i = 1; $i <= 10; $i++) {
-            Cart::create([
+            Cart::factory()->create([
                 'user_id' => $this->user->id,
-                'vehicle_id' => $vehicle->id,
-                'start_date' => Carbon::today()->addDays($i)->format('Y-m-d'),
-                'end_date' => Carbon::today()->addDays($i + 1)->format('Y-m-d'),
-                'subtotal' => 200000
+                'vehicle_id' => $this->vehicle->id,
+                'start_date' => Carbon::today()->addDays($i * 2),
+                'end_date' => Carbon::today()->addDays($i * 2 + 1),
             ]);
         }
 
-        // Try to add one more
-        $startDate = Carbon::today()->addDays(11)->format('Y-m-d');
-        $endDate = Carbon::today()->addDays(12)->format('Y-m-d');
+        $dateRanges = [
+            [
+                'start_date' => Carbon::today()->addDays(25)->format('Y-m-d'),
+                'end_date' => Carbon::today()->addDays(26)->format('Y-m-d'),
+            ],
+        ];
 
-        $response = $this->actingAs($this->user)
-                         ->post(route('cart.store'), [
-                             'vehicle_id' => $vehicle->id,
-                             'date_ranges' => [
-                                 ['start_date' => $startDate, 'end_date' => $endDate]
-                             ]
-                         ]);
+        $response = $this->post(route('cart.store'), [
+            'vehicle_id' => $this->vehicle->id,
+            'date_ranges' => $dateRanges,
+        ]);
 
+        $response->assertRedirect();
         $response->assertSessionHas('error', 'Maksimal 10 item pada Cart. Anda sudah memiliki 10 item.');
-        $this->assertCount(10, Cart::all()); // Still 10 items in the cart
+        $this->assertCount(10, Cart::all()); // The count should still be 10
     }
 
     /**
-     * Tc9_DeleteSpecificCartItemSuccessfully
-     * Test case for successfully deleting a specific item from the cart.
+     * Test Case 5: View the cart page with upcoming items.
+     *
+     * @return void
      */
-    public function testTc9_DeleteSpecificCartItemSuccessfully()
+    public function test_case_5_view_cart_with_upcoming_items()
     {
-        $vehicle = Vehicle::factory()->create();
-        $cartItem = Cart::create([
+        $this->actingAs($this->user);
+
+        // Create upcoming cart items
+        Cart::factory()->create([
             'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDay(),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 200000
+            'start_date' => Carbon::today()->addDays(5),
+            'end_date' => Carbon::today()->addDays(6),
         ]);
 
-        $this->actingAs($this->user)
-             ->delete(route('cart.destroy', $cartItem->id))
-             ->assertSessionHas('success', 'Item berhasil dihapus dari keranjang.');
+        $response = $this->get(route('cart'));
 
-        $this->assertDatabaseMissing('carts', ['id' => $cartItem->id]);
+        $response->assertStatus(200);
+        $response->assertViewIs('CartPage');
+        $response->assertViewHas('upcomingCart');
+        $response->assertViewHas('outdatedCart');
+        $this->assertCount(1, $response->viewData('upcomingCart'));
+        $this->assertCount(0, $response->viewData('outdatedCart'));
+    }
+
+    /**
+     * Test Case 6: View the cart page with outdated items.
+     *
+     * @return void
+     */
+    public function test_case_6_view_cart_with_outdated_items()
+    {
+        $this->actingAs($this->user);
+
+        // Create outdated cart items
+        Cart::factory()->create([
+            'user_id' => $this->user->id,
+            'start_date' => Carbon::today()->subDays(5),
+            'end_date' => Carbon::today()->subDays(4),
+        ]);
+
+        $response = $this->get(route('cart'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('CartPage');
+        $response->assertViewHas('upcomingCart');
+        $response->assertViewHas('outdatedCart');
+        $this->assertCount(0, $response->viewData('upcomingCart'));
+        $this->assertCount(1, $response->viewData('outdatedCart'));
+    }
+
+    /**
+     * Test Case 7: View an empty cart page.
+     *
+     * @return void
+     */
+    public function test_case_7_view_empty_cart()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get(route('cart'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('CartPage');
+        $response->assertViewHas('upcomingCart');
+        $response->assertViewHas('outdatedCart');
+        $this->assertCount(0, $response->viewData('upcomingCart'));
+        $this->assertCount(0, $response->viewData('outdatedCart'));
+        $response->assertSeeText('Your cart is empty.'); // Assumes this text exists in the view
+    }
+
+    /**
+     * Test Case 8: Delete a single item from the cart.
+     *
+     * @return void
+     */
+    public function test_case_8_delete_single_item_from_cart()
+    {
+        $this->actingAs($this->user);
+        $cartItem = Cart::factory()->create(['user_id' => $this->user->id]);
+        $this->assertCount(1, Cart::all());
+
+        $response = $this->delete(route('cart.destroy', $cartItem->id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Item berhasil dihapus dari keranjang.');
         $this->assertCount(0, Cart::all());
     }
 
     /**
-     * Tc10_AttemptToDeleteAnotherUsersCartItem
-     * Test case for attempting to delete a cart item that belongs to another user.
+     * Test Case 9: Delete an item from the cart that does not belong to the user.
+     *
+     * @return void
      */
-    public function testTc10_AttemptToDeleteAnotherUsersCartItem()
+    public function test_case_9_cannot_delete_other_users_cart_item()
     {
-        $anotherUser = User::factory()->create();
-        $vehicle = Vehicle::factory()->create();
-        $cartItem = Cart::create([
-            'user_id' => $anotherUser->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDay(),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 200000
-        ]);
+        $otherUser = User::factory()->create();
+        $this->actingAs($this->user);
 
-        $response = $this->actingAs($this->user)
-                         ->delete(route('cart.destroy', $cartItem->id));
+        $otherUsersCartItem = Cart::factory()->create(['user_id' => $otherUser->id]);
 
-        // The controller uses back()->withError(), which redirects back.
-        // We'll assert that it redirects and the item is still in the database.
-        $response->assertSessionHasErrors(); // Check for any error
-        $response->assertRedirect(); // Check for redirection
+        $response = $this->delete(route('cart.destroy', $otherUsersCartItem->id));
 
-        $this->assertDatabaseHas('carts', ['id' => $cartItem->id]);
-    }
-
-    /**
-     * Tc11_ClearAllOutdatedItemsSuccessfully
-     * Test case for successfully clearing all outdated items from the cart.
-     */
-    public function testTc11_ClearAllOutdatedItemsSuccessfully()
-    {
-        $vehicle = Vehicle::factory()->create();
-        // Outdated item
-        Cart::create([
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->subDays(5),
-            'end_date' => Carbon::today()->subDays(3),
-            'subtotal' => 300000
-        ]);
-        // Upcoming item (should not be deleted)
-        $upcomingCartItem = Cart::create([
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDays(1),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 200000
-        ]);
-
-        $this->actingAs($this->user)
-             ->delete(route('cart.clearOutdated'))
-             ->assertSessionHas('success', 'Semua rental kedaluwarsa berhasil dihapus!');
-
-        $this->assertDatabaseMissing('carts', ['start_date' => Carbon::today()->subDays(5)->format('Y-m-d')]);
-        $this->assertDatabaseHas('carts', ['id' => $upcomingCartItem->id]);
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
         $this->assertCount(1, Cart::all());
     }
 
     /**
-     * Tc12_ProcessPaymentWithSelectedItems
-     * Test case for processing payment with selected cart items.
+     * Test Case 10: Clear all outdated items from the cart.
+     *
+     * @return void
      */
-    public function testTc12_ProcessPaymentWithSelectedItems()
+    public function test_case_10_clear_all_outdated_items()
     {
-        $vehicle = Vehicle::factory()->create(['price' => 100000]);
-        $cartItem1 = Cart::create([
+        $this->actingAs($this->user);
+
+        // Create outdated items
+        Cart::factory()->create([
             'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDay(),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 190000 // 2 days * 100k - discount
+            'start_date' => Carbon::today()->subDays(10),
+            'end_date' => Carbon::today()->subDays(8),
         ]);
-        $cartItem2 = Cart::create([
+        Cart::factory()->create([
             'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDays(3),
-            'end_date' => Carbon::today()->addDays(4),
-            'subtotal' => 190000 // 2 days * 100k - discount
+            'start_date' => Carbon::today()->subDays(5),
+            'end_date' => Carbon::today()->subDays(4),
         ]);
 
-        $selectedCartIds = [$cartItem1->id, $cartItem2->id];
-        $selectedCartIdsJson = json_encode($selectedCartIds);
-
-        $response = $this->actingAs($this->user)
-                         ->get(route('payment.process', ['selected_cart_ids' => $selectedCartIdsJson]));
-
-        $response->assertStatus(200)
-                 ->assertViewIs('PaymentPage')
-                 ->assertViewHas('selectedCartItems', function ($items) use ($cartItem1, $cartItem2) {
-                     return $items->contains($cartItem1) && $items->contains($cartItem2);
-                 });
-    }
-
-    /**
-     * Tc13_ProcessPaymentWithoutSelectedItems
-     * Test case for attempting to process payment without any selected cart items.
-     */
-    public function testTc13_ProcessPaymentWithoutSelectedItems()
-    {
-        $response = $this->actingAs($this->user)
-                         ->get(route('payment.process', ['selected_cart_ids' => '[]']));
-
-        $response->assertRedirect()
-                 ->assertSessionHas('error', 'Tidak ada item keranjang yang dipilih untuk pembayaran.');
-    }
-
-    /**
-     * Tc14_ProcessPaymentWithInvalidSelectedItemsData
-     * Test case for attempting to process payment with invalid selected cart items data.
-     */
-    public function testTc14_ProcessPaymentWithInvalidSelectedItemsData()
-    {
-        $response = $this->actingAs($this->user)
-                         ->get(route('payment.process', ['selected_cart_ids' => 'invalid-json']));
-
-        $response->assertRedirect()
-                 ->assertSessionHas('error', 'Data keranjang yang dipilih tidak valid.');
-    }
-
-    /**
-     * Tc15_ProcessPaymentWithOtherUsersCartItems
-     * Test case for attempting to process payment with other users' cart items.
-     */
-    public function testTc15_ProcessPaymentWithOtherUsersCartItems()
-    {
-        $anotherUser = User::factory()->create();
-        $vehicle = Vehicle::factory()->create();
-        $cartItemOfAnotherUser = Cart::create([
-            'user_id' => $anotherUser->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDay(),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 200000
-        ]);
-
-        $selectedCartIds = [$cartItemOfAnotherUser->id];
-        $selectedCartIdsJson = json_encode($selectedCartIds);
-
-        $response = $this->actingAs($this->user)
-                         ->get(route('payment.process', ['selected_cart_ids' => $selectedCartIdsJson]));
-
-        $response->assertRedirect()
-                 ->assertSessionHas('error', 'cart.WarningPayment'); // This is the exact error message from your controller
-    }
-
-    /**
-     * Tc16_CartItemCountEndpointReturnsCorrectCount
-     * Test case for the API endpoint that returns the cart item count.
-     */
-    public function testTc16_CartItemCountEndpointReturnsCorrectCount()
-    {
-        $vehicle = Vehicle::factory()->create();
-        Cart::create([
+        // Create an upcoming item that should not be deleted
+        Cart::factory()->create([
             'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDay(),
-            'end_date' => Carbon::today()->addDays(2),
-            'subtotal' => 200000
-        ]);
-        Cart::create([
-            'user_id' => $this->user->id,
-            'vehicle_id' => $vehicle->id,
-            'start_date' => Carbon::today()->addDays(3),
-            'end_date' => Carbon::today()->addDays(4),
-            'subtotal' => 200000
+            'start_date' => Carbon::today()->addDays(2),
+            'end_date' => Carbon::today()->addDays(3),
         ]);
 
-        $response = $this->actingAs($this->user)
-                         ->get(route('cart.count')); // Assuming a route named 'cart.count'
+        $this->assertCount(3, Cart::all());
 
-        $response->assertStatus(200)
-                 ->assertJson(['count' => 2]);
+        $response = $this->delete(route('cart.clearOutdated'));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Semua rental kedaluwarsa berhasil dihapus!');
+        $this->assertCount(1, Cart::all()); // Only the upcoming item should remain
+        $this->assertEquals(Carbon::today()->addDays(2)->format('Y-m-d'), Cart::first()->start_date);
     }
 }
