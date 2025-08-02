@@ -20,7 +20,7 @@ class OtpController extends Controller
     {
         // return (session()->get('temp_user')==NULL);
         if(!session('temp_user')){
-            return view('auth.verify-otp')->withErrors(['otp' => 'Session expired. Please register again.'])->with('time',0);
+            return redirect(route('register'))->withErrors(['otp' => 'Session expired. Please register again.'])->with('time',0);
         }
         if(now()->gt(session('otp_expires_at'))){
             return view('auth.verify-otp')->withErrors(['otp' => 'OTP expired. Please resend OTP or register again.'])->with('time',0);

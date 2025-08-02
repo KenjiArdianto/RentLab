@@ -37,6 +37,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\BookingHistoryController;
 use App\Http\Controllers\UserReviewController;
 
+
 Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
@@ -211,8 +212,4 @@ Route::get('/faq', function (Request $request) {
 
 
 
-
-Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::class])->group(function(){
-    Route::get('/coba',[ProfileController::class,'coba']);
-});
 
