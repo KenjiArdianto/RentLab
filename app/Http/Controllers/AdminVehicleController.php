@@ -512,7 +512,7 @@ class AdminVehicleController extends Controller
         return back()->with('success', "Vehicle #$vehicle->id category removed.");
     }
 
-    public function import(Request $request)
+    public function import(AdminVehicleImportRequest $request)
     {
 
         $path = $request->file('csv_file')->getRealPath();
