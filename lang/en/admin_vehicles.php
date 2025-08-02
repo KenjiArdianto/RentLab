@@ -42,4 +42,10 @@ return [
     'no_reviews' => 'No reviews found.',
     'hint_review' => 'Write your review here (max 250 characters)...',
     'characters' => 'characters',
+    'import_vehicles' => 'Import Vehicles',
+    'expected_format' => 'Expected CSV format:',
+    'vehicle_categories_expected_format' => 'may contain multiple IDs, separated by commas (e.g., ',
+    'images_path_expected_format' => 'should be relative paths to image files in public/assets',
+    'and' => 'and',
+    'destroy' => 'Delete Vehicle',
 ];

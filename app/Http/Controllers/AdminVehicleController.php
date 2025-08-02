@@ -127,14 +127,6 @@ class AdminVehicleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(AdminVehicleStoreRequest $request)
@@ -205,6 +197,7 @@ class AdminVehicleController extends Controller
             $vehicle->vehicleImages()->create(['image' => $image4Path]);
         }
 
+        // Logging
         activity('admin_vehicle_store')
         ->causedBy(Auth::user())
         ->performedOn($vehicle)
@@ -216,22 +209,6 @@ class AdminVehicleController extends Controller
 
         return back()->with('success', 'Vehicle added.');
 
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vehicle $vehicle)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Vehicle $vehicle)
-    {
-        //
     }
 
     /**
@@ -535,11 +512,68 @@ class AdminVehicleController extends Controller
         return back()->with('success', "Vehicle #$vehicle->id category removed.");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function import(Request $request)
+    {
+
+        $path = $request->file('csv_file')->getRealPath();
+        $file = fopen($path, 'r');
+        $header = fgetcsv($file);
+
+        while (($row = fgetcsv($file)) !== false) {
+            $data = array_combine($header, $row);
+
+            $vehicle = Vehicle::create([
+                'vehicle_type_id'         => $data['vehicle_type_id'],
+                'vehicle_name_id'         => $data['vehicle_name_id'],
+                'vehicle_transmission_id' => $data['vehicle_transmission_id'],
+                'engine_cc'               => $data['engine_cc'],
+                'seats'                   => $data['seats'],
+                'year'                    => $data['year'],
+                'location_id'             => $data['location_id'],
+                'main_image'              => $data['main_image_path'],
+                'price'                   => $data['price'],
+            ]);
+
+            foreach (['vehicle_image_1', 'vehicle_image_2', 'vehicle_image_3', 'vehicle_image_4'] as $imageKey) {
+                if (!empty($data[$imageKey])) {
+                    $vehicle->vehicleImages()->create([
+                        'image' => $data[$imageKey],
+                    ]);
+                }
+            }
+
+            if (!empty($data['vehicle_categories'])) {
+                $categoryIds = explode(',', $data['vehicle_categories']);
+                $vehicle->vehicleCategories()->sync($categoryIds);
+            }
+        }
+
+        fclose($file);
+
+        return back()->with('success', 'Vehicles imported successfully.');
+    }
+
     public function destroy(Vehicle $vehicle)
     {
-        //
+      // Detach categories (pivot)
+        $vehicle->vehicleCategories()->detach();
+
+        // Delete related images and their files
+        foreach ($vehicle->vehicleImages as $image) {
+            if (File::exists('public/' . $image->path)) {
+                File::delete('public/' . $image->path);
+            }
+            $image->delete();
+        }
+
+        // Delete main image file
+        if ($vehicle->main_image && File::exists('public/' . $vehicle->main_image)) {
+            File::delete('public/' . $vehicle->main_image);
+        }
+
+        // Delete the vehicle record
+        $vehicle->delete();
+
+        return redirect()->back()->with('success', 'Vehicle and related data deleted successfully.');
     }
 }

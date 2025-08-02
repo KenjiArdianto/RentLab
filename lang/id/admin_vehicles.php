@@ -42,4 +42,10 @@ return [
     'no_reviews' => 'Ulasan tidak ditemukan.',
     'hint_review' => 'Tulis ulasan di sini (max 250 karakter)...',
     'characters' => 'karakter',
+    'import_vehicles' => 'Impor Kendaraan',
+    'expected_format' => 'Format CSV yang diharapkan:',
+    'vehicle_categories_expected_format' => 'dapat berisi banyak ID, pisahkan dengan koma (contoh: ',
+    'images_path_expected_format' => 'harus berupa path relatif dari file gambar dalam public/assets',
+    'and' => 'dan',
+    'destroy' => 'Hapus Kendaraan',
 ];

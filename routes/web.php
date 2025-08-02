@@ -117,6 +117,8 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
 
     Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
     Route::post('/admin/vehicles/store', [AdminVehicleController::class, 'store'])->name('admin.vehicles.store');
+    Route::post('/admin/vehicles/import', [AdminVehicleController::class, 'import'])->name('admin.vehicles.import');
+    Route::post('/admin/vehicles/destroy/{vehicle}', [AdminVehicleController::class, 'destroy'])->name('admin.vehicles.destroy');
     Route::post('/admin/vehicles/{vehicle}/update', [AdminVehicleController::class, 'update'])->name('admin.vehicles.update');
     Route::post('/admin/vehicles/{vehicle}/update-category', [AdminVehicleController::class, 'updateCategory'])->name('admin.vehicles.updateCategory');
     Route::post('/admin/vehicles/{vehicle}/delete-category', [AdminVehicleController::class, 'deleteCategory'])->name('admin.vehicles.deleteCategory');

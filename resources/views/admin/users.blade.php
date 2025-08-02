@@ -49,7 +49,7 @@
                         @endif
 
                         <div class="card flex-grow-1 shadow-sm p-3 d-flex flex-row align-items-center" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#viewModal{{ $user->id }}">
-                            <img src="{{ ($user->detail && $user->detail->profilePicture) ? asset($user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" class="rounded-circle bg-secondary me-3" style="width: 60px; height: 60px;">
+                            <img src="{{ ($user->detail && $user->detail->profilePicture) ? asset('storage/' . $user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" class="rounded-circle bg-secondary me-3" style="width: 60px; height: 60px;">
                             <div>
                                 <div class="fw-bold">{{ __('admin_tables.username') }}: {{ \Illuminate\Support\Str::limit($user->name, 20, '...') }}</div>
                                 <div>{{ __('admin_tables.user_id') }}: {{ $user->id }}</div>
@@ -77,8 +77,8 @@
 
             <div class="modal-body">
                 <div class="d-flex justify-content-center gap-2 mb-4">
-                    <img src="{{ $user->detail && $user->detail->profilePicture ? asset($user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" alt="Profile Picture" class="img-fluid border" style="max-height: 15vh;">
-                    <img src="{{ $user->detail && $user->detail->idcardPicture ? asset($user->detail->idcardPicture) : asset('assets/users/picture_id_default.jpg') }}" alt="ID Card" class="img-fluid border" style="max-height: 15vh;">
+                    <img src="{{ $user->detail && $user->detail->profilePicture ? asset('storage/' . $user->detail->profilePicture) : asset('assets/users/picture_profile_default.png') }}" alt="Profile Picture" class="img-fluid border" style="max-height: 15vh;">
+                    <img src="{{ $user->detail && $user->detail->idcardPicture ? asset('storage/' . $user->detail->idcardPicture) : asset('assets/users/picture_id_default.jpg') }}" alt="ID Card" class="img-fluid border" style="max-height: 15vh;">
                 </div>
                 <div class="text-start px-3">
                     <p><strong>{{ __('admin_tables.username') }}</strong>: {{ $user->name }}</p>

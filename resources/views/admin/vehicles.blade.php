@@ -10,9 +10,15 @@
 </div>  
 
 <div class="text-center">
+    {{-- Add Vehicle Button --}}
     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
         {{  __('admin_vehicles.add_vehicle') }}
     </button>
+    <!-- Import Vehicle from CSV Button -->
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#importVehicleModal">
+        {{ __('admin_vehicles.import_vehicles') }}
+    </button>
+
 </div>  
 
 
@@ -136,9 +142,40 @@
     </div>
 </div>
 
+<!-- Import Vehicles Modal -->
+<div class="modal fade" id="importVehicleModal" tabindex="-1" aria-labelledby="importVehicleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{ route('admin.vehicles.import') }}" method="POST" enctype="multipart/form-data">
+      @csrf
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="importVehicleModalLabel">{{ __('admin_vehicles.import_vehicles') }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="csv_file" class="form-label">CSV File</label>
+                <input type="file" class="form-control" id="csv_file" name="csv_file" required>
+                <div class="form-text mt-2">
+                    {{ __('admin_vehicles.expected_format') }}<br>
+                    <code>vehicle_type_id,vehicle_name_id,vehicle_transmission_id,engine_cc,seats,year,location_id,main_image_path,price,vehicle_image_1,vehicle_image_2,vehicle_image_3,vehicle_image_4,vehicle_categories</code><br>
+                    - <strong>vehicle_categories</strong> {{ __('admin_vehicles.vehicle_categories_expected_format') }} <code>1,2,3</code>)<br>
+                    - <strong>main_image_path</strong> {{ __('admin_vehicles.and') }} <strong>vehicle_image_X</strong> {{ __('admin_vehicles.images_path_expected_format') }}
+                </div>
+            </div>
+        </div>
 
 
 
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Import</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
 <div class="container-fluid mt-4">
     <div class="table-responsive" style="overflow-x: auto; overflow-y: hidden;">
@@ -203,6 +240,13 @@
                             <a href="{{ route('admin.transactions') }}?search={{ rawurlencode('vehicle_id=' . $v->id) }}" class="btn btn-secondary btn-sm text-nowrap">
                                 {{ __('admin_vehicles.view_transactions') }}
                             </a>
+                            <form action="{{ route('admin.vehicles.destroy', $v->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-danger btn-sm text-nowrap"  >
+                                    {{ __('admin_vehicles.destroy') }}
+                                </button>
+                            </form>
+
                         </div>
                     </td>
                 </tr>
