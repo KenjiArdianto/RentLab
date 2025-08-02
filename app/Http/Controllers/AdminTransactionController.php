@@ -28,10 +28,20 @@ class AdminTransactionController extends Controller
                 if (!str_contains($pair, '=')) continue;
 
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
-
+                
                 // handle transaction_id
                 if ($key === 'transaction_id' || $key === 'id_transaksi') {
                     $query->where('id', $value);
+                }
+                // handle payment_id
+                else if ($key === 'payment_id' || $key === 'id_transaksi') {
+                    $query->where('payment_id', $value);
+                }
+                // handle username
+                else if ($key === 'username' || $key === 'nama_pengguna') {
+                    $query->whereHas('user', function ($q) use ($value) {
+                        $q->where('name', 'like', '%' . $value . '%');
+                    });
                 }
                 // handle user_id
                 else if ($key === 'user_id' || $key === 'id_pengguna') {
@@ -111,7 +121,7 @@ class AdminTransactionController extends Controller
         // dd($request->all());
         
 
-        $transactions = $query->paginate(100)->appends(['search' => $search]);;
+        $transactions = $query->latest()->paginate(100)->appends(['search' => $search]);;
         \activity('admin_transaction_index')
         ->causedBy(Auth::user())
         ->withProperties([

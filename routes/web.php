@@ -14,6 +14,7 @@ use App\Http\Middleware\EnsureUserHasDetails;
 use App\Http\Controllers\AdminIndexController;
 use App\Http\Controllers\AdminDriverController;
 use App\Http\Controllers\AdminTransactionController;
+use App\Http\Controllers\AdminPaymentController;
 use App\Http\Controllers\AdminVehicleController;
 use App\Http\Controllers\AdminVehicleReviewController;
 use App\Http\Controllers\AdminVehicleTypeController;
@@ -95,11 +96,7 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::get('/admin',[AdminIndexController::class, 'index'])->name('admin.index');
 
 
-
-    Route::get('/admin/logs', function () {
-        return view('admin.logs');
-    })->name('admin.logs');
-
+    Route::get('/admin/logs',[AdminLogsController::class, 'index'])->name('admin.logs');
 
     Route::get('/admin/users',[AdminUserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users/suspend-selected',[AdminUserController::class, 'suspendSelected'])->name('admin.users.suspendSelected');
@@ -118,9 +115,12 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::get('/admin/transactions',[AdminTransactionController::class, 'index'])->name('admin.transactions');
     Route::post('/admin/transactions/{transaction}', [AdminTransactionController::class, 'update'])->name('admin.transactions.update');
 
+    Route::get('/admin/payments', [AdminPaymentController::class, 'index'])->name('admin.payments');
 
     Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
     Route::post('/admin/vehicles/store', [AdminVehicleController::class, 'store'])->name('admin.vehicles.store');
+    Route::post('/admin/vehicles/import', [AdminVehicleController::class, 'import'])->name('admin.vehicles.import');
+    Route::post('/admin/vehicles/destroy/{vehicle}', [AdminVehicleController::class, 'destroy'])->name('admin.vehicles.destroy');
     Route::post('/admin/vehicles/{vehicle}/update', [AdminVehicleController::class, 'update'])->name('admin.vehicles.update');
     Route::post('/admin/vehicles/{vehicle}/update-category', [AdminVehicleController::class, 'updateCategory'])->name('admin.vehicles.updateCategory');
     Route::post('/admin/vehicles/{vehicle}/delete-category', [AdminVehicleController::class, 'deleteCategory'])->name('admin.vehicles.deleteCategory');

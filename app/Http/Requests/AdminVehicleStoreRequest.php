@@ -27,6 +27,7 @@ class AdminVehicleStoreRequest extends FormRequest
             'vehicle_transmission_id' => ['required', 'exists:vehicle_transmissions,id'],
             'engine_cc' => ['required', 'integer', 'min:50', 'max:10000'],
             'seats' => ['required', 'integer', 'min:1', 'max:50'],
+            'year' => ['required', 'integer', 'min:1900', 'max:' . date('Y')],
             'price' => ['required', 'numeric', 'min:0'],
             'location_id' => ['required', 'exists:locations,id'],
 
@@ -62,6 +63,11 @@ class AdminVehicleStoreRequest extends FormRequest
             'seats.integer' => 'Seat count must be a number.',
             'seats.min' => 'There must be at least 1 seat.',
             'seats.max' => 'Seat count must not exceed 50.',
+
+            'year.required' => 'Year is required.',
+            'year.integer' => 'Year must be a number.',
+            'year.min' => 'Year must be at least 1900.',
+            'year.max' => 'Year must not exceed ' . date('Y'),
 
             'price.required' => 'Price is required.',
             'price.numeric' => 'Price must be a number.',
