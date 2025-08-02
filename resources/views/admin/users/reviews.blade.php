@@ -23,7 +23,7 @@
     <form action="{{ route('admin.users.reviews', $user->id) }}" method="GET">
         <input name="search" class="form-control border-dark mx-auto my-2" style="width: 50%;"
                placeholder="{{ __('admin_search_hints.user_reviews') }}"
-               aria-label="Search">
+               aria-label="Search" value="{{ request('search') }}">
     </form>
 </div>
 
@@ -85,11 +85,10 @@
     </table>
 </div>
 
-<div class="container">
+<div class="container d-flex justify-content-center my-4">
     {{ $reviews->onEachSide(5)->links('pagination::bootstrap-5') }}
 </div>
 
-<x-admin.feedback-modal/>
 
 <!-- JS for responsive font and comment truncation -->
 <script>

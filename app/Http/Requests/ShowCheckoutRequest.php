@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class ShowCheckoutRequest extends FormRequest
 {
@@ -32,5 +35,27 @@ class ShowCheckoutRequest extends FormRequest
 
         // Jika metodenya GET (misal: refresh), tidak perlu aturan validasi
         return [];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        \activity('show_checkout_validation_failed')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'method' => $this->method(),
+                'ip' => $this->ip(),
+                'user_id' => optional($this->user())->id,
+                'user_input' => $this->except([]), // Exclude fields if needed
+                'errors' => $validator->errors()->messages(),
+                'user_agent' => $this->userAgent(),
+            ])
+            ->log('Validation failed during show checkout request');
+
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
     }
 }

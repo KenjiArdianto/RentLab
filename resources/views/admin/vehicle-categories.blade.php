@@ -5,7 +5,7 @@
 
 <div class="container-fluid justify-content-between align-items-center mb-4">
     <form action="{{ route('admin.vehicle-categories') }}" method="GET">
-        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.vehicle_categories') }}" aria-label="Search">
+        <input name="search" class="form-control border-dark w-50 mx-auto my-2" placeholder="{{ __('admin_search_hints.vehicle_categories') }}" aria-label="Search" value="{{ request('search') }}">
         
     </form>
 </div> 
@@ -46,12 +46,8 @@
     @endforeach
 </div>
 
-<div class="container">
+<div class="container d-flex justify-content-center my-4">
     {{ $vehicleCategories->onEachSide(5)->links('pagination::bootstrap-5') }}
 </div>
-
-
-<x-admin.feedback-modal/>
-
 
 @endsection

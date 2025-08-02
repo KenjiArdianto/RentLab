@@ -16,24 +16,24 @@ class ProfileRequest extends FormRequest
     {
         return Auth::check() && Auth::user()->role!='admin';
     }
-    // protected function failedValidation(Validator $validator)
-    // {
-    //     \activity('profile_validation_failed')
-    //         ->causedBy(Auth::user())
-    //         ->performedOn(Auth::user()->detail)
-    //         ->withProperties([
-    //             'ip' => $this->ip(),
-    //             'user_id' => optional($this->user())->id,
-    //             'user_input' => $this->except(['idcardPicture', 'profilePicture']),
-    //             'errors' => $validator->errors()->messages(),
-    //             'user_agent' => $this->userAgent(),
-    //         ])
-    //         ->log('Validation failed when updating profile');
+    protected function failedValidation(Validator $validator)
+    {
+        \activity('profile_validation_failed')
+            ->causedBy(Auth::user())
+            ->performedOn(Auth::user()->detail)
+            ->withProperties([
+                'ip' => $this->ip(),
+                'user_id' => optional($this->user())->id,
+                'user_input' => $this->except(['idcardPicture', 'profilePicture']),
+                'errors' => $validator->errors()->messages(),
+                'user_agent' => $this->userAgent(),
+            ])
+            ->log('Validation failed when updating profile');
 
-    //     throw (new ValidationException($validator))
-    //         ->errorBag($this->errorBag)
-    //         ->redirectTo($this->getRedirectUrl());
-    // }
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
+    }
 
     /**
      * Get the validation rules that apply to the request.

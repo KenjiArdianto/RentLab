@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VehicleCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminVehicleCategoryController extends Controller
 {
@@ -22,6 +23,17 @@ class AdminVehicleCategoryController extends Controller
         }
 
         $vehicleCategories = $vehicleCategories->paginate(100);
+
+        \activity('admin_vehicle_category_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'search_query' => $request->query('search'),
+            'result_count' => $vehicleCategories->total(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin viewed vehicle category list' . ($request->has('search') ? ' with filters' : ''));
+
 
         return view('admin.vehicle-categories', compact('vehicleCategories'));
 
@@ -43,12 +55,32 @@ class AdminVehicleCategoryController extends Controller
         //
 
         if (VehicleCategory::where('category', $request->category)->exists()) {
+            \activity('admin_vehicle_category_store_duplicate')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => $request->ip(),
+                'attempted_category' => $request->category,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('Attempted to add duplicate vehicle category');
+
             return back()->with('error', 'Vehicle Category Already Exists');
         }
 
-        VehicleCategory::create([
+        $newCategory=VehicleCategory::create([
             'category' => $request->category
         ]);
+
+        \activity('admin_vehicle_category_store')
+        ->causedBy(Auth::user())
+        ->performedOn($newCategory)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'category_added' => $request->category,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Added new vehicle category');
+
         
         return back()->with('success', 'Vehicle Category Added Successfully');
     }
@@ -78,11 +110,33 @@ class AdminVehicleCategoryController extends Controller
         // dd($vehicleCategory);
 
         if ($vehicleCategory->category === $request->category) {
+            \activity('admin_vehicle_category_update_unchanged')
+            ->causedBy(Auth::user())
+            ->performedOn($vehicleCategory)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'category_name' => $vehicleCategory->category,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('Attempted to update vehicle category but no changes were made');
+
             return back()->with('error', 'Vehicle Category Not Updated');
         }
 
         $vehicleCategory->category = $request->category;
         $vehicleCategory->save();
+
+        \activity('admin_vehicle_category_update')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicleCategory)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'old_category' => $vehicleCategory->getOriginal('category'),
+            'new_category' => $request->category,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Updated vehicle category');
+
 
         return back()->with('success', 'Vehicle Category Updated Successfully');
     }
@@ -93,6 +147,16 @@ class AdminVehicleCategoryController extends Controller
     public function destroy(VehicleCategory $vehicleCategory)
     {
         //
+        \activity('admin_vehicle_category_destroy')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicleCategory)
+        ->withProperties([
+            'ip' => request()->ip(),
+            'deleted_category' => $vehicleCategory->category,
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('Deleted vehicle category');
+
         $vehicleCategory->delete();
 
         return back()->with('success', 'Vehicle Category Deleted Successfully');

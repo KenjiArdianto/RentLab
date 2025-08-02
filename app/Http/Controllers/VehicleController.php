@@ -23,6 +23,12 @@ class VehicleController extends Controller
     {
         //
         $listItem = Vehicle::all();
+        \activity('vehicle_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+        ])
+        ->log("Viewed vehicle page");
         return view('welcome', compact('listItem'));
     }
 
@@ -84,6 +90,16 @@ class VehicleController extends Controller
         ->where('vehicles.id', $id)
         ->groupBy('vehicles.id')
         ->first();
+
+        \activity('vehicle_show')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'vehicle_id' => $id,
+            'user_agent' => request()->userAgent(),
+
+        ])
+        ->log("Viewed vehicle detail");
 
         return view('DetailPage', compact('rating', 'idVehicle', 'getVehicleByIdsINCarts', 'getCommentByIdVehicle', 'cartDateRanges', 'getVehicleimagesById'));
     }
@@ -191,6 +207,16 @@ class VehicleController extends Controller
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
         $locations = Location::orderBy('location')->get();
 
+        \activity('vehicle_display')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'filter_applied'=>$request->validated(),
+            'vehicle_shown_count' => $vehicle->total(),
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User filtered and viewed vehicle list');
+
         return view('webview.homescreen', [
             "vehicle" => $vehicle,
             "advertisement" => $advertisement,
@@ -215,6 +241,17 @@ class VehicleController extends Controller
         $this->filter($request, $vehicleQuery); // Panggil private method filter
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
         $locations = Location::orderBy('location')->get();
+
+        \activity('vehicle_catalog')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'filters' => $filters,
+            'search' => $filters['search'] ?? null,
+            'result_count' => $vehicle->total(),
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User searched and filtered vehicle catalog');
 
         return view('webview.catalog', [
             "vehicle" => $vehicle,

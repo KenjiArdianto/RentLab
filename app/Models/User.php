@@ -49,9 +49,9 @@ class User extends Authenticatable
     {
         static::deleting(function ($user) {
             if ($user->isForceDeleting()) {
-                $user->detail()->withTrashed()->forceDelete();
+                $user->detail->withTrashed()->forceDelete();
             } else {
-                $user->detail()->delete();
+                $user->detail->delete();
             }
         });
 
