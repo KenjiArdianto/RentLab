@@ -7,6 +7,8 @@ return [
         'success' => 'Payment Successful',
         'pending' => 'Waiting for Payment',
         'failed' => 'Payment Failed',
+        'countdown' => 'Complete Payment Within',
+
     ],
 
     // Order Summary

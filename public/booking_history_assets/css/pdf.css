@@ -36,14 +36,28 @@ body {
     padding: 0 5px;
 }
 
+.items-table th, .items-table td {
+    padding: 8px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.id-col { width: 5%; }
+.product-col { width: 20%; }
+.variant-col { width: 15%; }
+.dates-col { width: 25%; }
+.quantity-col { width: 15%; }
+.subtotal-col { width: 20%; }
+
+.text-right { text-align: right; }
+
 .info-section td:first-child {
-    width: 40%; /* Memberikan 40% lebar untuk kolom pertama (Customer Name, Order Number, Booking Dates) */
+    width: 40%;
     padding: 0 5px;
-    vertical-align: top; /* Pertahankan alignment */
+    vertical-align: top;
 }
 
 .info-section td:nth-child(2) {
-    width: 60%; /* Memberikan 60% lebar untuk kolom kedua (Vendor Name, Transaction Date, Payment Method) */
+    width: 60%;
     padding: 0 5px;
     vertical-align: top; 
     padding-left: 75px;

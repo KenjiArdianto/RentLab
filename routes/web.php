@@ -82,7 +82,8 @@ Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::cla
 
     Route::get('/booking-history', [BookingHistoryController::class, 'index'])->name('booking.history');
     Route::post('/booking/{transaction}/cancel', [BookingHistoryController::class, 'cancel'])->name('booking.cancel');
-    Route::get('/receipt/{transaction}/download', [BookingHistoryController::class, 'downloadReceipt'])->name('receipt.download');
+    Route::post('/booking/{transaction}/expire', [BookingHistoryController::class, 'expire'])->name('booking.expire');
+    Route::get('/receipt/{payment}/download', [BookingHistoryController::class, 'downloadReceipt'])->name('receipt.download');
     Route::post('/reviews/{transaction}', [UserReviewController::class, 'store'])->name('reviews.store');
 });
 

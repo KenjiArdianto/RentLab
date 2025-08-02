@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         links.forEach(link => {
             link.addEventListener('click', function (e) {
-                e.preventDefault(); 
-               
                 links.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
                 
@@ -29,6 +27,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+    flatpickr(".date-picker", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d M Y",
+    });
 
     document.querySelectorAll('.review-form').forEach(form => {
         form.addEventListener('submit', function(event) {
@@ -49,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : ''
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
             })
             .then(response => response.json().then(data => ({ status: response.status, body: data })))
@@ -66,11 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 const ratingContainer = form.querySelector('.rating');
                                 if (ratingContainer) {
                                     ratingContainer.classList.add('is-invalid');
-                                }
-                            } else {
-                                const inputElement = form.querySelector(`[name="${field}"]`);
-                                if (inputElement) {
-                                    inputElement.classList.add('is-invalid');
                                 }
                             }
                         }
@@ -93,35 +91,5 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitButton.innerHTML = 'Submit Review';
             });
         });
-    });
-
-    const dateFromInput = document.getElementById('date_from');
-    const dateToInput = document.getElementById('date_to');
-
-    flatpickr("#date_range_picker", {
-        mode: "range",
-        dateFormat: "d M Y",
-        altInput: true,
-        altFormat: "d M Y",
-        
-        defaultDate: [dateFromInput.value, dateToInput.value],
-
-        onClose: function(selectedDates) {
-            if (selectedDates.length === 2) {
-                const startDate = selectedDates[0];
-                const endDate = selectedDates[1];
-
-                const formatDate = (date) => {
-                    const d = new Date(date);
-                    const year = d.getFullYear();
-                    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-                    const day = ('0' + d.getDate()).slice(-2);
-                    return `${year}-${month}-${day}`;
-                };
-
-                dateFromInput.value = formatDate(startDate);
-                dateToInput.value = formatDate(endDate);
-            }
-        }
     });
 });
