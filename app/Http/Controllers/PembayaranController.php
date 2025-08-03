@@ -75,6 +75,14 @@ class PembayaranController extends Controller
         }
 
         $totalAmount = $cartItems->sum('subtotal');
+        \activity('user_checkout_show')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'selected_cart_ids' => $selectedCartIds,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('User accessed checkout page.');
 
         return view('checkout', [
             'user' => $user,
@@ -212,6 +220,20 @@ class PembayaranController extends Controller
             $result = $apiInstance->createInvoice($createInvoiceRequest);
             $payment->url = $result->getInvoiceUrl();
             $payment->save();
+            \activity('user_checkout_success')
+            ->causedBy($user)
+            ->performedOn($payment)
+            ->withProperties([
+                'payment_id' => $payment->id,
+                'external_id' => $payment->external_id,
+                'amount' => $payment->amount,
+                'cart_item_ids' => $selectedCartIds,
+                'invoice_url' => $payment->url,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("User successfully created checkout and Xendit invoice.");
+
 
             // Hapus item dari keranjang dan session
             Cart::whereIn('id', $selectedCartIds)->where('user_id', $user->id)->delete();
@@ -226,6 +248,16 @@ class PembayaranController extends Controller
             DB::rollBack();
             Log::error('PAYMENT_CREATION_FAILED:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             activity('admin_payment_failed')->causedBy($user)->log("Payment creation failed: " . $e->getMessage());
+
+            \activity('user_checkout_failed')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'error' => $e->getMessage(),
+                'cart_item_ids' => $selectedCartIds,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Checkout or invoice creation failed.");
 
             if ($e instanceof \Xendit\XenditSdkException) {
                 return back()->with('error', 'Terjadi kesalahan saat membuat invoice Xendit. Silakan coba lagi.');
@@ -281,11 +313,30 @@ class PembayaranController extends Controller
 
         if (!$payment) {
             Log::warning("Webhook Rejected: Payment with external_id [{$externalId}] not found.");
+            \activity('webhook_payment_not_found')
+            ->withProperties([
+                'external_id' => $externalId,
+                'payload' => $payload,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Xendit webhook failed: Payment not found.");
+
             return response()->json(['status' => 'error', 'message' => 'Payment not found'], 404);
         }
 
         if ($payment->status === 'PAID') {
             Log::info("Webhook Skipped: Payment [{$externalId}] is already marked as PAID.");
+            \activity('webhook_payment_skipped')
+            ->performedOn($payment)
+            ->withProperties([
+                'status' => $paymentStatus,
+                'external_id' => $externalId,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Xendit webhook skipped (already processed).");
+
             return response()->json(['status' => 'success', 'message' => 'Already processed']);
         }
 
@@ -329,6 +380,17 @@ class PembayaranController extends Controller
                 $payment->payment_method = $payload['payment_method'] ?? null;
                 $payment->payment_channel = $payload['payment_channel'] ?? null;
                 $payment->save();
+                \activity('webhook_payment_updated')
+                ->performedOn($payment)
+                ->withProperties([
+                    'status' => $paymentStatus,
+                    'external_id' => $externalId,
+                    'transactions_updated' => $updatedRows ?? 0,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ])
+                ->log("Xendit webhook updated payment and transactions.");
+
 
                 Transaction::where('payment_id', $payment->id)->update(['transaction_status_id' => 2]);
 

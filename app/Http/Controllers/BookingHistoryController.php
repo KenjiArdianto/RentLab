@@ -54,6 +54,7 @@ class BookingHistoryController extends Controller
         $allTransactions = $baseQuery->get();
 
         $allTransactions->map(function ($transaction) {
+            // dd($transaction->all());
             if ($transaction->vehicle_price == 0 && $transaction->vehicle) {
                 $startDate = Carbon::parse($transaction->start_book_date);
                 $endDate = Carbon::parse($transaction->end_book_date);
@@ -71,7 +72,7 @@ class BookingHistoryController extends Controller
                 $transaction->driver_price = 50000;
             }
 
-            $transaction->price = $transaction->vehicle_price + $transaction->driver_price;
+            $transaction->price = $transaction->vehicle_price + $transaction->driver_price*(Carbon::parse($transaction->start_book_date)->diffInDays(Carbon::parse($transaction->end_book_date))+1);
             
             return $transaction;
         });
