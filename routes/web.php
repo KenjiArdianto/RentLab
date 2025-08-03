@@ -14,6 +14,7 @@ use App\Http\Middleware\EnsureUserHasDetails;
 use App\Http\Controllers\AdminIndexController;
 use App\Http\Controllers\AdminDriverController;
 use App\Http\Controllers\AdminTransactionController;
+use App\Http\Controllers\AdminPaymentController;
 use App\Http\Controllers\AdminVehicleController;
 use App\Http\Controllers\AdminVehicleReviewController;
 use App\Http\Controllers\AdminVehicleTypeController;
@@ -37,11 +38,13 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\BookingHistoryController;
 use App\Http\Controllers\UserReviewController;
 
+
 Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
 
 Route::get('/landing', [LandingController::class, 'index'])->name('landing.index');
 Route::get('/landing/search', [LandingController::class, 'search'])->name('landing.search');
 
+Route::get('/', [VehicleController::class, 'display']);
 Route::get('/home', [VehicleController::class, 'display'])->name('vehicle.display');
 Route::get('/catalog', [VehicleController::class, 'catalog'])->name('vehicle.catalog');
 Route::get('/vehicle/{id}', [VehicleController::class,'show'])->name("vehicle.detail");
@@ -56,6 +59,8 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 
 Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])->name('payment.callback');
 
+Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+
 //middleware untuk memastikan user telah login sebagai user
 Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
     Route::get('/complete-user-detail',[UserDetailController::class,'show'])->name('complete.user.detail');
@@ -67,7 +72,6 @@ Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::cla
 
     Route::post('/profile',[ProfileController::class,'change'])->name('change.profile');
     Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
-    Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 
     Route::get('/cart', [CartController::class,'index'])->name('cart');
     Route::post('/cart/store', [CartController::class,'store'])->name('cart.store');
@@ -92,13 +96,9 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::get('/admin',[AdminIndexController::class, 'index'])->name('admin.index');
 
 
+    Route::get('/admin/logs',[AdminLogsController::class, 'index'])->name('admin.logs');
 
-    Route::get('/admin/logs', function () {
-        return view('admin.logs');
-    })->name('admin.logs');
-
-
-    Route::get('/admin/users}',[AdminUserController::class, 'index'])->name('admin.users');
+    Route::get('/admin/users',[AdminUserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users/suspend-selected',[AdminUserController::class, 'suspendSelected'])->name('admin.users.suspendSelected');
     Route::post('/admin/users/suspend/{user}',[AdminUserController::class, 'suspend'])->name('admin.users.suspend');
     Route::post('/admin/users/unsuspend-selected',[AdminUserController::class, 'unsuspendSelected'])->name('admin.users.unsuspendSelected');
@@ -115,9 +115,12 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::get('/admin/transactions',[AdminTransactionController::class, 'index'])->name('admin.transactions');
     Route::post('/admin/transactions/{transaction}', [AdminTransactionController::class, 'update'])->name('admin.transactions.update');
 
+    Route::get('/admin/payments', [AdminPaymentController::class, 'index'])->name('admin.payments');
 
     Route::get('/admin/vehicles',[AdminVehicleController::class, 'index'])->name('admin.vehicles');
     Route::post('/admin/vehicles/store', [AdminVehicleController::class, 'store'])->name('admin.vehicles.store');
+    Route::post('/admin/vehicles/import', [AdminVehicleController::class, 'import'])->name('admin.vehicles.import');
+    Route::post('/admin/vehicles/destroy/{vehicle}', [AdminVehicleController::class, 'destroy'])->name('admin.vehicles.destroy');
     Route::post('/admin/vehicles/{vehicle}/update', [AdminVehicleController::class, 'update'])->name('admin.vehicles.update');
     Route::post('/admin/vehicles/{vehicle}/update-category', [AdminVehicleController::class, 'updateCategory'])->name('admin.vehicles.updateCategory');
     Route::post('/admin/vehicles/{vehicle}/delete-category', [AdminVehicleController::class, 'deleteCategory'])->name('admin.vehicles.deleteCategory');
@@ -209,8 +212,4 @@ Route::get('/faq', function (Request $request) {
 
 
 
-
-Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::class])->group(function(){
-    Route::get('/coba',[ProfileController::class,'coba']);
-});
 

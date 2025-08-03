@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VehicleTransmission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminVehicleTransmissionController extends Controller
 {
@@ -22,6 +23,14 @@ class AdminVehicleTransmissionController extends Controller
         }
 
         $vehicleTransmissions = $vehicleTransmissions->paginate(100);
+         \activity('admin_vehicle_transmission_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'search' => $search,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin searched vehicle transmissions with search = '{$search}'");
 
         return view('admin.vehicle-transmissions', compact('vehicleTransmissions'));
 
@@ -43,12 +52,29 @@ class AdminVehicleTransmissionController extends Controller
         //
 
         if (VehicleTransmission::where('transmission', $request->transmission)->exists()) {
+            \activity('admin_vehicle_transmission_store_failed')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'attempted_transmission' => $request->transmission,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin tried to create duplicate transmission '{$request->transmission}'");
             return back()->with('error', 'Vehicle Transmission Already Exists');
         }
 
-        VehicleTransmission::create([
+        $transmission=VehicleTransmission::create([
             'transmission' => $request->transmission
         ]);
+         \activity('admin_vehicle_transmission_store')
+        ->causedBy(Auth::user())
+        ->performedOn($transmission)
+        ->withProperties([
+            'transmission' => $request->transmission,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin created vehicle transmission '{$request->transmission}'");
         
         return back()->with('success', 'Vehicle Transmission Added Successfully');
     }
@@ -78,11 +104,31 @@ class AdminVehicleTransmissionController extends Controller
         // dd($vehicleTransmission);
 
         if ($vehicleTransmission->transmission === $request->transmission) {
+            \activity('admin_vehicle_transmission_update_failed')
+            ->causedBy(Auth::user())
+            ->performedOn($vehicleTransmission)
+            ->withProperties([
+                'attempted_same_transmission' => $request->transmission,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin attempted to update vehicle transmission '{$request->transmission}' with no change");
             return back()->with('error', 'Vehicle Transmission Not Updated');
         }
 
+        $old=$vehicleTransmission->transmission;
         $vehicleTransmission->transmission = $request->transmission;
         $vehicleTransmission->save();
+        \activity('admin_vehicle_transmission_update')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicleTransmission)
+        ->withProperties([
+            'old_transmission' => $old,
+            'new_transmission' => $request->transmission,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin updated transmission from '{$old}' to '{$request->transmission}'");
 
         return back()->with('success', 'Vehicle Transmission Updated Successfully');
     }
@@ -93,6 +139,15 @@ class AdminVehicleTransmissionController extends Controller
     public function destroy(VehicleTransmission $vehicleTransmission)
     {
         //
+         \activity('admin_vehicle_transmission_delete')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicleTransmission)
+        ->withProperties([
+            'deleted_transmission' => $vehicleTransmission->transmission,
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log("Admin deleted vehicle transmission '{$vehicleTransmission->transmission}'");
         $vehicleTransmission->delete();
 
         return back()->with('success', 'Vehicle Transmission Deleted Successfully');

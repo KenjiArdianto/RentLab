@@ -34,6 +34,17 @@ class CartController extends Controller
                             ->where('start_date', '<', $today)
                             ->orderBy('start_date', 'desc')
                             ->get();
+        \activity('cart_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip'=>request()->ip(),
+            'cart_shown' => [
+                'upcoming' => $upcomingCart->pluck('id')->toArray(),
+                'outdated' => $outdatedCart->pluck('id')->toArray(),
+            ],
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User viewed their cart.');
 
         return view("CartPage", compact('listCart', 'upcomingCart', 'outdatedCart'));
     }
@@ -48,6 +59,14 @@ class CartController extends Controller
         // Fetch the vehicle to get its price
         $vehicle = Vehicle::find($vehicleId);
         if (!$vehicle) {
+            \activity('cart')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'vehicle_id' => $vehicleId,
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Failed to add cart: vehicle not found');
             return back()->with('error', 'Kendaraan tidak ditemukan.');
         }
 
@@ -78,13 +97,24 @@ class CartController extends Controller
 
             // dd($subtotal);
 
-            Cart::create([
+            $cart=Cart::create([
                 'vehicle_id' => $vehicleId,
                 'start_date' => $range['start_date'],
                 'end_date' => $range['end_date'],
                 'user_id' => $userId,
                 'subtotal' => round($subtotal), // Store the calculated subtotal
             ]);
+            \activity('cart')
+            ->performedOn($cart)
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'vehicle_id' => $vehicleId,
+                'start_date' => $range['start_date'],
+                'end_date' => $range['end_date'],
+                'subtotal' => round($subtotal),
+            ])
+            ->log('Cart item created');
         }
 
         return back()->with('success', 'Tanggal berhasil ditambahkan ke keranjang!');
@@ -92,20 +122,52 @@ class CartController extends Controller
     public function destroy(string $id)
     {
         $cartitems=Cart::where('id',$id)->get();
+        if(!$cartitems){
+            \activity('cart')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'cart_id' => $id,
+            ])
+            ->log('Failed to delete cart: item not found');
+            return back()->withErrors(['error' => 'Cart item not found.']);
+        }
         if($cartitems->user_id != Auth::id()){
+            \activity('cart')
+            ->performedOn($cartitems)
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'cart_id' => $id,
+            ])
+            ->log('Unauthorized cart delete attempt');
             return back()->withError();
         }
         Cart::destroy($id);
+        \activity('cart')
+        ->performedOn($cartitems)
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'cart_id' => $id,
+        ])
+        ->log('Cart item deleted');
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
     }
 
     public function clearOutdated()
     {
         $today = Carbon::today();
-        Cart::where('user_id', Auth::id())
+        $deletedCart=Cart::where('user_id', Auth::id())
             ->where('start_date', '<', $today)
             ->delete();
-
+        \activity('cart')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'deleted_count' => $deletedCart,
+        ])
+        ->log('User cleared outdated cart items');
         return back()->with('success', 'Semua rental kedaluwarsa berhasil dihapus!');
     }
 
@@ -113,6 +175,13 @@ class CartController extends Controller
     {
         $userId = Auth::id() ; // Gunakan ID pengguna yang terautentikasi, atau dummy untuk pengujian
         $count = Cart::where('user_id', $userId)->count();
+        \activity('cart')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => request()->ip(),
+            'item_count' => $count,
+        ])
+        ->log('User checked cart item count');
         return response()->json(['count' => $count]);
     }
 }

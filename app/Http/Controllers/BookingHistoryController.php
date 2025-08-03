@@ -37,7 +37,6 @@ class BookingHistoryController extends Controller
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
         $baseQuery = Transaction::with($relations)->where('user_id', $userId)->orderBy('start_book_date', 'desc');
-
         $baseQuery->when($searchKeyword, function ($query, $keyword) {
             return $query->whereHas('vehicle.vehicleName', function ($subQuery) use ($keyword) {
                 $subQuery->where('name', 'like', "%{$keyword}%");
@@ -62,12 +61,36 @@ class BookingHistoryController extends Controller
             ->paginate(10, ['*'], 'historyPage') 
             ->appends($request->query());
 
+        \activity('bookinghistory_view')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'user_id' => Auth::id(),
+            'search' => $request->input('search'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+            'user_agent' => $request->userAgent(),
+            'ip' => $request->ip(),
+        ])
+        ->log('User viewed their transaction history');
+
         return view('booking-history', compact('ongoingTransactions', 'historyTransactions'));
     }
 
     public function show(Transaction $transaction)
     {
-        if (Auth::id() != $transaction->user_id) { abort(403); }
+        if (Auth::id() != $transaction->user_id) { 
+            \activity('bookinghistory_denied')
+            ->causedBy(Auth::user())
+            ->performedOn($transaction)
+            ->withProperties([
+                'user_id' => Auth::id(),
+                'transaction_id' => $transaction->id,
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User tried to access unauthorized transaction detail on booking history');
+            abort(403); 
+        }
 
         $transaction->load(['user', 'vehicle', 'vehicle.vehicleName', 'vehicle.vehicleType', 'vehicle.vehicleTransmission', 'driver']);
         return view('booking-detail', compact('transaction'));
@@ -76,6 +99,15 @@ class BookingHistoryController extends Controller
     public function downloadReceipt(Transaction $transaction)
     {
         if (Auth::id() != $transaction->user_id) {
+            \activity('bookinghistory_receipt_download_denied')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'transaction_id' => $transaction->id,
+                'user_id' => Auth::id(),
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Unauthorized receipt download attempt');
             abort(403, 'Unauthorized Action');
         }
 
@@ -85,6 +117,16 @@ class BookingHistoryController extends Controller
         ];
         $pdf = Pdf::loadView('receipts.pdf', $data);
         $fileName = 'receipt rentlab - ' . $transaction->id . ' - ' . Str::slug($transaction->user->name) . '.pdf';
+        \activity('bookinghistory_receipt_download')
+        ->causedBy(Auth::user())
+        ->performedOn($transaction)
+        ->withProperties([
+            'transaction_id' => $transaction->id,
+            'user_id' => Auth::id(),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User downloaded transaction receipt');
         return $pdf->download($fileName);
     }
 
@@ -92,15 +134,45 @@ class BookingHistoryController extends Controller
     {
         
         if (Auth::id() != $transaction->user_id) { 
+            \activity('bookinghistory_transaction_cancel_denied')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'transaction_id' => $transaction->id,
+                'user_id' => Auth::id(),
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Unauthorized transaction cancel attempt');
             abort(403, 'AKSI TIDAK DIIZINKAN');
         }
 
         if (!in_array($transaction->transaction_status_id, [1, 2])) {
+            \activity('bookinghistory_transaction_cancel_invalid')
+            ->causedBy(Auth::user())
+            ->performedOn($transaction)
+            ->withProperties([
+                'transaction_id' => $transaction->id,
+                'user_id' => Auth::id(),
+                'status' => $transaction->transaction_status_id,
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Attempted to cancel transaction with invalid status');
             return back()->with('error', __('booking-history.cancel_massage'));
         }
-
         $transaction->transaction_status_id = 7; 
         $transaction->save();
+        
+        \activity('bookinghistory_transaction_cancelled')
+        ->causedBy(Auth::user())
+        ->performedOn($transaction)
+        ->withProperties([
+            'transaction_id' => $transaction->id,
+            'user_id' => Auth::id(),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log('User successfully cancelled a transaction');
 
         return redirect()->route('booking.history')->with('success', __('booking-history.cancel_success_message'));
     }

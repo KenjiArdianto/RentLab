@@ -12,4 +12,6 @@ return [
     'vehicle_transmissions' => 'Search Vehicle Transmissions',
     'vehicle_categories' => 'Search Vehicle Categories',
     'locations' => 'Search Locations', 
+    'logs' => 'Format: Attribute1=Value1,Attribute2=Value2 ex: log_id=1,created_at=2025-08-01_10:00:00',
+    'payments' => 'Format: Attribute1=Value1,Attribute2=Value2 ex: payment_id=1,payment_method=EWALLET',
 ];

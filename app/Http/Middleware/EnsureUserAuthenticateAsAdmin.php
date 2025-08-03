@@ -16,6 +16,18 @@ class EnsureUserAuthenticateAsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if(!Auth::check() || Auth::user()->role!=='admin'){
+            \activity('middleware_access_denied')
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'user_id'     => optional(Auth::user())->id,
+                    'user_email'  => optional(Auth::user())->email,
+                    'role'        => optional(Auth::user())->role,
+                    'requested_url' => $request->fullUrl(),
+                    'method'      => $request->method(),
+                    'ip'          => $request->ip(),
+                    'user_agent'  => $request->userAgent(),
+                ])
+                ->log('Access denied: non-user tried to access admin-only route');
             abort(403,'admin doang cik, cabut lo!');
         }
         return $next($request);

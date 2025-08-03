@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'external_id',
@@ -22,6 +24,25 @@ class Transaction extends Model
         'return_date',
         'status',
     ];
+
+    // 🔍 Log only relevant fields
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'external_id',
+                'vehicle_id',
+                'user_id',
+                'driver_id',
+                'start_book_date',
+                'end_book_date',
+                'return_date',
+                'status',
+            ])
+            ->useLogName('transaction_model')
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function transactionStatus()
     {

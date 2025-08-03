@@ -4,6 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleFilterRequest extends FormRequest
 {
@@ -51,5 +54,26 @@ class VehicleFilterRequest extends FormRequest
             // Filter pencarian
             'search'          => ['nullable', 'string', 'max:100'], // Batasi panjang string pencarian
         ];
+    }
+
+     /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        \activity('vehicle_filter_validation_failed')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => $this->ip(),
+                'user_id' => optional($this->user())->id,
+                'user_input' => $this->except([]),
+                'errors' => $validator->errors()->messages(),
+                'user_agent' => $this->userAgent(),
+            ])
+            ->log('Validation failed when filtering vehicles');
+
+        throw (new ValidationException($validator))
+            ->errorBag($this->errorBag)
+            ->redirectTo($this->getRedirectUrl());
     }
 }

@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 
 class UserReview extends Model
 {
     /** @use HasFactory<\Database\Factories\UserReviewFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'admin_id',
@@ -17,6 +20,14 @@ class UserReview extends Model
         'comment',
         'rate'
     ];
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['admin_id', 'user_id', 'transaction_id', 'comment', 'rate'])
+            ->useLogName('user_review_model')
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function transaction()
     {
