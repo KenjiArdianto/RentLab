@@ -17,7 +17,7 @@ class AdminUserController extends Controller
     {
         $query = User::query()->with(['detail', 'reviews'])->where('role', '!=', 'admin');
 
-        // Apply filter based on status
+        // Apply filter based on actor status
         if ($request->has('filter')) {
             switch ($request->filter) {
                 case 'active':
@@ -27,7 +27,7 @@ class AdminUserController extends Controller
                     $query->whereNotNull('suspended_at')->whereNull('deleted_at');
                     break;
                 case 'deleted':
-                    $query->onlyTrashed(); // Make sure you are using SoftDeletes in User model
+                    $query->onlyTrashed();
                     break;
             }
         }
@@ -147,7 +147,7 @@ class AdminUserController extends Controller
             }
         }
 
-        $users = $query->paginate(33);
+        $users = $query->paginate(33)->appends(['search' => $search]);
 
         \activity('admin_user_index')
         ->causedBy(Auth::user())

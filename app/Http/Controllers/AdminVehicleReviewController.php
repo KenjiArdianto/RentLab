@@ -60,7 +60,7 @@ class AdminVehicleReviewController extends Controller
             'user_agent' => $request->userAgent(),
         ])
         ->log("Admin searched reviews for vehicle #$vehicle->id with query: $search");
-        $reviews = $query->paginate(100);
+        $reviews = $query->paginate(100)->appends(['search' => $search]);
 
         return view('admin.vehicles.reviews', compact('vehicle', 'reviews'));
     }

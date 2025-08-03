@@ -22,7 +22,7 @@ class AdminTransactionUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'integer', 'in:0,1,2,3,4,5,6'], // adjust allowed status values
+            'status' => ['required', 'integer', 'in:1,2,3,4,5,6,7'], // adjust allowed status values
             'comment' => ['nullable', 'string', 'max:250'],
             'rating' => ['nullable', 'integer', 'between:1,5'],
         ];

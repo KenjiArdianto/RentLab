@@ -8,17 +8,13 @@ use Spatie\Activitylog\Models\Activity;
 
 class AdminLogsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * 
-     * 
-     */
     public function index(Request $request)
     {
         //
         $query = Activity::latest();
         $search = $request->get('search');
 
+        // handle search
         // split search by comma
         if ($search) {
             $pairs = explode(',', $search);
@@ -38,35 +34,35 @@ class AdminLogsController extends Controller
                 }
                 // handle description
                 else if ($key === 'description' || $key === 'deskripsi') {
-                    $query->where('description', $value);
+                    $query->where('description', 'like', '%' . $value . '%');
                 }
                 // handle subject_type
                 else if ($key === 'subject_type' || $key === 'tipe_subjek') {
-                    $query->where('subject_type', $value);
+                    $query->where('subject_type', 'like', '%' . $value . '%');
                 }
                 // handle event
                 else if ($key === 'event' || $key === 'peristiwa') {
-                    $query->where('event', $value);
+                    $query->where('event', 'like', '%' . $value . '%');
                 }
                 // handle subject_id
                 else if ($key === 'subject_id' || $key === 'id_subjek') {
-                    $query->where('subject_id', $value);
+                    $query->where('subject_id', 'like', '%' . $value . '%');
                 }
                 // handle causer_type
                 else if ($key === 'causer_type' || $key === 'tipe_penyebab') {
-                    $query->where('causer_type', $value);
+                    $query->where('causer_type', 'like', '%' . $value . '%');
                 }
                 // handle causer_id
                 else if ($key === 'causer_id' || $key === 'id_penyebab') {
-                    $query->where('causer_id', $value);
+                    $query->where('causer_id', 'like', '%' . $value . '%');
                 }
                 // handle properties
                 else if ($key === 'properties' || $key === 'properti') {
-                    $query->where('properties', $value);
+                    $query->where('properties', 'like', '%' . $value . '%');
                 }
                 // handle batch_uuid
                 else if ($key === 'batch_uuid' || $key === 'uuid_batch') {
-                    $query->where('batch_uuid', $value);
+                    $query->where('batch_uuid', 'like', '%' . $value . '%');
                 }
                 // handle created_at
                 else if ($key === 'created_at' || $key === 'dibuat_pada') {
@@ -85,6 +81,7 @@ class AdminLogsController extends Controller
         }
 
 
+        // logging
         $logs = $query->paginate(100)->appends(['search' => $search]);;
         \activity('admin_logs_index')
         ->causedBy(Auth::user())

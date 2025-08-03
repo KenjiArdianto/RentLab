@@ -13,10 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminDriverController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
+    // View Driver List
     public function index(Request $request)
     {
         $locations = Location::all();
@@ -50,7 +47,8 @@ class AdminDriverController extends Controller
             }
         }
 
-        $drivers = $query->paginate(31);
+        // logging
+        $drivers = $query->appends(['search' => $search]);
         \activity('admin_driver_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -62,9 +60,6 @@ class AdminDriverController extends Controller
         return view('admin.drivers', compact('drivers', 'locations'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // Store Image
@@ -82,6 +77,7 @@ class AdminDriverController extends Controller
             'location_id' => $request->location_id
         ]);
 
+        // logging
         \activity('admin_driver_created')
         ->causedBy(Auth::user())
         ->performedOn($driver)
@@ -106,10 +102,13 @@ class AdminDriverController extends Controller
 
         if ($action_type == 'delete') {
 
+            // get driver object
             $driver = Driver::where('id', $driver_id)->first();
 
+            // delete driver image from folderas
             File::delete(public_path($driver->image));
 
+            // logging
             \activity('admin_driver_deleted')
             ->causedBy(Auth::user())
             ->performedOn($driver)
@@ -121,14 +120,17 @@ class AdminDriverController extends Controller
             ])
             ->log('Admin deleted a driver');
 
+            // delete driver object itself
             $driver->delete();
             
             return back()->with('success', 'Selected driver deleted.');
         }
         else if ($action_type == 'edit') {
 
+            // get driver object
             $driver = Driver::where('id', $driver_id)->first();
             
+            // if the request have image in it then delete original image and store new image, also replace old path with new path
             if($request->hasFile('image')){ 
                 $image = $request->file('image');
                 $image_name = 'driver_image_' .  time() . '_' . $image->getClientOriginalName();
@@ -141,15 +143,17 @@ class AdminDriverController extends Controller
 
             }
             
+            // if request have name then replace old name with new name
             if ($request->has('name')) {
                 $driver->name = $request->input('name');
             }
 
+            // if request have location then replace old location with new location
             if ($request->has('location_id')) {
                 $driver->location_id = $request->input('location_id');
             }
 
-            // $driver->image = $request->input('image');
+            // logging
             $driver->save();
             \activity('admin_driver_edited')
             ->causedBy(Auth::user())
@@ -170,8 +174,10 @@ class AdminDriverController extends Controller
     {
         $id_list = $request->input('selected', []);
 
+        // delete all selected driver ids
         Driver::whereIn('id', $id_list)->delete();
 
+        // logging
         \activity('admin_driver_bulk_deleted')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -181,7 +187,6 @@ class AdminDriverController extends Controller
             'user_agent' => $request->userAgent(),
         ])
         ->log('Admin deleted multiple drivers');
-
 
         if (!$id_list) {
             return back()->with('error', 'No drivers selected.');

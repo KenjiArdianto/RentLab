@@ -52,7 +52,7 @@ class AdminUserReviewController extends Controller
         }
 
 
-        $reviews = $query->paginate(100);
+        $reviews = $query->paginate(100)->appends(['search' => $search]);
 
         \activity('admin_user_review_index')
         ->causedBy(Auth::user())

@@ -33,7 +33,7 @@ return [
     'vehicle_id' => 'ID Kendaraan',
     'main_image' => 'Gambar Utama',
     'type' => 'Tipe',
-    'transmission' => 'Transmission',
+    'transmission' => 'Transmisi',
     'engine_cc' => 'Kapasitas mesin (CC)',
     'seats' => 'Jumlah Kursi',
     'year' => 'Tahun',

@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Http\Requests\AdminVehicleStoreRequest;
 use App\Http\Requests\AdminVehicleImportRequest;
+use App\Http\Requests\AdminVehicleUpdateRequest;
+use App\Http\Requests\AdminVehicleUpdateCategoryRequest;
+use App\Http\Requests\AdminVehicleDeleteCategoryRequest;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -26,6 +29,7 @@ class AdminVehicleController extends Controller
     {
         //
 
+        // get all required tables
         $vehicleTypes = VehicleType::all();
         $vehicleNames = VehicleName::all();
         $vehicleTransmissions = VehicleTransmission::all();
@@ -46,45 +50,46 @@ class AdminVehicleController extends Controller
                 [$key, $value] = array_map('trim', explode('=', $pair, 2));
                 
                 // handle vehicle_id
-                if ($key === 'vehicle_id') {
+                if ($key === 'vehicle_id' || $key === 'id_kendaraan') {
                     $query->where('id', $value);
                 }
                 // handle type
-                else if ($key === 'type') {
+                else if ($key === 'type' || $key === 'tipe') {
                     $query->whereHas('vehicleType', function ($q) use ($value) {
-                        $q->where('type', $value);
+                        $q->where('type', 'LIKE', '%' . $value . '%');
                     });
                 }
                 // handle transmission
-                else if ($key === 'transmission') {
+                else if ($key === 'transmission' || $key === 'transmisi') {
                     $query->whereHas('vehicleTransmission', function ($q) use ($value) {
-                        $q->where('transmission', $value);
+                        $q->where('transmission', 'LIKE', '%' . $value . '%');
                     });
                 }
                 // handle engine_cc
-                else if ($key === 'engine_cc') {
-                    $query->where('engine_cc', $value);
+                else if ($key === 'engine_cc' || $key === 'kapasitas_mesin') {
+                    $query->where('engine_cc', 'LIKE', '%' . $value . '%');
                 }
                 // handle seats
-                else if ($key === 'seats') {
-                    $query->where('seats', $value);
+                else if ($key === 'seats' || $key === 'jumlah_kursi') {
+                    $query->where('seats', 'LIKE', '%' . $value . '%');
                 }
                 // handle year
-                else if ($key === 'year') {
-                    $query->where('year', $value);
+                else if ($key === 'year' || $key === 'tahun') {
+                    $query->where('year', 'LIKE', '%' . $value . '%');
                 }
                 // handle price
-                else if ($key === 'price') {
-                    $query->where('price', $value);
+                else if ($key === 'price' || $key === 'biaya') {
+                    $query->where('price', 'LIKE', '%' . $value . '%');
                 }
                 // handle location
-                else if ($key === 'location') {
+                else if ($key === 'location' || $key === 'lokasi') {
                     $query->whereHas('location', function ($q) use ($value) {
-                        $q->where('location', $value);
+                        $q->where('location', 'LIKE', '%' . $value . '%');
                     });
                 }
+
                 // handle rating
-                else if ($key === 'rating') {
+                else if ($key === 'rating' || $key === 'penilaian') {
                     $query->whereHas('vehicleReview', function ($q) use ($value) {
                         $q->selectRaw('vehicle_id, AVG(rate) as avg_rating')
                         ->groupBy('vehicle_id')
@@ -92,7 +97,7 @@ class AdminVehicleController extends Controller
                     });
                 }
                 // handle transactions
-                else if ($key === 'transactions') {
+                else if ($key === 'transactions' || $key === 'transaksi') {
                     $query->whereHas('transactions', function ($q) {
                         $q->select('vehicle_id')
                         ->groupBy('vehicle_id');
@@ -113,6 +118,7 @@ class AdminVehicleController extends Controller
             ->with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'vehicleCategories', 'location', 'vehicleReview', 'transactions', 'vehicleImages'])
             ->paginate(100)->appends(['search' => $search]);
 
+            // logging
         activity('admin_vehicle_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -212,19 +218,20 @@ class AdminVehicleController extends Controller
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Vehicle $vehicle)
+    public function update(AdminVehicleUpdateRequest $request, Vehicle $vehicle)
     {
         //
         // dd($request->all());
 
         
+        // to log changes
         $changes = [];
         $uploadErrors = [];
 
         $vehicleUpdated = false;
+
+        // check if theres changes, if there are then change the attribute
+        // for images, if there are changes then delete the old image and replace with new one
 
         if ($request->vehicle_name_id != $vehicle->vehicle_name_id) {
             $changes['vehicle_name_id'] = [
@@ -436,6 +443,7 @@ class AdminVehicleController extends Controller
             }
         }
 
+        // if updated then save the vehicle instance and log
         if ($vehicleUpdated) {
             $vehicle->save();
             \activity('admin_vehicle_update_successful')
@@ -451,6 +459,7 @@ class AdminVehicleController extends Controller
             return back()->with('success', "Vehicle #$vehicle->id updated.");
 
         }
+        // logging
         \activity('admin_vehicle_update_failed')
         ->causedBy(Auth::user())
         ->performedOn($vehicle)
@@ -463,11 +472,12 @@ class AdminVehicleController extends Controller
         return back()->with('error', "Vehicle #$vehicle->id not updated.");
     }
 
-    public function updateCategory(Request $request, Vehicle $vehicle)
+    public function updateCategory(AdminVehicleUpdateCategoryRequest $request, Vehicle $vehicle)
     {
         //
         // dd($request->all());
 
+        // if category already exist then log error and redirect
         if (VehicleCategory::where('category', $request->category)->exists()) {
             // The category already exists
             \activity('admin_vehicle_category_add_failed')
@@ -482,6 +492,7 @@ class AdminVehicleController extends Controller
             return back()->with('error', 'Vehicle already has this category.');
         }
 
+        // attach category and log
         $vehicle->vehicleCategories()->attach($request->category_id);
         \activity('admin_vehicle_category_add')
         ->causedBy(Auth::user())
@@ -495,11 +506,12 @@ class AdminVehicleController extends Controller
         return back()->with('success', "Vehicle #$vehicle->id category added.");
     }
 
-    public function deleteCategory(Request $request, Vehicle $vehicle)
+    public function deleteCategory(AdminVehicleDeleteCategoryRequest $request, Vehicle $vehicle)
     {
         //
         // dd($request->all());
 
+        // detach category and log
         $vehicle->vehicleCategories()->detach($request->category_id);
         \activity('admin_vehicle_category_remove')
         ->causedBy(Auth::user())
@@ -516,10 +528,12 @@ class AdminVehicleController extends Controller
     public function import(AdminVehicleImportRequest $request)
     {
 
+        // get csv path, set to read mode, and use header to get input
         $path = $request->file('csv_file')->getRealPath();
         $file = fopen($path, 'r');
         $header = fgetcsv($file);
 
+        // iterate through rows
         while (($row = fgetcsv($file)) !== false) {
             $data = array_combine($header, $row);
 

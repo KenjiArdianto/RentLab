@@ -13,7 +13,7 @@ class AdminVehicleNameController extends Controller
      */
     public function index(Request $request)
     {
-        //
+        // view and search
         $vehicleNames = VehicleName::query();
 
 
@@ -22,7 +22,7 @@ class AdminVehicleNameController extends Controller
             $vehicleNames->where('name', 'like', '%' . $search . '%');
         }
 
-        $vehicleNames = $vehicleNames->paginate(100);
+        $vehicleNames = $vehicleNames->paginate(100)->appends(['search' => $search]);
         \activity('admin_vehicle_name_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -36,21 +36,11 @@ class AdminVehicleNameController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
 
+        // check if already exist
         if (VehicleName::where('name', $request->name)->exists()) {
             \activity('admin_vehicle_name_store_failed')
             ->causedBy(Auth::user())
@@ -80,30 +70,11 @@ class AdminVehicleNameController extends Controller
         return back()->with('success', 'Vehicle Name Added Successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(VehicleName $vehicleName, Request $request)
     {
         //
         // dd($vehicleName->name);
-
+        // update vehicle name
         if ($vehicleName->name == $request->name) {
             \activity('admin_vehicle_name_update_failed')
             ->causedBy(Auth::user())
@@ -134,12 +105,11 @@ class AdminVehicleNameController extends Controller
         return back()->with('success', 'Vehicle Name Updated Successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(VehicleName $vehicleName)
     {
         //
+
+        // remove vehicle name
         \activity('admin_vehicle_name_delete')
         ->causedBy(Auth::user())
         ->performedOn($vehicleName)
