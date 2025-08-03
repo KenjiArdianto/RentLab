@@ -8,6 +8,19 @@
   <title>User Profile UI</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        /* Hapus bayangan internal yang kadang ditambahkan browser */
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+
+        /* Opsional: Jika warna teks juga berubah (misalnya jadi hitam), atur kembali */
+        -webkit-text-fill-color: #000 !important;
+
+        /* Paksa transisi agar perubahan warna tidak terlihat aneh */
+        transition: background-color 5000s ease-in-out 0s;
+    }
     body {
       margin: 0;
       padding: 0;
@@ -19,7 +32,7 @@
     .card {
       opacity: 100%;
       max-width: 480px;
-      margin: 40px auto;
+      margin: 40px auto 100px auto;
       background: #ffffff;
       border-radius: 16px;
       overflow: hidden;
@@ -102,7 +115,7 @@
       gap: 12px;
     }
     .input-group div input, #buttonIdCard{
-        width: 88%;
+        width: 100%;
     }
     input, select , #buttonIdCard{
       flex: 1;
@@ -230,18 +243,23 @@
     }
 
     .profile-popup{ 
-      background: #111827;
+      
+      width: 100vw;
+      max-width: 480px;
+      background: #a3a3a3;
       margin:auto;
       border-radius: 50px;
       display:flex;
       flex-direction: column;
+      /* overflow: hidden; */
+
     }
 
     .profile-image-popup{
-      width: 400px;
-      height: 400px;
-      background-color: #1f2937;
-      margin: 30px 60px;
+      width: 350px;
+      margin: 5% auto;
+      height: 350px;
+      background-color: #5e5e5e;
       border-radius: 500px;
       cursor: pointer;
       background-position: center;
@@ -250,8 +268,9 @@
     }
 
     .hiddenMenu{
+      max-width: 480px;
       height: 500px;
-      width: 500px;
+      width: 100vw;
       display: flex;
       flex-direction: column;
     }
@@ -262,13 +281,12 @@
       flex-direction: column;
     }
     .unAuthHiddenMenu {
-  background-color: #111827;
+  background-color: #a3a3a3;
   padding: 40px 30px;
   border-radius: 30px;
   width: 90%;
   max-width: 400px;
   margin: 50px auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   text-align: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -309,13 +327,13 @@
 
 
 .unUserDetailHiddenMenu {
-  background-color: #111827;
+  background-color: #a3a3a3;
   padding: 40px 30px;
   border-radius: 30px;
   width: 90%;
   max-width: 400px;
   margin: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  /* box-shadow: 0 8px 24px rgba(0,0,0,0.3); */
   text-align: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -363,7 +381,7 @@
     .buttons-popup{
       width: 100%;
       display: flex;
-      background: #1f2937;
+      background: #a1a1a1;
       border-radius: 0 0 50px 50px;
     }
 
@@ -373,14 +391,16 @@
       color: white;
       display: flex;
       text-align: center;
-      border: 3px solid #374151;
+      border: 3px solid #d5d5d5;
       font-size: 20px;
-      font-weight: 600;
+      font-weight: 600;   
     }
 
     .popup-button:hover{
-      opacity: 80%;
-      color: #374151;
+      opacity: 100%;
+      color: white;
+      background-color: #5e5e5e;
+      cursor: pointer;
     }
 
   </style>
@@ -457,7 +477,13 @@
     </div>
 
     <div class="content">
-      <div class="name">{{ Auth::user()->name??'~' }} <span class="status">Verified</span></div>
+     
+      <div class="name">
+        {{ Auth::user()->name??'~' }} 
+         @if (Auth::check())
+          <span class="status">Verified</span>
+        @endif
+      </div>
       <div class="email">{{ Auth::user()->email??'~' }}</div>
 
       <div class="info-grid">

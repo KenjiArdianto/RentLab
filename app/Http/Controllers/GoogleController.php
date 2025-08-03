@@ -38,6 +38,7 @@ class GoogleController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('New user registered via Google');
+                return redirect()->intended($this->redirectPath());
             }
 
             Auth::login($user);
@@ -50,7 +51,7 @@ class GoogleController extends Controller
             ])
             ->log('User logged in via Google');
 
-            return redirect('/home');
+            return redirect('/complete-user-detail');
         }catch(\Exception $e){
             activity('google_auth')
             ->withProperties([

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AdminUserReviewController extends Controller
 {
@@ -50,6 +51,19 @@ class AdminUserReviewController extends Controller
 
 
         $reviews = $query->paginate(100);
+
+        \activity('admin_user_review_index')
+        ->causedBy(Auth::user())
+        ->performedOn($user)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'searched_user_id' => $user->id,
+            'search_query' => $request->query('search'),
+            'result_count' => $reviews->total(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin viewed reviews of user #{$user->id}" . ($request->has('search') ? ' with filters' : ''));
+
 
         return view('admin.users.reviews', compact('user', 'reviews'));
     }

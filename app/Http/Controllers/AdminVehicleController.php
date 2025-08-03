@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Location;
 use App\Models\Vehicle;
 use App\Models\VehicleCategory;
+use App\Models\VehicleImage;
 use App\Models\VehicleType;
 use App\Models\VehicleName;
 use App\Models\VehicleTransmission;
 use App\Models\VehicleReview;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use App\Http\Requests\AdminVehicleStoreRequest;
+use App\Http\Requests\AdminVehicleImportRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 class AdminVehicleController extends Controller
 {
@@ -106,17 +111,20 @@ class AdminVehicleController extends Controller
     
         $vehicles = $query
             ->with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'vehicleCategories', 'location', 'vehicleReview', 'transactions', 'vehicleImages'])
-            ->paginate(100)->appends(['search' => $search]);;
+            ->paginate(100)->appends(['search' => $search]);
+
+        activity('admin_vehicle_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'search_query' => $search,
+            'result_count' => $vehicles->total(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin viewed vehicle list' . ($request->has('search') ? ' with filters' : ''));
+
 
         return view('admin.vehicles', compact('vehicles', 'vehicleTypes', 'vehicleNames', 'vehicleTransmissions', 'locations', 'categories'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -126,15 +134,16 @@ class AdminVehicleController extends Controller
     {
         // Store Data in Variable Temporarily
         $data = [
-        'vehicle_name_id'        => $request->vehicle_name_id,
-        'vehicle_type_id'        => $request->vehicle_type_id,
-        'vehicle_transmission_id'=> $request->vehicle_transmission_id,
-        'engine_cc'              => $request->engine_cc,
-        'seats'                  => $request->seats,
-        'price'                  => $request->price,
-        'location_id'            => $request->location_id,
-        'main_image'             => null,  // Set default null
-    ];
+            'vehicle_name_id'        => $request->vehicle_name_id,
+            'vehicle_type_id'        => $request->vehicle_type_id,
+            'vehicle_transmission_id'=> $request->vehicle_transmission_id,
+            'engine_cc'              => $request->engine_cc,
+            'seats'                  => $request->seats,
+            'year'                   => $request->year,
+            'price'                  => $request->price,
+            'location_id'            => $request->location_id,
+            'main_image'             => null,  // Set default null
+        ];
 
         // Save Main Image
         if ($request->hasFile('main_image') && $request->file('main_image')->isValid()) {
@@ -189,24 +198,18 @@ class AdminVehicleController extends Controller
             $vehicle->vehicleImages()->create(['image' => $image4Path]);
         }
 
+        // Logging
+        activity('admin_vehicle_store')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicle)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin created vehicle #$vehicle->id");
+
         return back()->with('success', 'Vehicle added.');
 
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vehicle $vehicle)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Vehicle $vehicle)
-    {
-        //
     }
 
     /**
@@ -217,162 +220,246 @@ class AdminVehicleController extends Controller
         //
         // dd($request->all());
 
+        
+        $changes = [];
+        $uploadErrors = [];
+
         $vehicleUpdated = false;
 
         if ($request->vehicle_name_id != $vehicle->vehicle_name_id) {
+            $changes['vehicle_name_id'] = [
+                'old' => $vehicle->vehicle_name_id,
+                'new' => $request->vehicle_name_id,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->vehicle_name_id = $request->vehicle_name_id;
         }
 
         if ($request->vehicle_type_id != $vehicle->vehicle_type_id) {
+            $changes['vehicle_type_id'] = [
+                'old' => $vehicle->vehicle_type_id,
+                'new' => $request->vehicle_type_id,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->vehicle_type_id = $request->vehicle_type_id;
         }
 
         if ($request->vehicle_transmission_id != $vehicle->vehicle_transmission_id) {
+            $changes['vehicle_transmission_id'] = [
+                'old' => $vehicle->vehicle_transmission_id,
+                'new' => $request->vehicle_transmission_id,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->vehicle_transmission_id = $request->vehicle_transmission_id;
         }
 
         if ($request->engine_cc != $vehicle->engine_cc) {
+            $changes['engine_cc'] = [
+                'old' => $vehicle->engine_cc,
+                'new' => $request->engine_cc,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->engine_cc = $request->engine_cc;
         }
 
         if ($request->seats != $vehicle->seats) {
+            $changes['seats'] = [
+                'old' => $vehicle->seats,
+                'new' => $request->seats,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->seats = $request->seats;
         }
 
+        if ($request->year != $vehicle->year) {
+            $changes['year'] = [
+                'old' => $vehicle->year,
+                'new' => $request->year,
+            ];
+            $vehicleUpdated = true;
+
+            $vehicle->year = $request->year;
+        }
+
         if ($request->price != $vehicle->price) {
+            $changes['price'] = [
+                'old' => $vehicle->price,
+                'new' => $request->price,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->price = $request->price;
         }
 
         if ($request->location_id != $vehicle->location_id) {
+            $changes['location'] = [
+                'old' => $vehicle->location_id,
+                'new' => $request->location_id,
+            ];
             $vehicleUpdated = true;
 
             $vehicle->location_id = $request->location_id;
         }
 
+        // dd($request->all());
+
         if ($request->hasFile('main_image') && $request->file('main_image')->isValid()) {
-            $vehicleUpdated = true;
+            try {
+                $vehicleUpdated = true;
 
-            if ($vehicle->main_image && File::exists(public_path($vehicle->main_image))) {
-                File::delete(public_path($vehicle->main_image));
+                if ($vehicle->main_image && File::exists(public_path($vehicle->main_image))) {
+                    File::delete(public_path($vehicle->main_image));
+                }
+
+                $extension = $request->file('main_image')->getClientOriginalExtension();
+                $fileName = 'vehicle_image_main_' . time() . '.' . $extension;
+                $request->file('main_image')->move(public_path('assets'), $fileName);
+                $mainImagePath = 'assets/' . $fileName;
+
+                $vehicle->main_image = $mainImagePath;
+            } catch (\Exception $e) {
+                $uploadErrors[] = 'main_image failed: ' . $e->getMessage();
             }
-
-            $extension = $request->file('main_image')->getClientOriginalExtension();
-            $fileName = 'vehicle_image_main_' . time() . '.' . $extension;
-            $request->file('main_image')->move(public_path('assets'), $fileName);
-            $mainImagePath = 'assets/' . $fileName;
-
-            $vehicle->main_image = $mainImagePath;
         }
 
         if ($request->hasFile('image1') && $request->file('image1')->isValid()) {
-            $vehicleUpdated = true;
+            try {
+                $vehicleUpdated = true;
 
-            $extension = $request->file('image1')->getClientOriginalExtension();
-            $fileName = 'vehicle_image_1_' . time() . '.' . $extension;
-            $request->file('image1')->move(public_path('assets'), $fileName);
-            $newPath = 'assets/' . $fileName;
+                $extension = $request->file('image1')->getClientOriginalExtension();
+                $fileName = 'vehicle_image_1_' . time() . '.' . $extension;
+                $request->file('image1')->move(public_path('assets'), $fileName);
+                $newPath = 'assets/' . $fileName;
 
-            if ($request->image1_id) {
-                $img = VehicleImage::find($image1_id);
-                if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                if ($request->image1_id) {
+                    $img = VehicleImage::find($request->image1_id);
+                    if ($img) {
+                        if ($img->image && File::exists(public_path($img->image))) {
+                            File::delete(public_path($img->image));
+                        }
+                        $img->update(['image' => $newPath]);
+                    } else {
+                        $vehicle->vehicleImages()->create(['image' => $newPath]);
                     }
-                    $img->update(['image_path' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
-            } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+            } catch (\Exception $e) {
+                $uploadErrors[] = 'Image1 failed: ' . $e->getMessage();
             }
         }
 
         if ($request->hasFile('image2') && $request->file('image2')->isValid()) {
-            $vehicleUpdated = true;
+            try{
+                $vehicleUpdated = true;
 
-            $extension = $request->file('image2')->getClientOriginalExtension();
-            $fileName = 'vehicle_image_2_' . time() . '.' . $extension;
-            $request->file('image2')->move(public_path('assets'), $fileName);
-            $newPath = 'assets/' . $fileName;
+                $extension = $request->file('image2')->getClientOriginalExtension();
+                $fileName = 'vehicle_image_2_' . time() . '.' . $extension;
+                $request->file('image2')->move(public_path('assets'), $fileName);
+                $newPath = 'assets/' . $fileName;
 
-            if ($request->$image2_id) {
-                $img = VehicleImage::find($image2_id);
-                if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                if ($request->image2_id) {
+                    $img = VehicleImage::find($request->image2_id);
+                    if ($img) {
+                        if ($img->image && File::exists(public_path($img->image))) {
+                            File::delete(public_path($img->image));
+                        }
+                        $img->update(['image' => $newPath]);
+                    } else {
+                        $vehicle->vehicleImages()->create(['image' => $newPath]);
                     }
-                    $img->update(['image_path' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
-            } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+            } catch (\Exception $e) {
+                $uploadErrors[] = 'Image2 failed: ' . $e->getMessage();
             }
         }
 
         if ($request->hasFile('image3') && $request->file('image3')->isValid()) {
-            $vehicleUpdated = true;
+            try{
+                $vehicleUpdated = true;
 
-            $extension = $request->file('image3')->getClientOriginalExtension();
-            $fileName = 'vehicle_image_3_' . time() . '.' . $extension;
-            $request->file('image3')->move(public_path('assets'), $fileName);
-            $newPath = 'assets/' . $fileName;
+                $extension = $request->file('image3')->getClientOriginalExtension();
+                $fileName = 'vehicle_image_3_' . time() . '.' . $extension;
+                $request->file('image3')->move(public_path('assets'), $fileName);
+                $newPath = 'assets/' . $fileName;
 
-            if ($request->$image3_id) {
-                $img = VehicleImage::find($image3_id);
-                if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+
+                if ($request->image3_id) {
+                    $img = VehicleImage::find($request->image3_id);
+                    if ($img) {
+                        if ($img->image && File::exists(public_path($img->image))) {
+                            File::delete(public_path($img->image));
+                        }
+                        $img->update(['image' => $newPath]);
+                    } else {
+                        $vehicle->vehicleImages()->create(['image' => $newPath]);
                     }
-                    $img->update(['image_path' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
-            } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+            } catch (\Exception $e) {
+                $uploadErrors[] = 'Image3 failed: ' . $e->getMessage();
             }
         }
 
         if ($request->hasFile('image4') && $request->file('image4')->isValid()) {
-            $vehicleUpdated = true;
+            try{
+                $vehicleUpdated = true;
 
-            $extension = $request->file('image4')->getClientOriginalExtension();
-            $fileName = 'vehicle_image_4_' . time() . '.' . $extension;
-            $request->file('image4')->move(public_path('assets'), $fileName);
-            $newPath = 'assets/' . $fileName;
+                $extension = $request->file('image4')->getClientOriginalExtension();
+                $fileName = 'vehicle_image_4_' . time() . '.' . $extension;
+                $request->file('image4')->move(public_path('assets'), $fileName);
+                $newPath = 'assets/' . $fileName;
 
-            if ($request->$image4_id) {
-                $img = VehicleImage::find($image4_id);
-                if ($img) {
-                    if ($img->image_path && File::exists(public_path($img->image_path))) {
-                        File::delete(public_path($img->image_path));
+                if ($request->image4_id) {
+                    $img = VehicleImage::find($request->image4_id);
+                    if ($img) {
+                        if ($img->image && File::exists(public_path($img->image))) {
+                            File::delete(public_path($img->image));
+                        }
+                        $img->update(['image' => $newPath]);
+                    } else {
+                        $vehicle->vehicleImages()->create(['image' => $newPath]);
                     }
-                    $img->update(['image_path' => $newPath]);
                 } else {
-                    $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+                    $vehicle->vehicleImages()->create(['image' => $newPath]);
                 }
-            } else {
-                $vehicle->vehicleImages()->create(['image_path' => $newPath]);
+            } catch (\Exception $e) {
+                $uploadErrors[] = 'Image4 failed: ' . $e->getMessage();
             }
         }
 
         if ($vehicleUpdated) {
             $vehicle->save();
+            \activity('admin_vehicle_update_successful')
+            ->causedBy(Auth::user())
+            ->performedOn($vehicle)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'changes' => $changes ?: null,
+                'upload_errors' => $uploadErrors ?: null,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin updated vehicle #$vehicle->id");
             return back()->with('success', "Vehicle #$vehicle->id updated.");
 
         }
+        \activity('admin_vehicle_update_failed')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicle)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'attempted_input' => $request->except(['_token']),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin attempted to update vehicle #$vehicle->id, but no changes were made.");
         return back()->with('error', "Vehicle #$vehicle->id not updated.");
     }
 
@@ -383,10 +470,28 @@ class AdminVehicleController extends Controller
 
         if (VehicleCategory::where('category', $request->category)->exists()) {
             // The category already exists
+            \activity('admin_vehicle_category_add_failed')
+            ->causedBy(Auth::user())
+            ->performedOn($vehicle)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'category_attempted' => $request->category,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin failed to add existing category '{$request->category}' to vehicle #$vehicle->id");
             return back()->with('error', 'Vehicle already has this category.');
         }
 
         $vehicle->vehicleCategories()->attach($request->category_id);
+        \activity('admin_vehicle_category_add')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicle)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'category_id' => $request->category_id,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin added category ID {$request->category_id} to vehicle #$vehicle->id");
         return back()->with('success', "Vehicle #$vehicle->id category added.");
     }
 
@@ -396,14 +501,103 @@ class AdminVehicleController extends Controller
         // dd($request->all());
 
         $vehicle->vehicleCategories()->detach($request->category_id);
+        \activity('admin_vehicle_category_remove')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicle)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'category_id' => $request->category_id,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin removed category ID {$request->category_id} from vehicle #$vehicle->id");
         return back()->with('success', "Vehicle #$vehicle->id category removed.");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function import(AdminVehicleImportRequest $request)
+    {
+
+        $path = $request->file('csv_file')->getRealPath();
+        $file = fopen($path, 'r');
+        $header = fgetcsv($file);
+
+        while (($row = fgetcsv($file)) !== false) {
+            $data = array_combine($header, $row);
+
+            $vehicle = Vehicle::create([
+                'vehicle_type_id'         => $data['vehicle_type_id'],
+                'vehicle_name_id'         => $data['vehicle_name_id'],
+                'vehicle_transmission_id' => $data['vehicle_transmission_id'],
+                'engine_cc'               => $data['engine_cc'],
+                'seats'                   => $data['seats'],
+                'year'                    => $data['year'],
+                'location_id'             => $data['location_id'],
+                'main_image'              => $data['main_image_path'],
+                'price'                   => $data['price'],
+            ]);
+
+            foreach (['vehicle_image_1', 'vehicle_image_2', 'vehicle_image_3', 'vehicle_image_4'] as $imageKey) {
+                if (!empty($data[$imageKey])) {
+                    $vehicle->vehicleImages()->create([
+                        'image' => $data[$imageKey],
+                    ]);
+                }
+            }
+
+            if (!empty($data['vehicle_categories'])) {
+                $categoryIds = explode(',', $data['vehicle_categories']);
+                $vehicle->vehicleCategories()->sync($categoryIds);
+            }
+        }
+
+        \activity('admin_vehicle_import')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'file_name' => $request->file('csv_file')->getClientOriginalName(),
+            // Optional: log row count (simple estimation)
+            'total_rows_imported' => count(file($request->file('csv_file')->getRealPath())) - 1, // minus header
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin imported vehicles from CSV file.');
+        fclose($file);
+
+        return back()->with('success', 'Vehicles imported successfully.');
+    }
+
     public function destroy(Vehicle $vehicle)
     {
-        //
+      // Detach categories (pivot)
+        $vehicle->vehicleCategories()->detach();
+
+        // Delete related images and their files
+        foreach ($vehicle->vehicleImages as $image) {
+            if (File::exists('public/' . $image->path)) {
+                File::delete('public/' . $image->path);
+            }
+            $image->delete();
+        }
+
+        // Delete main image file
+        if ($vehicle->main_image && File::exists('public/' . $vehicle->main_image)) {
+            File::delete('public/' . $vehicle->main_image);
+        }
+
+        // Delete the vehicle record
+        \activity('admin_vehicle_delete')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicle)
+        ->withProperties([
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'vehicle_id' => $vehicle->id,
+            'categories_detached' => true,
+            'main_image_deleted' => $vehicle->main_image ? true : false,
+            'related_images_deleted' => $vehicle->vehicleImages->count(),
+        ])
+        ->log("Admin deleted vehicle #$vehicle->id and its related data.");
+
+        $vehicle->delete();
+
+        return redirect()->back()->with('success', 'Vehicle and related data deleted successfully.');
     }
 }

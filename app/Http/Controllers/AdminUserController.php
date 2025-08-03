@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AdminUserController extends Controller
 {
@@ -90,7 +91,8 @@ class AdminUserController extends Controller
                     } elseif (count($dateParts) === 2) {
                         // yyyy-mm
                         [$year, $month] = explode('-', $value);
-                        $query->whereHas('detail', function ($q) use ($value) {
+                        
+                        $query->whereHas('detail', function ($q) use ($year,$month) {
                             $q->whereYear('dateOfBirth',$year)->whereMonth('dateOfBirth', $month);
                         });
                     } elseif (count($dateParts) === 1) {
@@ -144,6 +146,18 @@ class AdminUserController extends Controller
         }
 
         $users = $query->paginate(33);
+
+        \activity('admin_user_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'filter' => $request->query('filter'),
+            'search_query' => $request->query('search'),
+            'result_count' => $users->total(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin viewed user list' . ($request->has('filter') || $request->has('search') ? ' with filters' : ''));
+
 
         return view('admin.users', compact('users'));
     }
@@ -204,6 +218,15 @@ class AdminUserController extends Controller
         $ids = $request->selected;
         // dd($ids);
         User::whereIn('id', $ids)->update(['suspended_at' => now()]);
+        \activity('admin_user_suspend_selected')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_ids_suspended' => $request->selected,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin suspended selected users');
+
         return back()->with('success', 'Users Suspended Successfully');
     }
 
@@ -212,6 +235,15 @@ class AdminUserController extends Controller
         //
         
         $user->update(['suspended_at' => now()]);
+        \activity('admin_user_suspend')
+        ->causedBy(Auth::user())
+        ->performedOn($user)
+        ->withProperties([
+            'ip' => request()->ip(),
+            'user_id_suspended' => $user->id,
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log("Admin suspended user #$user->id");
 
         return back()->with('success', 'User Suspended Successfully');
     }
@@ -223,6 +255,14 @@ class AdminUserController extends Controller
         $ids = $request->selected;
         // dd($ids);
         User::whereIn('id', $ids)->update(['suspended_at' => null]);
+        \activity('admin_user_unsuspend_selected')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_ids_unsuspended' => $request->selected,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin unsuspended selected users');
         return back()->with('success', 'Users Unsuspended Successfully');
     }
 
@@ -231,6 +271,16 @@ class AdminUserController extends Controller
         //
         // dd($user);
         $user->update(['suspended_at' => null]);
+        \activity('admin_user_unsuspend')
+        ->causedBy(Auth::user())
+        ->performedOn($user)
+        ->withProperties([
+            'ip' => request()->ip(),
+            'user_id_unsuspended' => $user->id,
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log("Admin unsuspended user #$user->id");
+
 
         return back()->with('success', 'User Unsuspended Successfully');
     }

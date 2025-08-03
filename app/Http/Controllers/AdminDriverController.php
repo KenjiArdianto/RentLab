@@ -7,6 +7,8 @@ use App\Models\Driver;
 use App\Models\Location;
 use Illuminate\Support\Facades\File;
 use App\Http\Requests\AdminDriverEditSelectedRequest;
+use App\Http\Requests\AdminDriverDeleteSelectedRequest;
+use Illuminate\Support\Facades\Auth;
 
 
 class AdminDriverController extends Controller
@@ -49,7 +51,14 @@ class AdminDriverController extends Controller
         }
 
         $drivers = $query->paginate(31);
-
+        \activity('admin_driver_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'filters' => $request->query('search'),
+            'user_agent' => $request->userAgent(),
+        ])
+         ->log('Admin viewed driver list' . ($request->has('search') ? ' with filters' : ''));
         return view('admin.drivers', compact('drivers', 'locations'));
     }
 
@@ -67,10 +76,7 @@ class AdminDriverController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        // dd($request->all());
         // Store Image
-
         // Storing image in public folder
         $image = $request->file('image');
         $image_name = 'driver_image_' .  time() . '_' . $image->getClientOriginalName();
@@ -79,13 +85,22 @@ class AdminDriverController extends Controller
         $image_path = 'assets/' . $image_name;
 
         // // Storing Data in Model
-        Driver::create([
+        $driver=Driver::create([
             'name' => $request->name,
             'image' => $image_path,
             'location_id' => $request->location_id
         ]);
 
-        // dd($image_path);    
+        \activity('admin_driver_created')
+        ->causedBy(Auth::user())
+        ->performedOn($driver)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'input' => $request->except('image'),
+            'driver_id' => $driver->id,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin created a new driver');   
         return back()->with('success', 'Driver added.');
     }
 
@@ -125,8 +140,8 @@ class AdminDriverController extends Controller
     {
         // Format variable action_type dari request itu Operation_DriverID
         // Jadi disini di split dulu dengan _ sebagai separator
-        return "hi";
-        $request = $request->validate();
+    
+        // $request = $request->validate();
 
         list($action_type, $driver_id) = explode('_', $request->input('action_type'));
 
@@ -136,7 +151,19 @@ class AdminDriverController extends Controller
 
             File::delete(public_path($driver->image));
 
+            \activity('admin_driver_deleted')
+            ->causedBy(Auth::user())
+            ->performedOn($driver)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'driver_id' => $driver_id,
+                'driver_name' => $driver->name,
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('Admin deleted a driver');
+
             $driver->delete();
+            
             return back()->with('success', 'Selected driver deleted.');
         }
         else if ($action_type == 'edit') {
@@ -165,6 +192,16 @@ class AdminDriverController extends Controller
 
             // $driver->image = $request->input('image');
             $driver->save();
+            \activity('admin_driver_edited')
+            ->causedBy(Auth::user())
+            ->performedOn($driver)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'driver_id' => $driver_id,
+                'input' => $request->except('image'),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log('Admin edited a driver');
             
             return redirect()->back()->with('success', 'Selected driver edited.');
         }
@@ -176,10 +213,21 @@ class AdminDriverController extends Controller
 
         Driver::whereIn('id', $id_list)->delete();
 
+        \activity('admin_driver_bulk_deleted')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'driver_ids' => $id_list,
+            'count_deleted' => count($id_list),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin deleted multiple drivers');
+
+
         if (!$id_list) {
             return back()->with('error', 'No drivers selected.');
         }
-
+        
         return back()->with('success', 'Selected drivers deleted.');
     }
 }
