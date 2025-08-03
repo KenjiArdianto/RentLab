@@ -48,7 +48,7 @@ class LoginController extends Controller
         // This will automatically validate before this line
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials, $request->filled('remember'))) {
-            // 🚫 Check if user is suspended
+            // Check if user is suspended
             if (Auth::user()->suspended_at !== null) {
                 activity('login')
                 ->causedBy(Auth::user())
@@ -76,6 +76,11 @@ class LoginController extends Controller
             ])
             ->log('User logged in successfully');
             $request->session()->regenerate();
+
+            
+            if(Auth::user()->role==='admin'){
+                return redirect('/admin');
+            }
             return redirect()->intended($this->redirectPath());
         }
 

@@ -34,7 +34,7 @@ class RegisterController extends Controller
     use RegistersUsers;
     public function register(RegisterUserRequest $request)
     {    
-        // Check if a user with this email already exists (for edge cases)
+        // Check if a user with this email already exists 
         if (User::where('email', $request->email)->exists()) {
             activity('registration')
             ->causedBy(Auth::user()) // will be null here, it's fine

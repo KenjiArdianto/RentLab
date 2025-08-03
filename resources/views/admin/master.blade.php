@@ -44,6 +44,7 @@
             <div class="position-absolute top-50 start-50 translate-middle navbar-center">
                 <a href="{{ route('admin.index') }}" class="btn btn-primary">{{  __('admin_navbar.home') }}</a>
             </div>
+            
 
             <!-- Language Dropdown Selector (Bootstrap-styled, right of Home button) -->
             <div class="position-absolute top-50 start-50 translate-middle navbar-language" style="margin-left: 120px;">

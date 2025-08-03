@@ -14,31 +14,37 @@ use Illuminate\Support\Facades\Log;
 
 class OtpController extends Controller
 {
+
+    //making sure only guest can access this page
     public function __construct()
     {
         $this->middleware('guest');
     }
+
+    //to return resent OTP page
     public function showForm()
     {
-        // if(Auth::check()){
-        //     return redirect()->back();
-        // }
-        // return (session()->get('temp_user')==NULL);
+        //check if user doesnt have session
         if(!session('temp_user')){
             return redirect(route('register'))->withErrors(['otp' => 'Session expired. Please register again.'])->with('time',0);
         }
+        //check if user otp has expired
         if(now()->gt(session('otp_expires_at'))){
             return view('auth.verify-otp')->withErrors(['otp' => 'OTP expired. Please resend OTP or register again.'])->with('time',0);
         };
         $time=now()->addMinutes(4)->diffInSeconds(session('otp_expires_at'));
+        //return page with time
         return view('auth.verify-otp')->with('time',$time);
     }
 
+    //function to resent OTP
     public function resentOTP()
     {
+        //check if user has session
         if (!session()->has('temp_user')) {
             return redirect()->back()->withErrors(['otp' => 'Session expired. Please register again'])->with('time',0);
         }
+        //check if user try to resent otp too frequently (within a minute after a request of resent)
         if (now()->addMinutes(4)->lt(session('otp_expires_at'))) {
             \activity('otp_resend')
             ->withProperties([
@@ -51,6 +57,7 @@ class OtpController extends Controller
             
             return redirect()->back()->withErrors(['otp' => 'Please wait before resending more OTP !'])->with('time',now()->addMinutes(4)->diffInSeconds(session('otp_expires_at')));
         }
+        //regenerate andresending OTP
         $temp = session('temp_user');
         $otp = rand(100000, 999999);
         $temp['otp'] = $otp;
@@ -67,15 +74,19 @@ class OtpController extends Controller
         ->log('OTP resent successfully');
         return redirect()->back()->with(['success'=> 'OTP has been resent','time'=>$time]);
     }
+
+    //verifying user's OTP
     public function verify(OTPUserRequest $request)
     {
         
         $temp = session()->get('temp_user');
         $expires = session()->get('otp_expires_at');
+        //if doesnt have session required
         if (!$temp || now()->gt($expires)) {
             return back()->withErrors(['otp' => 'OTP expired. Please resend OTP or register again.'])->with('time',0);
         }
 
+        //if otp sent by user doesnt match the otp
         if ($request->otp != $temp['otp']) {
             \activity('otp_verification')
             ->withProperties([
@@ -92,7 +103,7 @@ class OtpController extends Controller
         }
         
 
-        // ✅ OTP is correct, now create the user
+        // OTP is correct, now create the user
         $user = User::create([
             'name' => $temp['name'],
             'email' => $temp['email'],
@@ -111,7 +122,7 @@ class OtpController extends Controller
         ])
         ->log('User successfully verified OTP and account created');
 
-        // ✅ Now clear session
+        // Now clear session
         session()->forget(['temp_user', 'otp_expires_at']);
 
         Auth::login($user);

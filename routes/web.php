@@ -61,6 +61,7 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 Route::post('/payment/callback', [PembayaranController::class, 'handleWebhook'])->name('payment.callback');
 
 Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
+Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
 
 //middleware untuk memastikan user telah login sebagai user
 Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
@@ -72,7 +73,6 @@ Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
 Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::class])->group(function(){
 
     Route::post('/profile',[ProfileController::class,'change'])->name('change.profile');
-    Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
 
     Route::get('/cart', [CartController::class,'index'])->name('cart');
     Route::post('/cart/store', [CartController::class,'store'])->name('cart.store');

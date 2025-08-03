@@ -508,9 +508,6 @@ class AdminVehicleController extends Controller
 
     public function deleteCategory(AdminVehicleDeleteCategoryRequest $request, Vehicle $vehicle)
     {
-        //
-        // dd($request->all());
-
         // detach category and log
         $vehicle->vehicleCategories()->detach($request->category_id);
         \activity('admin_vehicle_category_remove')

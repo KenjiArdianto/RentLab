@@ -42,7 +42,7 @@ class GoogleController extends Controller
                 return redirect('/home');
             }
 
-            // 🚫 Suspended check
+            // Suspended user check
             if ($user->suspended_at !== null) {
                 activity('google_auth')
                     ->causedBy($user)
@@ -57,6 +57,8 @@ class GoogleController extends Controller
                 return redirect('/login')->withErrors(['email' => 'Your account has been suspended.']);
             }
 
+            
+            //logs user in with that account
             Auth::login($user);
             activity('google_auth')
             ->causedBy($user)
@@ -66,7 +68,10 @@ class GoogleController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('User logged in via Google');
-
+            //if user's account role is admin, then redirect to admin page, if not then go to home
+            if($user->role==='admin'){
+                return redirect('/admin');
+            }
             return redirect('/home')  ;
         }catch(\Exception $e){
             activity('google_auth')
