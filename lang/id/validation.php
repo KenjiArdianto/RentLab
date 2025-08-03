@@ -172,7 +172,7 @@ return [
     | konvensi "attribute.rule" untuk memberi nama baris. Ini membuatnya cepat
     | untuk menentukan baris bahasa kustom tertentu untuk aturan atribut tertentu.
     |
-    */
+    */  
 
     'custom' => [
         'nama-atribut' => [
