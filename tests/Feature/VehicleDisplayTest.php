@@ -6,6 +6,7 @@ use App\Models\Advertisement;
 use App\Models\Location;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehicleCategory;
 use App\Models\VehicleName;
 use App\Models\VehicleType;
 use App\Models\VehicleTransmission;
@@ -17,7 +18,7 @@ class VehicleDisplayTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
-    protected VehicleTransmission $transmission; // Properti untuk menyimpan transmisi default
+    protected VehicleTransmission $transmission;
 
     // Method ini berjalan sebelum setiap test dijalankan
     protected function setUp(): void
@@ -25,19 +26,16 @@ class VehicleDisplayTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
 
-        // =============================================================
-        // PERBAIKAN: Buat data master dengan ID yang pasti dan konsisten
-        // =============================================================
-        // Buat tipe kendaraan dengan ID yang spesifik agar VehicleFactory tidak error
+        // Buat data master dengan ID yang pasti dan konsisten
         VehicleType::factory()->create(['id' => 1, 'type' => 'Car']);
         VehicleType::factory()->create(['id' => 2, 'type' => 'Motorcycle']);
 
-        // Buat nama kendaraan yang cukup untuk kedua tipe
         VehicleName::factory()->count(20)->sequence(fn ($s) => ['name' => 'Vehicle Name ' . $s->index])->create();
 
         Location::factory()->create(['location' => 'Test Location']);
-        // Simpan satu transmisi untuk digunakan di semua tes
         $this->transmission = VehicleTransmission::factory()->create(['transmission' => 'Automatic']);
+
+        VehicleCategory::factory()->count(5)->sequence(fn ($s) => ['category' => 'Category ' . $s->index])->create();
     }
 
     //======================================================================
@@ -64,19 +62,23 @@ class VehicleDisplayTest extends TestCase
     /** @test */
     public function homescreen_displays_list_of_vehicles(): void
     {
-        // PERBAIKAN: Pastikan kendaraan yang dibuat memiliki semua relasi yang dibutuhkan
+        // Arrange: Pastikan kendaraan yang dibuat memiliki semua relasi yang dibutuhkan
+        $vehicleName = VehicleName::factory()->create(['name' => 'Avanza Test Spesifik']);
         Vehicle::factory()->create([
             'vehicle_type_id' => 1,
             'vehicle_transmission_id' => $this->transmission->id,
-            'vehicle_name_id' => VehicleName::first()->id, // <-- Tambahkan baris ini
+            'vehicle_name_id' => $vehicleName->id,
         ]);
 
         // Act: Kunjungi halaman utama
         $response = $this->get(route('vehicle.display'));
 
-        // Assert: Cek apakah ada komponen vehicle card
+        // Assert: Cek apakah nama kendaraan yang spesifik itu muncul di halaman
         $response->assertStatus(200);
-        $response->assertSee('class="vehicle-card"', false);
+        // ==========================================================
+        // PERBAIKAN FINAL: Cari nama kendaraan, bukan kelas CSS
+        // ==========================================================
+        $response->assertSee('Avanza Test Spesifik');
     }
 
     /** @test */

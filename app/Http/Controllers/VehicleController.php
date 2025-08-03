@@ -24,14 +24,14 @@ class VehicleController extends Controller
      */
     public function index()
     {
-        //
         $listItem = Vehicle::all();
-        \activity('vehicle_index')
-        ->causedBy(Auth::user())
-        ->withProperties([
-            'ip' => request()->ip(),
-        ])
-        ->log("Viewed vehicle page");
+        // PERBAIKAN: Hanya catat log jika user sudah login
+        if (Auth::check()) {
+            activity('vehicle_index')
+            ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip()])
+            ->log("Viewed vehicle page");
+        }
         return view('welcome', compact('listItem'));
     }
 
@@ -57,13 +57,12 @@ class VehicleController extends Controller
      */
     public function show(string $id)
     {
-        //
         $idVehicle = Vehicle::with([
             'vehicleCategories',
             'vehicleName',
-            'vehicleType', 
+            'vehicleType',
             'vehicleTransmission',
-            'location' 
+            'location'
         ])->findOrFail($id);
 
         //get vehicle id
@@ -81,28 +80,39 @@ class VehicleController extends Controller
             $cartDateRanges=null;
         }
 
-        //calculate  user rating from userReviews
+
+        // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get();
+
+        $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
+            $query->where('vehicle_id', $id);
+        })->get();
+
+        $getVehicleimagesById = VehicleImage::where("vehicle_id","=",$id)->get();
+
+
+
+
         $rating = DB::table('user_reviews')
         ->join('transactions', 'user_reviews.transaction_id', '=', 'transactions.id')
         ->join('vehicles', 'transactions.vehicle_id', '=', 'vehicles.id')
-        ->select(
-            DB::raw('ROUND(AVG(user_reviews.rate), 1) as average_rating')
-        )
+        ->select(DB::raw('ROUND(AVG(user_reviews.rate), 1) as average_rating'))
         ->where('vehicles.id', $id)
         ->groupBy('vehicles.id')
         ->first();
 
-        \activity('vehicle_show')
-        ->causedBy(Auth::user())
-        ->withProperties([
-            'ip' => request()->ip(),
-            'vehicle_id' => $id,
-            'user_agent' => request()->userAgent(),
+        // PERBAIKAN: Hanya catat log jika user sudah login
+        if (Auth::check()) {
+            \activity('vehicle_show')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'vehicle_id' => $id,
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log("Viewed vehicle detail");
+        }
 
-        ])
-        ->log("Viewed vehicle detail");
 
-    
     $bookedTransactionDates = Transaction::where('vehicle_id', $id)
     ->where('transaction_status_id', '<', 7)
     ->select('start_book_date as start_date', 'end_book_date as end_date')
@@ -112,13 +122,13 @@ class VehicleController extends Controller
 
 
     return view('DetailPage', compact(
-            'rating', 
-            'idVehicle', 
-            'getVehicleByIdsINCarts', 
-            'getCommentByIdVehicle', 
-            'cartDateRanges', 
+            'rating',
+            'idVehicle',
+            'getVehicleByIdsINCarts',
+            'getCommentByIdVehicle',
+            'cartDateRanges',
             'getVehicleimagesById',
-            'allBookedDates' 
+            'allBookedDates'
         ));
     }
 
@@ -166,7 +176,6 @@ class VehicleController extends Controller
     {
         $filters = $request->validated();
 
-        // Filter ketersediaan berdasarkan tanggal
         if (isset($filters['start_date']) && isset($filters['end_date'])) {
             $userStartDate = \Carbon\Carbon::parse($filters['start_date']);
             $userEndDate = \Carbon\Carbon::parse($filters['end_date']);
@@ -183,7 +192,6 @@ class VehicleController extends Controller
             });
         }
 
-        // Terapkan filter lainnya
         $query
             ->when($filters['min_price'] ?? null, function ($q, $minPrice) {
                 $q->where('price', '>=', $minPrice);
@@ -218,24 +226,29 @@ class VehicleController extends Controller
      */
     public function display(VehicleFilterRequest $request)
     {
-        // PERBAIKAN: Tambahkan with() untuk memuat relasi yang dibutuhkan oleh view
-        $vehicleQuery = Vehicle::with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'location']);
+        $vehicleQuery = Vehicle::query();
 
         $this->filter($request, $vehicleQuery);
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
 
+        // Muat relasi SETELAH paginasi untuk memastikan data selalu ada
+        $vehicle->load(['vehicleName', 'vehicleType', 'vehicleTransmission', 'location']);
+
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
         $locations = Location::orderBy('location')->get();
 
-        \activity('vehicle_display')
-        ->causedBy(Auth::user())
-        ->withProperties([
-            'ip' => request()->ip(),
-            'filter_applied'=>$request->validated(),
-            'vehicle_shown_count' => $vehicle->total(),
-            'user_agent' => request()->userAgent(),
-        ])
-        ->log('User filtered and viewed vehicle list');
+        // PERBAIKAN: Hanya catat log jika user sudah login
+        if (Auth::check()) {
+            \activity('vehicle_display')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'filter_applied'=>$request->validated(),
+                'vehicle_shown_count' => $vehicle->total(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User filtered and viewed vehicle list');
+        }
 
         return view('webview.homescreen', [
             "vehicle" => $vehicle,
@@ -248,8 +261,7 @@ class VehicleController extends Controller
 
     public function catalog(VehicleFilterRequest $request)
     {
-        // PERBAIKAN: Tambahkan with() untuk memuat relasi yang dibutuhkan oleh view
-        $vehicleQuery = Vehicle::with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'location']);
+        $vehicleQuery = Vehicle::query();
 
         $filters = $request->validated();
 
@@ -261,18 +273,25 @@ class VehicleController extends Controller
 
         $this->filter($request, $vehicleQuery);
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
+
+        // Muat relasi SETELAH paginasi untuk memastikan data selalu ada
+        $vehicle->load(['vehicleName', 'vehicleType', 'vehicleTransmission', 'location']);
+
         $locations = Location::orderBy('location')->get();
 
-        \activity('vehicle_catalog')
-        ->causedBy(Auth::user())
-        ->withProperties([
-            'ip' => request()->ip(),
-            'filters' => $filters,
-            'search' => $filters['search'] ?? null,
-            'result_count' => $vehicle->total(),
-            'user_agent' => request()->userAgent(),
-        ])
-        ->log('User searched and filtered vehicle catalog');
+        // PERBAIKAN: Hanya catat log jika user sudah login
+        if (Auth::check()) {
+            \activity('vehicle_catalog')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'ip' => request()->ip(),
+                'filters' => $filters,
+                'search' => $filters['search'] ?? null,
+                'result_count' => $vehicle->total(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User searched and filtered vehicle catalog');
+        }
 
         return view('webview.catalog', [
             "vehicle" => $vehicle,
