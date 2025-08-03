@@ -48,6 +48,25 @@ class LoginController extends Controller
         // This will automatically validate before this line
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials, $request->filled('remember'))) {
+            // 🚫 Check if user is suspended
+            if (Auth::user()->suspended_at !== null) {
+                activity('login')
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'email' => $request->email,
+                    'ip' => $request->ip(),
+                    'suspended_at' => Auth::user()->suspended_at,
+                    'user_agent' => $request->userAgent(),
+                ])
+                ->log('Login blocked: user is suspended');
+                Auth::logout(); // Prevent login
+
+                return back()->withErrors([
+                    'email' => 'Your account has been suspended.',
+                ])->withInput();
+            }
+
+
             activity('login')
             ->causedBy(Auth::user())
             ->withProperties([

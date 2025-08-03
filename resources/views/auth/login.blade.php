@@ -14,7 +14,13 @@
                     <p style="padding: 3px; text-align: center; font-size: medium;">Don't have a RentLab Account? <a href="{{  route('register') }}" style=" text-decoration: none;">Sign Up</a></p>
                     <form method="POST" action="{{ route('login') }}" style="display: flex;flex-direction:column;">
                         @csrf
-
+                        @error('google')
+                            <span class="invalid-feedback" style=" margin:auto; display: flex; width: 100%; align-items: center; font-size: 15px;" role="alert">
+                                <strong style="margin: auto;">{{ $message }}</strong>
+                            </span>
+                        @enderror
+                        
+                        
                         <div style="width: 80%;display: flex;margin:auto; padding: 0;">
                             <a href="{{ route('google.login') }}" class="btn btn-danger" style=" padding: 0;;margin: auto;width:100%; height: 45px; text-align: center; font-weight: bold; font-size: large; background-color: transparent; border: 2px solid black; display: flex;">
                                 <div style="margin: auto; display: flex;">
@@ -25,6 +31,7 @@
                                 </div>
                             </a> 
                         </div>
+                       
                         <br>
                         <div style="display: flex; width: 80%; margin: auto;;">
                             <div style="flex: 5; height: 2px; background-color: black; margin: auto;"></div>

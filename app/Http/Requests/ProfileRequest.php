@@ -43,7 +43,7 @@ class ProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required','min:3','max:15','regex:/^(?=.*[A-Za-z])[A-Za-z0-9._-]{3,15}$/'],
+            'name' => ['required','min:3','max:15','regex:/^(?=.*[A-Za-z])[A-Za-z0-9._\-\s]{3,15}$/'],
             'fname' => ['required', 'regex:/^[A-Za-z]+$/', 'max:255'],
             'lname' => ['nullable', 'regex:/^[A-Za-z]+$/', 'max:255'],
             'phoneNumber' => ['required', 'digits_between:8,13'],

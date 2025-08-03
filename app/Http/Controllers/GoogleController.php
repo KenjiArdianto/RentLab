@@ -38,7 +38,23 @@ class GoogleController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('New user registered via Google');
-                return redirect()->intended($this->redirectPath());
+                Auth::login($user);
+                return redirect('/home');
+            }
+
+            // 🚫 Suspended check
+            if ($user->suspended_at !== null) {
+                activity('google_auth')
+                    ->causedBy($user)
+                    ->withProperties([
+                        'email' => $user->email,
+                        'ip' => request()->ip(),
+                        'suspended_at' => $user->suspended_at,
+                        'user_agent' => request()->userAgent(),
+                    ])
+                    ->log('Google login blocked: user is suspended');
+
+                return redirect('/login')->withErrors(['email' => 'Your account has been suspended.']);
             }
 
             Auth::login($user);
@@ -51,7 +67,7 @@ class GoogleController extends Controller
             ])
             ->log('User logged in via Google');
 
-            return redirect('/complete-user-detail');
+            return redirect('/home')  ;
         }catch(\Exception $e){
             activity('google_auth')
             ->withProperties([
@@ -60,7 +76,7 @@ class GoogleController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('Google login failed');
-            return back()->withErrors(['google' => 'Google login failed. Please try again.']);
+            return redirect('/login')->withErrors(['google' => 'Google login failed. Please try again.']);
         }
     }
 }

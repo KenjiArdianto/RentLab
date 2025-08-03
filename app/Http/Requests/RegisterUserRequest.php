@@ -59,7 +59,7 @@ class RegisterUserRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:15',
-                'regex:/^(?=.*[A-Za-z])[A-Za-z0-9._-]{3,15}$/'
+                'regex:/^(?=.*[A-Za-z])[A-Za-z0-9._\-\s]{3,15}$/'
             ],
             'email' => [
                 'required',
