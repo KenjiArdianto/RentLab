@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\UploadedFile;
 
 class userDetailTest extends TestCase
 {
@@ -49,6 +50,7 @@ class userDetailTest extends TestCase
     /** @test */
     public function tc002_guest_cannot_access_user_detail_page()
     {
+        
         $response = $this->get('/complete-user-detail');
         $response->assertRedirect('/login');
     }
@@ -57,7 +59,7 @@ class userDetailTest extends TestCase
     public function tc003_admin_cannot_access_user_detail_page()
     {
         $this->delete_test_user();
-        $admin = $this->create_test_user(['role'=>'admin'])->fresh();
+        $admin = $this->create_test_user(['role'=>'admin']);
         $response = $this->actingAs($admin)->get('/complete-user-detail');
         $response->assertStatus(403);
         $response->assertSee('bukan user ga usah maksa');
@@ -147,6 +149,36 @@ class userDetailTest extends TestCase
     }
 
     /** @test */
+    public function tc009_invalid_file_type_for_idcard_picture()
+    {
+        $user=$this->create_test_user()->fresh();
+        $response = $this->actingAs($user)->post('/complete-user-detail', [
+            'fname' => 'Jane123',
+            'lname' => 'Doe!',
+            'phoneNumber' => '123456789',
+            'idcardNumber' => '9876543210123456',
+            'dateOfBirth' => 'not-a-date',
+            'idcardPicture' => UploadedFile::fake()->create('doc.pdf', 100)
+        ]);
+        $response->assertSessionHasErrors(['idcardPicture']);
+    }
+
+    /** @test */
+    public function tc010_idcard_picture_too_large()
+    {
+        $user=$this->create_test_user()->fresh();
+        $response = $this->actingAs($user)->post('/complete-user-detail', [
+            'fname' => 'Jane123',
+            'lname' => 'Doe!',
+            'phoneNumber' => '123456789',
+            'idcardNumber' => '9876543210123456',
+            'dateOfBirth' => 'not-a-date',
+            'idcardPicture' =>UploadedFile::fake()->image('photo.jpg')->size(11000)
+        ]);
+        $response->assertSessionHasErrors(['idcardPicture']);
+    }
+
+    /** @test */
     public function tc011_submit_invalid_date_of_birth()
     {
         $user=$this->create_test_user()->fresh();
@@ -156,7 +188,7 @@ class userDetailTest extends TestCase
             'phoneNumber' => '08123456789',
             'idcardNumber' => '9876543210123456',
             'dateOfBirth' => '1990-01-01',
-            'idcardPicture' => 'idcard/fakepic.jpg'
+            'idcardPicture' => UploadedFile::fake()->image('ktp.jpg')
         ]);
         $response->assertRedirect('/home');
     }

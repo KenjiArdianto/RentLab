@@ -9,7 +9,7 @@
 
                 <div class="card-body" style="padding: 40px 0;">
                     <div class="SmallLogo" style=" margin: auto; width: 100px; height: 100px; ">
-                        <img src="{{ asset('build/assets/images/RentLab.png') }}" style="width: 90%; height: 90%; display: flex; justify-content: center; align-items: center; margin: auto; ">
+                        <img src="{{ asset('assets/auth/RentLab.png') }}" style="width: 90%; height: 90%; display: flex; justify-content: center; align-items: center; margin: auto; ">
                     </div>
                     <form method="POST" action="{{ route('post.user.detail') }}" enctype="multipart/form-data" style="display: flex;flex-direction:column;">
                         @csrf
@@ -103,7 +103,7 @@
             </div>
             <div class="BigLogo" style="width: 350px; height: 350px; background-color:  #20447c; margin: auto; border-radius: 250px; display: flex; ">
                 <div style="margin: auto; background-color: white; width: 80%; height: 80%; border-radius: 200px; display: flex;">
-                    <img src="{{ asset('build/assets/images/RentLab.png') }}" style="width: 80%; height: 80%; display: flex; justify-content: center; align-items: center; margin: auto;">
+                    <img src="{{ asset('assets/auth/RentLab.png') }}" style="width: 80%; height: 80%; display: flex; justify-content: center; align-items: center; margin: auto;">
                 </div>
             </div>
         </div>

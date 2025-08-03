@@ -6,7 +6,7 @@
     <div class="card" style="margin:  auto; padding: 40px; min-width:350px;width:35vw;padding:20px; max-width: 500px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);  border-radius: 10px;">
         <div class="card-body" style="padding: 40px 0; display: flex; flex-direction: column;">
             <div class="SmallLogo" style=" margin: auto; width: 80px; height: 80px; ">
-                <img src="{{ asset('build/assets/images/RentLab.png') }}" style="width: 90%; height: 90%; display: flex; justify-content: center; align-items: center; margin: auto; ">
+                <img src="{{ asset('assets/auth/RentLab.png') }}" style="width: 90%; height: 90%; display: flex; justify-content: center; align-items: center; margin: auto; ">
             </div>
             <p style="padding:3px;text-align: center; font-size: 25px; font-family:Verdana, Geneva, Tahoma, sans-serif; margin: 0;">Verify Your Account</p>    
             <div style="display: flex; width: 80%; margin: auto;">
@@ -43,7 +43,7 @@
     </div>
     <div class="BigLogo" style="width: 350px; height: 350px; background-color:  #20447c; margin: auto; border-radius: 250px; display: flex; ">
         <div style="margin: auto; background-color: white; width: 80%; height: 80%; border-radius: 200px; display: flex;">
-            <img src="{{ asset('build/assets/images/RentLab.png') }}" style="width: 80%; height: 80%; display: flex; justify-content: center; align-items: center; margin: auto;">
+            <img src="{{ asset('assets/auth/RentLab.png') }}" style="width: 80%; height: 80%; display: flex; justify-content: center; align-items: center; margin: auto;">
         </div>
     </div>
 </div>
