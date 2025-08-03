@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('end_book_date');
             $table->date('return_date')->nullable();
             $table->decimal('price', 15, 2);
+            $table->decimal('driver_fee', 15, 2)->default(0);
             $table->timestamps();
         });
     }
