@@ -171,27 +171,28 @@
                                                             </div>
                                                         </div>
 
-                                                    <div class="m-2">
-                                                        <div class="d-flex justify-content-center align-items-center">
-                                                            <form
-                                                                action="{{route('cart.destroy', ['id' => $getVehicleByIdsINCart->id])}}"
-                                                                method="POST">
-                                                                <input type="hidden" name="vehicle_id"
-                                                                    value="{{ $getVehicleByIdsINCart->vehicle_id}}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <div class="container bg-danger p-2 rounded-1"
-                                                                    style="width:32px">
-                                                                    <button
-                                                                        class="submit text-light border-0 bg-transparent p-0 w-20">
-                                                                        <i class="bi bi-trash3"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </form>
+                                                        <div class="m-2">
+                                                            <div class="d-flex justify-content-center align-items-center">
+                                                                <form
+                                                                    action="{{route('cart.destroy', ['id' => $getVehicleByIdsINCart->id])}}"
+                                                                    method="POST">
+                                                                    <input type="hidden" name="vehicle_id"
+                                                                        value="{{ $getVehicleByIdsINCart->vehicle_id}}">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <div class="container bg-danger p-2 rounded-1"
+                                                                        style="width:32px">
+                                                                        <button
+                                                                            class="submit text-light border-0 bg-transparent p-0 w-20">
+                                                                            <i class="bi bi-trash3"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-12 text-center">

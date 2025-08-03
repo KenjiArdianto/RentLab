@@ -80,6 +80,11 @@ class VehicleController extends Controller
             $getVehicleByIdsINCarts=null;
             $cartDateRanges=null;
         }
+        $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
+            $query->where('vehicle_id', $id);
+        })->get();
+
+        $getVehicleimagesById = VehicleImage::where("vehicle_id","=",$id)->get();
 
         //calculate  user rating from userReviews
         $rating = DB::table('user_reviews')
