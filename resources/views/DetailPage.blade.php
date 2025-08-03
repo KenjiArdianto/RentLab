@@ -10,13 +10,13 @@
             {{-- Thumbnails --}}
             <div class="thumbnail-container">
                 <div class="h-20 thumbnail-item active-thumbnail" data-bs-slide-to="0">
-                    <img src="{{ $idVehicle->main_image }}" class="w-100 shadow-sm rounded-1"
+                    <img src="{{ asset($idVehicle->main_image) }}" class="w-100 shadow-sm rounded-1"
                         alt="Main Product Image 1">
                 </div>
 
                 @foreach ($getVehicleimagesById as $index => $imageById)
                     <div class="h-20 thumbnail-item" data-bs-slide-to="{{ $index + 1 }}">
-                        <img src="{{ $imageById->image }}" class="w-100 shadow-sm rounded-1"
+                        <img src="{{ asset($imageById->image) }}" class="w-100 shadow-sm rounded-1"
                             alt="Vehicle Image {{ $index + 2 }}">
                     </div>
                 @endforeach
@@ -27,13 +27,13 @@
                 <div id="productCarousel" class="carousel slide" data-bs-interval="false">
                     <div class="carousel-inner shadow">
                         <div class="carousel-item active m-0">
-                            <img src="{{ $idVehicle->main_image }}" class="d-block w-100 rounded-1"
+                            <img src="{{  asset($idVehicle->main_image)  }}" class="d-block w-100 rounded-1"
                                 alt="Main Product Image">
                         </div>
 
                         @foreach ($getVehicleimagesById as $imageById)
                             <div class="carousel-item">
-                                <img src="{{ $imageById->image }}" class="d-block w-100 rounded-1" alt="Vehicle Image">
+                                <img src="{{  asset($imageById->image) }}" class="d-block w-100 rounded-1" alt="Vehicle Image">
                             </div>
                         @endforeach
                     </div>
