@@ -17,7 +17,8 @@ class AdvertisementFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'isactive' => $this->faker->boolean,
+            'path' => 'images/iklan-placeholder.jpg', // <-- TAMBAHKAN BARIS INI
         ];
     }
 }

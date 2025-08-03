@@ -27,6 +27,8 @@ class CreateCheckoutInvoiceRequest extends FormRequest
         return [
             'cart_ids'   => 'required|array|min:1',
             'cart_ids.*' => 'integer|exists:carts,id',
+            'with_driver' => 'nullable|array',
+            'with_driver.*' => 'sometimes|boolean',
         ];
     }
     protected function failedValidation(Validator $validator)
