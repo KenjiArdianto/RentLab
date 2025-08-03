@@ -29,20 +29,17 @@ class VehicleCategorySeeder extends Seeder
             ['category' => 'Sport'],
             ['category' => 'City'],
             ['category' => 'Custom'],
+
             ['category' => 'Scooter'],
             ['category' => 'Moped'],
             ['category' => 'Sport'],
             ['category' => 'Cruiser'],
             ['category' => 'Touring'],
             ['category' => 'Off-Road'],
-            ['category' => 'Standard'],
-            ['category' => 'Cafe Racer'],
-            ['category' => 'Adventure'],
-            ['category' => 'Electric'],
-            ['category' => 'Custom'],
             ['category' => 'Naked'],
+            ['category' => 'Electric'],
             ['category' => 'Commuter'],
-            ['category' => 'Mini Bike'],
+            ['category' => 'Custom'],
         ]);
     }
 }
