@@ -13,8 +13,8 @@ class VehicleType extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'name',
-    ];
+        'type',
+    ];  
 
     public function getActivitylogOptions(): LogOptions
     {

@@ -8,28 +8,29 @@ use Illuminate\Support\Facades\Auth;
 use  Carbon\Carbon;
 use App\Http\Requests\StoreCartRequest;
 use App\Models\Vehicle;
+use App\Models\Transaction;
+
 
 class CartController extends Controller
 {
-    /**
-     * Menampilkan daftar sumber daya.
-     */
+    //show cart item
     public function index()
     {
         $userId=Auth::user()->id;
+
         $listCart = Cart::where("user_id", $userId)
                     ->orderBy('start_date', 'desc')
                     ->get();
 
-
         $today = Carbon::today();
-
+        
+        //show upcomming cart ordered by start date
         $upcomingCart = Cart::where("user_id", $userId)
                             ->where('start_date', '>=', $today)
                             ->orderBy('start_date', 'asc')
                             ->get();
 
-
+        //show outdated cart ordered by start date
         $outdatedCart = Cart::where("user_id", $userId)
                             ->where('start_date', '<', $today)
                             ->orderBy('start_date', 'desc')
@@ -56,7 +57,6 @@ class CartController extends Controller
         $dateRanges = $request->input('date_ranges');
         $userId=Auth::id();
 
-        // Fetch the vehicle to get its price
         $vehicle = Vehicle::find($vehicleId);
         if (!$vehicle) {
             \activity('cart')
@@ -73,6 +73,7 @@ class CartController extends Controller
         $currentCartItemCount = Cart::where('user_id', $userId)->count();
         $itemsToAdd = count($dateRanges);
 
+        //maximal item cart check
         if (($currentCartItemCount + $itemsToAdd) > 10) {
             return back()->with('error', 'Maksimal 10 item pada Cart. Anda sudah memiliki ' . $currentCartItemCount . ' item.');
         }
@@ -81,29 +82,36 @@ class CartController extends Controller
             $startDate = Carbon::parse($range['start_date']);
             $endDate = Carbon::parse($range['end_date']);
 
+            //query for cart items that booked by other user  
+            $bookedTransactionDates = Transaction::where('vehicle_id', $vehicleId)
+            ->where('transaction_status_id', '<', 7) 
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_book_date', [$startDate, $endDate])
+                      ->orWhereBetween('end_book_date', [$startDate, $endDate])
+                      ->orWhere(function ($query) use ($startDate, $endDate) {
+                          $query->where('start_book_date', '<', $startDate)
+                                ->where('end_book_date', '>', $endDate);
+                      });
+            })->get(); 
 
-            // Calculate the number of days
+            if ($bookedTransactionDates->count() > 0) {
+                return back()->with('error', 'Rentang tanggal ' . $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y') . ' tumpang tindih dengan pemesanan lain atau sudah di keranjang. Silakan pilih tanggal lain.');
+            }
+
+            //calculating discount
+            //maximal 30% dscount
             $numberOfDays = $startDate->diffInDays($endDate) +1;
-
-            // Calculate the discount percentage
-            // 5% discount per day, capped at 30% (which means max 6 days for discount)
-            $discountPercentage = min(0.05 * ($numberOfDays-1), 0.30); // 0.05 = 5%, 0.30 = 30%
-
-            // Calculate the total price before discount
+            $discountPercentage = min(0.05 * ($numberOfDays-1), 0.30); 
             $totalPriceBeforeDiscount = $vehicle->price * $numberOfDays;
-
-            // Calculate the subtotal with discount
             $subtotal = $totalPriceBeforeDiscount * (1 - $discountPercentage);
-
-            // dd($subtotal);
 
             $cart=Cart::create([
                 'vehicle_id' => $vehicleId,
                 'start_date' => $range['start_date'],
                 'end_date' => $range['end_date'],
                 'user_id' => $userId,
-                'subtotal' => round($subtotal), // Store the calculated subtotal
-            ]);
+                'subtotal' => round($subtotal, 2), 
+            ]); 
             \activity('cart')
             ->performedOn($cart)
             ->causedBy(Auth::user())
@@ -119,8 +127,11 @@ class CartController extends Controller
 
         return back()->with('success', 'Tanggal berhasil ditambahkan ke keranjang!');
     }
+
+    //delete items from cart
     public function destroy(string $id)
     {
+
         $cartitems=Cart::where('id',$id)->first();
         if(!$cartitems){
             \activity('cart')
@@ -141,8 +152,9 @@ class CartController extends Controller
                 'cart_id' => $id,
             ])
             ->log('Unauthorized cart delete attempt');
-            return back()->withError();
+            return back()->with('error', 'Anda tidak memiliki hak untuk menghapus item ini.');
         }
+
         Cart::destroy($id);
         \activity('cart')
         ->performedOn($cartitems)
@@ -155,6 +167,7 @@ class CartController extends Controller
         return back()->with('success', 'Item berhasil dihapus dari keranjang.');
     }
 
+    //delete all expired cart items
     public function clearOutdated()
     {
         $today = Carbon::today();
@@ -173,7 +186,7 @@ class CartController extends Controller
 
     public function getCartItemCount()
     {
-        $userId = Auth::id() ; // Gunakan ID pengguna yang terautentikasi, atau dummy untuk pengujian
+        $userId = Auth::id(); 
         $count = Cart::where('user_id', $userId)->count();
         \activity('cart')
         ->causedBy(Auth::user())

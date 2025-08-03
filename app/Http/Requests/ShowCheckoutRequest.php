@@ -36,7 +36,11 @@ class ShowCheckoutRequest extends FormRequest
         // Jika metodenya GET (misal: refresh), tidak perlu aturan validasi
         return [];
     }
-
+    public function messages(){
+        return [
+            'cart_ids.required'=>'Please select minimum 1 cart items',
+        ];
+    }
     /**
      * Handle a failed validation attempt.
      */
@@ -58,4 +62,6 @@ class ShowCheckoutRequest extends FormRequest
             ->errorBag($this->errorBag)
             ->redirectTo($this->getRedirectUrl());
     }
+    
+    
 }

@@ -8,7 +8,7 @@ use Illuminate\View\Component;
 
 class admin.FeedbackModal extends Component
 {
-    /**
+    /** 
      * Create a new component instance.
      */
     public function __construct()

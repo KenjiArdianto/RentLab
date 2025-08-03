@@ -21,7 +21,7 @@
             </div>
             <div class="col-4 d-flex align-items-center">
                 <div>
-                    <h6 class="m-0">{{$param->vehicle->vehiclename->name }} {{ $param->vehicle->year}}</h6>
+                    <h6 class="m-0">{{$param->vehicle->vehicleName->name }} {{ $param->vehicle->year}}</h6>
                     <h6 class="text-muted">{{ $param->vehicle->location->location }}</h6>   
                 </div>
             </div>

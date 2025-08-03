@@ -1,16 +1,19 @@
 <x-layout>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <div class="container my-4">
 
-        <div class="row">
+        {{-- header  --}}
+        <div class="row"> 
             <div class="col-12 cart-header-wrapper mb-3">
-                @if(session('error'))
+                @if(session('errors'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ __(session('error')) }}
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
                 <div class="d-flex bg-light border rounded me-0 p-3 ps-0 pe-0 cart-header shadow-sm">
 
                     <div class="col-1 d-none d-md-flex justify-content-center align-items-center">
@@ -35,7 +38,7 @@
             </div>
         </div>
 
-
+        {{-- upcomming cart items  --}}
         @if ($upcomingCart->isNotEmpty())
             <h4 class="mb-3">{{__('cart.RecentDate')}}</h4>
             @foreach ($upcomingCart as $cart)
@@ -44,7 +47,7 @@
             @endforeach
         @endif
 
-
+        {{-- expired cart items  --}}
         @if ($outdatedCart->isNotEmpty())
             <div class="container d-flex justify-content-between px-0">
                 <h4 class="mt-5 mb-4">{{__('cart.PastDate')}}</h4>
@@ -112,44 +115,17 @@
         </div>
     </div>
 
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const breakpointLg = 992;
 
-            //sinii
             function calculateAndUpdateSubtotal(checkbox) {
-                // const vehiclePrice = parseFloat(checkbox.dataset.vehiclePrice);
-                // const startDateStr = checkbox.dataset.startDate;
-                // const endDateStr = checkbox.dataset.endDate;
                 const subtotal = parseFloat(checkbox.dataset.subtotal);
-
-                // if (isNaN(vehiclePrice) || !startDateStr || !endDateStr) {
-                //     console.error("Data harga atau tanggal tidak lengkap untuk perhitungan subtotal.");
-                //     return;
-                // }
 
                 if (isNaN(subtotal)) {
                     console.error("Data subtotal tidak lengkap untuk perhitungan.");
                     return;
                 }
-
-                // const startDate = moment(startDateStr);
-                // const endDate = moment(endDateStr);
-                // const numberOfDays = endDate.diff(startDate, 'days') + 1;
-
-                // const subtotal = vehiclePrice * numberOfDays;
-
-                // const parentItem = checkbox.closest('.cart-item-container-desktop') || checkbox.closest('.cart-responsive-item');
-                // if (parentItem) {
-                //     const subtotalDisplayElement = parentItem.querySelector('.subtotal-display');
-                //     if (subtotalDisplayElement) {
-                //         subtotalDisplayElement.innerText = `Rp.${subtotal.toLocaleString('id-ID')},00`;
-                //     }
-                // }
 
                 const parentItem = checkbox.closest('.cart-item-container-desktop') || checkbox.closest('.cart-responsive-item');
                 if (parentItem) {
@@ -165,38 +141,6 @@
             document.querySelectorAll('.cart-checkbox').forEach(cb => {
                 calculateAndUpdateSubtotal(cb);
             });
-            //sini
-
-            //--
-            // function calculateAndUpdateSubtotal(checkbox) {
-            //     // Ensure data-subtotal is present and is a valid number
-            //     const subtotal = parseFloat(checkbox.dataset.subtotal);
-
-            //     if (isNaN(subtotal)) {
-            //         console.error("Data subtotal is missing or invalid for calculation.", checkbox);
-            //         // Set to 0 or handle error appropriately if subtotal is not available
-            //         checkbox.dataset.price = 0;
-            //         return;
-            //     }
-
-            //     // Find the parent element to update the displayed subtotal
-            //     const parentItem = checkbox.closest('.cart-item-container-desktop') || checkbox.closest('.cart-responsive-item');
-            //     if (parentItem) {
-            //         const subtotalDisplayElement = parentItem.querySelector('.subtotal-display');
-            //         if (subtotalDisplayElement) {
-            //             subtotalDisplayElement.innerText = `Rp.${subtotal.toLocaleString('id-ID')},00`;
-            //         }
-            //     }
-
-            //     // Crucially, set the data-price for the checkbox, which updateCartSummary will read
-            //     checkbox.dataset.price = subtotal;
-            // }
-
-            // // Initialize subtotals for all cart items on page load
-            // document.querySelectorAll('.cart-checkbox').forEach(cb => {
-            //     calculateAndUpdateSubtotal(cb);
-            // });
-            //--
 
             function synchronizeCheckboxes() {
                 const desktopCheckboxes = document.querySelectorAll('.desktop-checkbox');
@@ -259,14 +203,14 @@
 
 
                 const container = document.getElementById('cartIdsContainer');
-                // Kosongkan ID lama setiap kali ada perubahan
+                
                 container.innerHTML = '';
 
-                // Buat input baru untuk setiap ID yang dipilih
+                
                 selectedIds.forEach(id => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
-                    input.name = 'cart_ids[]'; // <-- Nama ini penting agar terbaca sebagai array di Laravel
+                    input.name = 'cart_ids[]'; 
                     input.value = id;
                     container.appendChild(input);
                 });
@@ -293,14 +237,14 @@
 
             if (paymentForm) {
                 paymentForm.addEventListener('submit', function(event) {
-                    // Temukan tombol submit di dalam form
+                    
                     const submitButton = paymentForm.querySelector('button[type="submit"]');
 
                     if (submitButton) {
-                        // Nonaktifkan tombol
+                        
                         submitButton.disabled = true;
 
-                        // Ubah teks dan tambahkan ikon spinner
+                        
                         submitButton.innerHTML = `
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Memproses...
@@ -319,7 +263,6 @@
             display: block;
 
         }
-
 
         .cart-header {
             height: 70px;
@@ -349,7 +292,6 @@
             width: 100%;
         }
 
-
         .cart-item-outdated {
             opacity: 0.6;
             pointer-events: none;
@@ -363,7 +305,6 @@
         .cart-item-outdated .cart-checkbox {
             pointer-events: none;
         }
-
 
         @media (max-width: 991.98px) {
 
@@ -396,7 +337,6 @@
             .cart-header .col-3 {
                 display: none !important;
             }
-
 
             .cart-header .col-1 {
                 display: none !important;
@@ -447,7 +387,6 @@
                 width: 90%;
                 margin: 0 auto;
             }
-
 
             .cart-responsive-item {
                 height: 130px;

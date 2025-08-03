@@ -13,6 +13,9 @@ use App\Http\Requests\VehicleFilterRequest;
 use App\Models\Location;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Transaction;
+
+
 
 class VehicleController extends Controller
 {
@@ -58,11 +61,12 @@ class VehicleController extends Controller
         $idVehicle = Vehicle::with([
             'vehicleCategories',
             'vehicleName',
-            'vehicleType',
+            'vehicleType', 
             'vehicleTransmission',
-            'location' // Ini akan mengambil data lokasi
+            'location' 
         ])->findOrFail($id);
 
+        //get vehicle id
         if(Auth::check()){
             $getVehicleByIdsINCarts = Cart::where('user_id', Auth::user()->id)->where('vehicle_id', $id)->get();
 
@@ -77,19 +81,7 @@ class VehicleController extends Controller
             $cartDateRanges=null;
         }
 
-        
-        // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get();
-
-        $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
-            $query->where('vehicle_id', $id);
-        })->get();
-
-        $getVehicleimagesById = VehicleImage::where("vehicle_id","=",$id)->get();
-
-
-        
-
-
+        //calculate  user rating from userReviews
         $rating = DB::table('user_reviews')
         ->join('transactions', 'user_reviews.transaction_id', '=', 'transactions.id')
         ->join('vehicles', 'transactions.vehicle_id', '=', 'vehicles.id')
@@ -110,7 +102,24 @@ class VehicleController extends Controller
         ])
         ->log("Viewed vehicle detail");
 
-        return view('DetailPage', compact('rating', 'idVehicle', 'getVehicleByIdsINCarts', 'getCommentByIdVehicle', 'cartDateRanges', 'getVehicleimagesById'));
+    
+    $bookedTransactionDates = Transaction::where('vehicle_id', $id)
+    ->where('transaction_status_id', '<', 7)
+    ->select('start_book_date as start_date', 'end_book_date as end_date')
+    ->get();
+
+    $allBookedDates = $bookedTransactionDates;
+
+
+    return view('DetailPage', compact(
+            'rating', 
+            'idVehicle', 
+            'getVehicleByIdsINCarts', 
+            'getCommentByIdVehicle', 
+            'cartDateRanges', 
+            'getVehicleimagesById',
+            'allBookedDates' 
+        ));
     }
 
     /**

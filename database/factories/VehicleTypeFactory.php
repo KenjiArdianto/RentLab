@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\VehicleType;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\VehicleType>
@@ -14,10 +15,11 @@ class VehicleTypeFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    
     public function definition(): array
     {
         return [
-            //
+          
         ];
     }
 }

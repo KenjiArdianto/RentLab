@@ -21,7 +21,7 @@
 
             <div class="col-6 d-flex align-items-center">
                 <div>
-                    <h6 class="m-0 fw-semibold" style="font-size:17px">{{ $param->vehicle->vehiclename->name }}</h6>
+                    <h6 class="m-0 fw-semibold" style="font-size:17px">{{ $param->vehicle->vehicleName->name }}</h6>
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-geo-alt-fill me-1 text-muted" style="font-size: 11px"></i>
                         <h6 class="text-muted m-0" style="font-size:14px">{{ $param->vehicle->location->location }}</h6>
