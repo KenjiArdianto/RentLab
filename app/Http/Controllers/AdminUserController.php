@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\AdminSuspendSelectedRequest;
+use App\Http\Requests\AdminUnsuspendSelectedRequest;
 
 class AdminUserController extends Controller
 {
@@ -162,56 +164,7 @@ class AdminUserController extends Controller
         return view('admin.users', compact('users'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
-    }
-
-    public function suspendSelected(Request $request)
+    public function suspendSelected(AdminSuspendSelectedRequest $request)
     {
         //
         
@@ -248,7 +201,7 @@ class AdminUserController extends Controller
         return back()->with('success', 'User Suspended Successfully');
     }
 
-    public function unsuspendSelected(Request $request)
+    public function unsuspendSelected(AdminUnsuspendSelected $request)
     {
         //
         

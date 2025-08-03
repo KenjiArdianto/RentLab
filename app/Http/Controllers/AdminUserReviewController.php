@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserReview;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\AdminUserReviewRequest;
 
 class AdminUserReviewController extends Controller
 {
@@ -68,51 +70,80 @@ class AdminUserReviewController extends Controller
         return view('admin.users.reviews', compact('user', 'reviews'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function update(AdminUserReviewRequest $request, User $user, UserReview $userReview)
     {
         //
+        $reviewUpdated = false;
+        $changes = [];
+
+        // dd($userReview->id);
+        if ($userReview->comment != $request->comment) {
+            $changes['comment'] = [
+                'old' => $userReview->comment,
+                'new' => $request->comment,
+            ];
+            $reviewUpdated = true;
+            $userReview->comment = $request->comment;
+        }
+
+        if ($userReview->rate != $request->rate) {
+            $changes['rate'] = [
+                'old' => $userReview->rate,
+                'new' => $request->rate,
+            ];
+            $reviewUpdated = true;
+            $userReview->rate = $request->rate;
+        }
+
+        
+        if (!$reviewUpdated) {
+            \activity('admin_review_update_failed')
+            ->causedBy(Auth::user())
+            ->performedOn($userReview)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'user_id' => $user->id,
+                'review_id' => $userReview->id,
+                'reason' => 'no changes detected',
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin tried to update review #$userReview->id for user #$user->id with no changes");
+            return back()->with('error', 'Review Not Updated');
+        }
+
+        $userReview->save();
+
+        \activity('admin_review_update')
+        ->causedBy(Auth::user())
+        ->performedOn($userReview)
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_id' => $user->id,
+            'review_id' => $userReview->id,
+            'changes' => $changes,
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin updated review #$userReview->id for user #$user->id");
+
+        return back()->with('success', 'Review Updated Successfully');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function destroy(User $user, UserReview $userReview)
     {
         //
-    }
+        \activity('admin_review_delete')
+        ->causedBy(Auth::user())
+        ->performedOn($userReview)
+        ->withProperties([
+            'ip' => request()->ip(),
+            'user_id' => $user->id,
+            'review_id' => $userReview->id,
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log("Admin deleted review #$userReview->id for user #$user->id");
+        $userReview->delete();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        return back()->with('success', 'Review Deleted Successfully');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

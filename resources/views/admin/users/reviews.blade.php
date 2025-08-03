@@ -52,33 +52,63 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel{{ $review->id }}">{{ __('admin_tables.reviews') }} - #{{ $review->id }}</h5>
+                                <h5 class="modal-title" id="editModalLabel{{ $review->id }}">{{ __('admin_vehicles.edit_review') }} - #{{ $review->id }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-                            <div class="modal-body">
-                                <dl class="row mb-0">
-                                    <dt class="col-sm-3">{{ __('admin_tables.admin_id') }}</dt>
-                                    <dd class="col-sm-9">{{ $review->admin_id ?? 'N/A' }}</dd>
 
-                                    <dt class="col-sm-3">{{ __('admin_tables.transaction_id') }}</dt>
-                                    <dd class="col-sm-9">{{ $review->transaction_id ?? 'N/A' }}</dd>
+                            <form id="updateReviewForm-{{ $review->id }}"
+                                  action="{{ route('admin.users.reviews.update', ['user' => $user->id, 'userReview' => $review->id]) }}"
+                                  method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-3">{{ __('admin_tables.admin_id') }}</dt>
+                                        <dd class="col-sm-9">{{ $review->admin_id ?? 'N/A' }}</dd>
 
-                                    <dt class="col-sm-3">{{ __('admin_tables.comment') }}</dt>
-                                    <dd class="col-sm-9 text-break">{{ $review->comment ?? 'N/A' }}</dd>
+                                        <dt class="col-sm-3">{{ __('admin_tables.transaction_id') }}</dt>
+                                        <dd class="col-sm-9">{{ $review->transaction_id }}</dd>
 
-                                    <dt class="col-sm-3">{{ __('admin_tables.rating') }}</dt>
-                                    <dd class="col-sm-9">{{ $review->rate ?? 'N/A' }}</dd>
-                                </dl>
-                            </div>
+                                        <dt class="col-sm-3">{{  __('admin_tables.comment') }}</dt>
+                                        <dd class="col-sm-9">
+                                            <textarea name="comment"
+                                                    class="form-control"
+                                                    rows="3"
+                                                    maxlength="250"
+                                                    oninput="updateCharCount(this, 'reviewCounter-{{ $review->id }}')"
+                                                    placeholder="{{  __('admin_vehicles.hint_review')}}">{{ $review->comment ?? '' }}</textarea>
+                                            <small class="text-muted">
+                                                <span id="reviewCounter-{{ $review->id }}">{{ strlen($review->comment ?? '') }}</span>/250 {{ __('admin_vehicles.characters') }}
+                                            </small>
+                                        </dd>
+
+                                        <dt class="col-sm-3">{{  __('admin_tables.rating') }}</dt>
+                                        <dd class="col-sm-9">
+                                            <select name="rate" class="form-select w-auto">
+                                                @for ($j = 1; $j <= 5; $j++)
+                                                    <option value="{{ $j }}" {{ ($review->rate ?? '') == $j ? 'selected' : '' }}>
+                                                        {{ $j }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </form>
+
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <form action="{{ route('admin.users.reviews.destroy', ['user' => $user->id, 'userReview' => $review->id]) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger">{{ __('admin_buttons.delete') }}</button>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin_buttons.close') }}</button>
+                                <button type="submit" form="updateReviewForm-{{ $review->id }}" class="btn btn-primary">{{  __('admin_buttons.apply') }}</button>
                             </div>
                         </div>
                     </div>
                 </div>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">No reviews found.</td>
+                    <td colspan="4" class="text-center">{{  __('admin_vehicles.no_reviews') }}</td>
                 </tr>
             @endforelse
         </tbody>

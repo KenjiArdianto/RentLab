@@ -62,15 +62,6 @@ class AdminDriverController extends Controller
         return view('admin.drivers', compact('drivers', 'locations'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -102,38 +93,6 @@ class AdminDriverController extends Controller
         ])
         ->log('Admin created a new driver');   
         return back()->with('success', 'Driver added.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 
     public function editSelected(AdminDriverEditSelectedRequest $request)
