@@ -27,6 +27,7 @@ class AdminVehicleUpdateRequest extends FormRequest
             'vehicle_transmission_id' => 'required|exists:vehicle_transmissions,id',
             'engine_cc' => 'required|numeric|min:50',
             'seats' => 'required|integer|min:1|max:50',
+            'year' => 'required|integer|min:1900|max:' . date('Y'),
             'price' => 'required|numeric|min:0',
             'location_id' => 'required|exists:locations,id',
 
@@ -69,6 +70,12 @@ class AdminVehicleUpdateRequest extends FormRequest
             'seats.min' => 'There must be at least 1 seat.',
             'seats.max' => 'Seat count must not exceed 20.',
 
+            // year
+            'year.required' => 'Year is required.',
+            'year.integer' => 'Year must be a number.',
+            'year.min' => 'Year must be at least 1900.',
+            'year.max' => 'Year must not exceed ' . date('Y'),
+            
             // price
             'price.required' => 'Price is required.',
             'price.numeric' => 'Price must be a number.',

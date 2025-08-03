@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminVehicleTypeController extends Controller
 {
@@ -22,6 +23,14 @@ class AdminVehicleTypeController extends Controller
         }
 
         $vehicleTypes = $vehicleTypes->paginate(100);
+        \activity('admin_vehicle_type_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'search' => $search,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin searched vehicle types with search = '{$search}'");
 
         return view('admin.vehicle-types', compact('vehicleTypes'));
 
@@ -43,12 +52,29 @@ class AdminVehicleTypeController extends Controller
         //
 
         if (VehicleType::where('type', $request->type)->exists()) {
+            \activity('admin_vehicle_type_store_failed')
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'attempted_type' => $request->type,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin tried to create duplicate vehicle type '{$request->type}'");
             return back()->with('error', 'Vehicle Type Already Exists');
         }
 
-        VehicleType::create([
+        $vehicleType=VehicleType::create([
             'type' => $request->type
         ]);
+        \activity('admin_vehicle_type_store')
+            ->causedBy(Auth::user())
+            ->performedOn($vehicleType)
+            ->withProperties([
+                'type' => $request->type,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin created vehicle type '{$request->type}'");
         
         return back()->with('success', 'Vehicle Type Added Successfully');
     }
@@ -76,11 +102,31 @@ class AdminVehicleTypeController extends Controller
     {
         //
         if ($vehicleType->type == $request->type) {
+            \activity('admin_vehicle_type_update_failed')
+            ->causedBy(Auth::user())
+            ->performedOn($vehicleType)
+            ->withProperties([
+                'attempted_same_type' => $request->type,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->log("Admin attempted to update vehicle type '{$request->type}' with no change");
             return back()->with('error', 'Vehicle Type Not Updated');
         }
 
+        $old=$vehicleType->type;
         $vehicleType->type = $request->type;
         $vehicleType->save();
+        \activity('admin_vehicle_type_update')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicleType)
+        ->withProperties([
+            'old_type' => $old,
+            'new_type' => $request->type,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log("Admin updated vehicle type from '{$old}' to '{$request->type}'");
 
         return back()->with('success', 'Vehicle Type Updated Successfully');
     }
@@ -91,6 +137,15 @@ class AdminVehicleTypeController extends Controller
     public function destroy(VehicleType $vehicleType)
     {
         //
+        \activity('admin_vehicle_type_delete')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicleType)
+        ->withProperties([
+            'deleted_type' => $vehicleType->type,
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ])
+        ->log("Admin deleted vehicle type '{$vehicleType->type}'");
         $vehicleType->delete();
 
         return back()->with('success', 'Vehicle Type Deleted Successfully');
