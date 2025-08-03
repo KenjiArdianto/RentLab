@@ -46,13 +46,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
-<<<<<<< HEAD
 
     
     {{-- <iframe width="425" height="755" src="https://www.youtube.com/embed/3XrzMkmOQQA" title="KAWASAKI CAGO KRICO ESTRIPPER" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> --}}
 
-=======
->>>>>>> 720c415b7b9d7091c471953989a35203d2ac5290
     <header class="sticky-top bg-light shadow-sm">
         <!-- Top bar for language selection -->
         <nav class="navbar mt-0 mb-0 me-lg-0 p-0 justify-content-end d-flex">
