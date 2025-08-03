@@ -128,4 +128,6 @@ return [
 
     'fallback_locale' => 'en',
 
+    'timezone' => 'Asia/Jakarta',
+
 ];
