@@ -206,7 +206,7 @@ class PembayaranController extends Controller
                 'success_redirect_url' => route('payment.success'),
                 'failure_redirect_url' => route('payment.failed'),
                 'payer_email' => $user->email,
-                'invoice_duration' => 120,
+                'invoice_duration' => 5,
             ]);
 
             $result = $apiInstance->createInvoice($createInvoiceRequest);
