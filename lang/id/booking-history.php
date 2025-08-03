@@ -34,6 +34,8 @@ return [
     'modal.your_comment' => 'Komentar Anda',
     'modal.submit_review' => 'Kirim Ulasan',
     'modal.to' => 'sampai',
+    'modal.noresult' => 'Tidak ada transaksi yang sedang berjalan.',
+    'modal.noresulttransaction' => 'Tidak ada riwayat transaksi',
     
     'modal.payment_method' => 'Metode Pembayaran',
     'modal.payment_status' => 'Status Pembayaran',

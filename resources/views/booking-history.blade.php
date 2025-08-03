@@ -103,7 +103,7 @@
                                         <span class="badge rounded-pill {{ $currentStatus['bg'] }} mb-2">{{ $currentStatus['text'] }}</span>
                                         
                                         @php
-                                            $vehiclePrice = $transaction->vehicle_price;
+                                            $vehiclePrice = $transaction->price;
                                             
                                             $driverFee = ($transaction->driver_price > 0 || $transaction->driver_id) ? ($transaction->driver_price > 0 ? $transaction->driver_price : 50000) : 0;
                                             
@@ -128,7 +128,7 @@
                         @include('partials.booking-transaction-detail', ['transaction' => $transaction])
                     @endif
                 @empty
-                    <div class="text-center p-5 bg-light rounded"><p class="text-muted">Tidak ada transaksi yang sedang berjalan.</p></div>
+                    <div class="text-center p-5 bg-light rounded"><p class="text-muted"> {{ __('booking-history.modal.noresult') }}</p></div>
                 @endforelse
                 <div class="mt-4 d-flex justify-content-center">
                     {{ $ongoingItems->appends(['active_tab' => 'ongoing'] + request()->except(['ongoingPage', 'active_tab']))->links() }}
@@ -196,7 +196,7 @@
                     </div>
                      @include('partials.booking-transaction-detail', ['transaction' => $transaction])
                 @empty
-                    <div class="text-center p-5 bg-light rounded"><p class="text-muted">Tidak ada riwayat transaksi.</p></div>
+                    <div class="text-center p-5 bg-light rounded"><p class="text-muted">{{ __('booking-history.modal.noresulttransaction') }}</p></div>
                 @endforelse
                 <div class="mt-4 d-flex justify-content-center">
                     {{ $historyTransactions->appends(['active_tab' => 'history'] + request()->except(['historyPage', 'active_tab']))->links() }}

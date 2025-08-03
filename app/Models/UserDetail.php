@@ -7,9 +7,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class UserDetail extends Model
 {
     //
+    use HasFactory;
     use SoftDeletes, LogsActivity;
     public function getActivitylogOptions(): LogOptions
     {

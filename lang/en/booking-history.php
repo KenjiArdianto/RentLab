@@ -34,6 +34,8 @@ return [
     'modal.your_comment' => 'Your Comment',
     'modal.submit_review' => 'Submit Review',
     'modal.to' => 'to',
+    'modal.noresult' => 'There are no transactions in progress.',
+    'modal.noresulttransaction' => 'No transaction history',
 
     'modal.payment_method' => 'Payment Method',
     'modal.payment_status' => 'Payment Status',
