@@ -121,7 +121,7 @@ class CartController extends Controller
     }
     public function destroy(string $id)
     {
-        $cartitems=Cart::where('id',$id)->get();
+        $cartitems=Cart::where('id',$id)->first();
         if(!$cartitems){
             \activity('cart')
             ->causedBy(Auth::user())

@@ -65,7 +65,7 @@ class UserDetailController extends Controller
         Storage::disk('public')->putFileAs('idcard', $image, $filename);
         // return $user;
         // Store data in session temporarily
-        $userDetail=$user->detail->create([
+        $userDetail=$user->detail()->create([
             'fname'=>$request->fname,
             'lname'=>$request->lname,
             'phoneNumber'=>$request->phoneNumber,
