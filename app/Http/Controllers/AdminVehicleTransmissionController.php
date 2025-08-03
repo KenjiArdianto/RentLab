@@ -8,21 +8,19 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminVehicleTransmissionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         //
         $vehicleTransmissions = VehicleTransmission::query();
 
 
+        // handle search
         $search = request('search');
         if ($search) {
             $vehicleTransmissions->where('transmission', 'like', '%' . $search . '%');
         }
 
-        $vehicleTransmissions = $vehicleTransmissions->paginate(100);
+        $vehicleTransmissions = $vehicleTransmissions->paginate(100)->appends(['search' => $search]);
          \activity('admin_vehicle_transmission_index')
         ->causedBy(Auth::user())
         ->withProperties([

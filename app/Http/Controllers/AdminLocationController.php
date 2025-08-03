@@ -8,21 +8,19 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminLocationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        //
+        
         $locations = Location::query();
 
-
+        // handle search
         $search = request('search');
         if ($search) {
             $locations->where('location', 'like', '%' . $search . '%');
         }
 
-        $locations = $locations->paginate(100);
+        // logging
+        $locations = $locations->paginate(100)->appends(['search' => $search]);
         \activity('admin_location_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -36,20 +34,9 @@ class AdminLocationController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        // turn back and log if attempt to create an existing entry
 
         if (Location::where('location', $request->location)->exists()) {
             \activity('admin_location_created_fail')
@@ -63,9 +50,11 @@ class AdminLocationController extends Controller
             return back()->with('error', 'Location Already Exists');
         }
 
+        // create new entry
         Location::create([
             'location' => $request->location
         ]);
+        // logging
         \activity('admin_location_created_succssful')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -78,30 +67,12 @@ class AdminLocationController extends Controller
         return back()->with('success', 'Location Added Successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Location $location)
     {
         //
         // dd($location);
 
+        // turn back and log on attempt to create existing
         if ($location->location === $request->location) {
             \activity('admin_location_update_failed')
             ->causedBy(Auth::user())
@@ -116,8 +87,10 @@ class AdminLocationController extends Controller
             return back()->with('error', 'Location Not Updated');
         }
 
+        // update entry
         $location->location = $request->location;
         $location->save();
+        // logging
         \activity('admin_location_update_successful')
         ->causedBy(Auth::user())
         ->performedOn($location)
@@ -132,12 +105,9 @@ class AdminLocationController extends Controller
         return back()->with('success', 'Location Updated Successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Location $location)
     {
-        //
+        // logging
         \activity('admin_location_deleted')
         ->causedBy(Auth::user())
         ->performedOn($location)
@@ -147,6 +117,7 @@ class AdminLocationController extends Controller
             'user_agent' => request()->userAgent(),
         ])
         ->log('Admin deleted a location');
+        // delete
         $location->delete();
 
         return back()->with('success', 'Location Deleted Successfully');

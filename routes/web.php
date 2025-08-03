@@ -106,6 +106,8 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::post('/admin/users/unsuspend-selected',[AdminUserController::class, 'unsuspendSelected'])->name('admin.users.unsuspendSelected');
     Route::post('/admin/users/unsuspend/{user}',[AdminUserController::class, 'unsuspend'])->name('admin.users.unsuspend');
     Route::get('/admin/users/{user}/reviews', [AdminUserReviewController::class, 'index'])->name('admin.users.reviews');
+    Route::post('/admin/users/{user}/reviews/{userReview}/update', [AdminUserReviewController::class, 'update'])->name('admin.users.reviews.update');
+    Route::post('/admin/users/{user}/reviews/{userReview}/destroy', [AdminUserReviewController::class, 'destroy'])->name('admin.users.reviews.destroy');
 
     Route::get('/admin/drivers',[AdminDriverController::class, 'index'])->name('admin.drivers');
     Route::post('/admin/drivers/store', [AdminDriverController::class, 'store'])->name('admin.drivers.store');
@@ -127,9 +129,7 @@ Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
     Route::post('/admin/vehicles/{vehicle}/update-category', [AdminVehicleController::class, 'updateCategory'])->name('admin.vehicles.updateCategory');
     Route::post('/admin/vehicles/{vehicle}/delete-category', [AdminVehicleController::class, 'deleteCategory'])->name('admin.vehicles.deleteCategory');
     Route::get('/admin/vehicles/{vehicle}/reviews', [AdminVehicleReviewController::class, 'index'])->name('admin.vehicles.reviews');
-    Route::post('/admin/vehicles/{vehicle}/reviews/{vehicleReview}/update', [AdminVehicleReviewController::class, 'update'])->name('admin.vehicles.reviews.update');
-    Route::post('/admin/vehicles/{vehicle}/reviews/{vehicleReview}/destroy', [AdminVehicleReviewController::class, 'destroy'])->name('admin.vehicles.reviews.destroy');
-
+    
 
     Route::get('/admin/vehicle-types', [AdminVehicleTypeController::class, 'index'])->name('admin.vehicle-types');
     Route::post('/admin/vehicle-types/store', [AdminVehicleTypeController::class, 'store'])->name('admin.vehicle-types.store');

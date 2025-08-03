@@ -22,7 +22,7 @@ class AdminVehicleCategoryController extends Controller
             $vehicleCategories->where('category', 'like', '%' . $search . '%');
         }
 
-        $vehicleCategories = $vehicleCategories->paginate(100);
+        $vehicleCategories = $vehicleCategories->paginate(100)->appends(['search' => $search]);
 
         \activity('admin_vehicle_category_index')
         ->causedBy(Auth::user())

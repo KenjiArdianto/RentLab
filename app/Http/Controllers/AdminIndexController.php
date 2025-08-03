@@ -12,6 +12,7 @@ class AdminIndexController extends Controller
      */
     public function index()
     {
+        // count all tables
         $logCount = \Spatie\Activitylog\Models\Activity::count();
         $userCount = \App\Models\User::count();
         $driverCount = \App\Models\Driver::count();
@@ -24,6 +25,7 @@ class AdminIndexController extends Controller
         $vehicleCategoryCount = \App\Models\VehicleCategory::count();
         $locationCount = \App\Models\Location::count();
         
+        // store all needed stuff in a variable
         $counts = [
             [
                 'title' => 'Logs',
@@ -92,6 +94,7 @@ class AdminIndexController extends Controller
                 'color' => 'warning'
             ],
         ];
+        // logging
         \activity('admin_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -112,53 +115,5 @@ class AdminIndexController extends Controller
         ->log('Admin accessed the dashboard');
 
         return view('admin.index', compact('counts'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

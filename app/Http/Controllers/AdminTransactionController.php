@@ -10,16 +10,14 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminTransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
     public function index(Request $request)
     {
         $search = $request->query('search');
 
         $query = Transaction::query();
 
+
+        // handle search
         // split search by comma
         if ($search) {
             $pairs = explode(',', $search);
@@ -71,6 +69,7 @@ class AdminTransactionController extends Controller
                         $query->whereYear('start_book_date', $value);
                     }
                 }
+                // handle end
                 else if ($key === 'end' || $key === 'selesai') {
                     $dateParts = explode('-', $value);
 
@@ -86,6 +85,7 @@ class AdminTransactionController extends Controller
                         $query->whereYear('end_book_date', $value);
                     }
                 }
+                // handle return
                 else if ($key === 'return' || $key === 'kembali') {
                     $dateParts = explode('-', $value);
 
@@ -101,6 +101,7 @@ class AdminTransactionController extends Controller
                         $query->whereYear('return_date', $value);
                     }
                 }
+                // handle status
                 else if ($key == 'status') {
                     $statusMap = [
                         'on_payment'       => 1,
@@ -122,6 +123,7 @@ class AdminTransactionController extends Controller
         
 
         $transactions = $query->latest()->paginate(100)->appends(['search' => $search]);;
+        // logging
         \activity('admin_transaction_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -135,48 +137,13 @@ class AdminTransactionController extends Controller
         return view('admin.transactions', compact('transactions'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(AdminTransactionUpdateRequest $request, Transaction $transaction)
     {
         //
         
-        // dd($transaction);
-
-        if ($request->status === $transaction->transaction_status_id) {
+        // handle if status not changed
+        if (intval($request->status) === $transaction->transaction_status_id) {
+            // logging
             \activity('admin_transaction_update_skipped')
             ->causedBy(Auth::user())
             ->performedOn($transaction)
@@ -185,15 +152,19 @@ class AdminTransactionController extends Controller
                 'submitted_status' => $request->status,
                 'current_status' => $transaction->transaction_status_id,
                 'user_agent' => $request->userAgent(),
-            ])
-            ->log("Admin tried to update transaction #$transaction->id but status remained unchanged");
+                ])
+                ->log("Admin tried to update transaction #$transaction->id but status remained unchanged");
                 return back()->with('error', "Status Not Changed");
-        }
-        else if ($request->comment) {
+            }
+            else if (($request->comment || $request->rating) && $transaction->transaction_status_id === 4) {
             // dd($request->all());
             
             $transaction->transaction_status_id = $request->status;
             $transaction->save();
+
+            if ($request->comment === null) {
+                $request->comment = ' ';
+            }
 
             UserReview::create([
                 'admin_id' => 1,
@@ -215,10 +186,12 @@ class AdminTransactionController extends Controller
             ->log("Admin submitted review for transaction #$transaction->id");
             return back()->with('success', "Transaction #$transaction->id review submitted successfully.");
         }
+        // handle if status changed
         else {
             $transaction->transaction_status_id = $request->status;
             $transaction->save();
 
+            // logging
             \activity('admin_transaction_status_updated')
             ->causedBy(Auth::user())
             ->performedOn($transaction)
@@ -232,13 +205,5 @@ class AdminTransactionController extends Controller
 
             return back()->with('success', "Transaction #$transaction->id status updated successfully.");
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
     }
 }

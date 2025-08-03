@@ -17,12 +17,13 @@ class AdminVehicleTypeController extends Controller
         $vehicleTypes = VehicleType::query();
 
 
+        // handle search
         $search = request('search');
         if ($search) {
             $vehicleTypes->where('type', 'like', '%' . $search . '%');
         }
 
-        $vehicleTypes = $vehicleTypes->paginate(100);
+        $vehicleTypes = $vehicleTypes->paginate(100)->appends(['search' => $search]);
         \activity('admin_vehicle_type_index')
         ->causedBy(Auth::user())
         ->withProperties([
@@ -36,17 +37,6 @@ class AdminVehicleTypeController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //

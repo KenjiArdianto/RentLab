@@ -23,7 +23,6 @@ class AdminVehicleUpdateCategoryRequest extends FormRequest
     {
         return [
             'category_id' => ['required', 'exists:vehicle_categories,id'],
-            'category' => ['required', 'string', 'max:255'],
         ];
     }
 
@@ -32,10 +31,6 @@ class AdminVehicleUpdateCategoryRequest extends FormRequest
         return [
             'category_id.required' => 'Category ID is required.',
             'category_id.exists' => 'Selected category does not exist in the system.',
-
-            'category.required' => 'Category name is required.',
-            'category.string' => 'Category must be a valid text.',
-            'category.max' => 'Category name may not be greater than 255 characters.',
         ];
     }
 }

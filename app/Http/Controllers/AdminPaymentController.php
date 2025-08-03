@@ -19,6 +19,7 @@ class AdminPaymentController extends Controller
         $query = Payment::latest();
         $search = $request->get('search');
 
+        // handle search
         // split search by comma
         if ($search) {
             $pairs = explode(',', $search);
@@ -73,6 +74,7 @@ class AdminPaymentController extends Controller
         }
 
 
+        // logging
         $payments = $query->paginate(100)->appends(['search' => $search]);;
         \activity('admin_payment_index')
         ->causedBy(Auth::user())
