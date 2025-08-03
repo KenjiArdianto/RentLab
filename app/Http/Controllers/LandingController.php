@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\SearchVehicleRequest;
 
 class LandingController extends Controller
 {
-    /**
+    /*
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
@@ -20,24 +21,21 @@ class LandingController extends Controller
     }
 
     /**
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\SearchVehicleRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function search(Request $request)
+    public function search(SearchVehicleRequest $request)
     {
-        $validated_data = $request->validate([
-            'vehicle_type'    => 'required|string|in:motorcycle,car',
-            'start_book_date' => 'required|date|after_or_equal:today',
-            'end_book_date'   => 'required|date|after_or_equal:start_book_date',
-        ]);
+        $validated_data = $request->validated();
 
         $redirect_parameters = [
-            'vehicle_type' => $validated_data['vehicle_type'] === 'car' ? 'Car' : 'Motor',
+            'vehicle_type'    => $validated_data['vehicle_type'] === 'car' ? 'Car' : 'Motor',
             'start_book_date' => $validated_data['start_book_date'],
             'end_book_date'   => $validated_data['end_book_date'],
-            'min_price'      => '',
-            'max_price'      => '',
+            'min_price'       => '',
+            'max_price'       => '',
         ];
+        
         return redirect()->route('vehicle.display', $redirect_parameters);
     }
 }
