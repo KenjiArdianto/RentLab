@@ -100,6 +100,21 @@ class BookingHistoryController extends Controller
             ['path' => $request->url(), 'pageName' => 'historyPage']
         );
 
+        activity('user_bookinghistory_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('User viewed booking history');
+
+        \activity('user_bookinghistory_index')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('User viewed booking history');
         return view('booking-history', [
             'ongoingItems' => $paginatedOngoing,
             'historyTransactions' => $paginatedHistory,
