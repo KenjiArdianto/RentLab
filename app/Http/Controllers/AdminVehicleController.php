@@ -13,6 +13,7 @@ use App\Models\VehicleReview;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Http\Requests\AdminVehicleStoreRequest;
+use App\Http\Requests\AdminVehicleImportRequest;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -548,6 +549,16 @@ class AdminVehicleController extends Controller
             }
         }
 
+        \activity('admin_vehicle_import')
+        ->causedBy(Auth::user())
+        ->withProperties([
+            'ip' => $request->ip(),
+            'file_name' => $request->file('csv_file')->getClientOriginalName(),
+            // Optional: log row count (simple estimation)
+            'total_rows_imported' => count(file($request->file('csv_file')->getRealPath())) - 1, // minus header
+            'user_agent' => $request->userAgent(),
+        ])
+        ->log('Admin imported vehicles from CSV file.');
         fclose($file);
 
         return back()->with('success', 'Vehicles imported successfully.');
@@ -572,6 +583,19 @@ class AdminVehicleController extends Controller
         }
 
         // Delete the vehicle record
+        \activity('admin_vehicle_delete')
+        ->causedBy(Auth::user())
+        ->performedOn($vehicle)
+        ->withProperties([
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'vehicle_id' => $vehicle->id,
+            'categories_detached' => true,
+            'main_image_deleted' => $vehicle->main_image ? true : false,
+            'related_images_deleted' => $vehicle->vehicleImages->count(),
+        ])
+        ->log("Admin deleted vehicle #$vehicle->id and its related data.");
+
         $vehicle->delete();
 
         return redirect()->back()->with('success', 'Vehicle and related data deleted successfully.');
