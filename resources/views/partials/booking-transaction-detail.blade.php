@@ -166,7 +166,9 @@
                     </form>
                 @endif
                 @if ($transaction->payment?->status == 'PAID')
-                    <a href="{{ route('receipt.download', ['payment' => $transaction->payment_id]) }}" class="btn btn-primary">{{ __('booking-history.button.download_receipt') }}</a>
+                    <a href="{{ route('receipt.download', ['payment' => $transaction->payment_id]) }}" class="btn btn-primary ...">
+                        {{ __('booking-history.button.download_receipt') }}
+                    </a>
                 @endif
             </div>
         </div>

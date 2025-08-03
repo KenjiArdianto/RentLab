@@ -117,9 +117,11 @@
                                             <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#detailModal{{ $transaction->id }}">
                                                 {{ __('booking-history.button.view_detail') }}
                                             </button>
-                                            <a href="{{ route('receipt.download', ['payment' => $transaction->payment_id]) }}" class="btn btn-primary btn-sm rounded-pill px-3 ms-2">
-                                                {{ __('booking-history.button.download_receipt') }}
-                                            </a>
+                                            @if ($transaction->payment?->status == 'PAID')
+                                                <a href="{{ route('receipt.download', ['payment' => $transaction->payment_id]) }}" class="btn btn-primary ...">
+                                                    {{ __('booking-history.button.download_receipt') }}
+                                                </a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -185,9 +187,11 @@
                                             @endif
                                         </button>
                                         @if($transaction->transaction_status_id != 7)
-                                        <a href="{{ route('receipt.download', ['payment' => $transaction->payment_id]) }}" class="btn btn-primary btn-sm rounded-pill px-3 ms-2">
-                                            {{ __('booking-history.button.download_receipt') }}
-                                        </a>
+                                        @if ($transaction->payment?->status == 'PAID')
+                                            <a href="{{ route('receipt.download', ['payment' => $transaction->payment_id]) }}" class="btn btn-primary ...">
+                                                {{ __('booking-history.button.download_receipt') }}
+                                            </a>
+                                        @endif
                                         @endif
                                     </div>
                                 </div>
