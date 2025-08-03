@@ -198,10 +198,12 @@ class VehicleController extends Controller
     /**
      * Menampilkan kendaraan di halaman utama dengan filter.
      */
-    public function display(VehicleFilterRequest $request) // <-- 2. Ganti Request biasa dengan Form Request
+    public function display(VehicleFilterRequest $request)
     {
-        $vehicleQuery = Vehicle::query();
-        $this->filter($request, $vehicleQuery); // Panggil private method filter
+        // PERBAIKAN: Tambahkan with() untuk memuat relasi yang dibutuhkan oleh view
+        $vehicleQuery = Vehicle::with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'location']);
+
+        $this->filter($request, $vehicleQuery);
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
 
         $advertisement = Advertisement::orderBy('id')->where('isactive', true)->get();
@@ -226,19 +228,20 @@ class VehicleController extends Controller
         ]);
     }
 
-    public function catalog(VehicleFilterRequest $request) // <-- 2. Ganti Request biasa dengan Form Request
+    public function catalog(VehicleFilterRequest $request)
     {
-        $vehicleQuery = Vehicle::query();
-        $filters = $request->validated(); // Ambil data yang sudah bersih
+        // PERBAIKAN: Tambahkan with() untuk memuat relasi yang dibutuhkan oleh view
+        $vehicleQuery = Vehicle::with(['vehicleName', 'vehicleType', 'vehicleTransmission', 'location']);
 
-        // Logika pencarian khusus untuk katalog
+        $filters = $request->validated();
+
         if (isset($filters['search'])) {
             $vehicleQuery->whereHas('vehicleName', function ($subQuery) use ($filters) {
                 $subQuery->where('name', 'LIKE', '%' . $filters['search'] . '%');
             });
         }
 
-        $this->filter($request, $vehicleQuery); // Panggil private method filter
+        $this->filter($request, $vehicleQuery);
         $vehicle = $vehicleQuery->latest()->paginate(16)->withQueryString();
         $locations = Location::orderBy('location')->get();
 
