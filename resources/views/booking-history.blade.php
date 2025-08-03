@@ -64,7 +64,7 @@
                                             <p class="card-text">{{ $transaction->vehicle?->vehicleType?->type ?? '-' }} / {{ $transaction->vehicle?->vehicleTransmission?->transmission ?? '-' }}</p>
                                         </div>
                                         <div class="col-md-5 text-md-end">
-                                            <p class="text-muted mb-1 small">Subtotal Item</p>
+                                            <p class="text-muted mb-1 small">{{ __('booking-history.pdf.subtotal') }}</p>
                                             <h5 class="mb-3">Rp {{ number_format($transaction->price ?? 0, 0, ',', '.') }}</h5>
                                             <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#detailModal{{ $transaction->id }}">
                                                 {{ __('booking-history.button.view_detail') }}
@@ -73,7 +73,7 @@
                                     </div>
                                 @endforeach
                                 <div class="text-end mt-3 border-top pt-3">
-                                    <p class="mb-1">Total Pembayaran</p>
+                                    <p class="mb-1">{{ __('booking-history.pdf.total_payment') }}</p>
                                     <h4 class="fw-bold text-danger">Rp{{ number_format($paymentGroup->first()->payment->amount, 0, ',', '.') }}</h4>
                                      <a href="{{ $paymentGroup->first()->payment->url }}" target="_blank" class="btn btn-sm btn-danger mt-2">
                                         {{ __('payment.buttons.pay_now') }}
@@ -104,13 +104,10 @@
                                         
                                         @php
                                             $vehiclePrice = $transaction->price;
-                                            
-                                            $driverFee = ($transaction->driver_price > 0 || $transaction->driver_id) ? ($transaction->driver_price > 0 ? $transaction->driver_price : 50000) : 0;
-                                            
-                                            $thisItemTotal = $vehiclePrice + $driverFee;
+                                            $thisItemTotal = $vehiclePrice;
                                         @endphp
 
-                                        <p class="text-muted mb-1 small">Total Harga</p>
+                                        <p class="text-muted mb-1 small">{{ __('booking-history.pdf.total_payment') }}</p>
                                         <h5 class="mb-3">Rp {{ number_format($thisItemTotal, 0, ',', '.') }}</h5>
                                         
                                         <div>
@@ -175,7 +172,7 @@
                                         $thisItemTotal = $vehiclePrice + $driverFee;
                                     @endphp
 
-                                    <p class="text-muted mb-1 small mt-1">Total Harga</p>
+                                    <p class="text-muted mb-1 small mt-1">{{ __('booking-history.pdf.total_payment') }}</p>
                                     <h5 class="mb-3">Rp {{ number_format($thisItemTotal, 0, ',', '.') }}</h5>
 
                                     <div>

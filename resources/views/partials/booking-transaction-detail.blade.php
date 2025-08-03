@@ -91,7 +91,8 @@
                         </tr>
 
                         @php
-                            $vehiclePrice = $transaction->price;
+                            $balancePrice = 50000;
+                            $vehiclePrice = $transaction->price - $balancePrice;
                             $driverFee = ($transaction->driver_price > 0 || $transaction->driver_id) ? ($transaction->driver_price > 0 ? $transaction->driver_price : 50000) : 0;
                             $thisItemTotal = $vehiclePrice + $driverFee;
                         @endphp
