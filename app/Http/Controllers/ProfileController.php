@@ -20,7 +20,7 @@ class ProfileController extends Controller
     // }
     public function index(){
         // if(Auth::user()->role!=='admin'){
-        //     abort(403,'Anjing lu bukan admin! jangan gw hack gua plis');
+        //     abort(403,'lu bukan admin! jangan gw hack gua plis');
         // }
         return view('profile');
     }
@@ -30,7 +30,6 @@ class ProfileController extends Controller
         $user = Auth::user();
         $details = $user->detail;
 
-        // ✅ Update basic info
         $user->name=$request->name;
         $user->save();
         
@@ -55,9 +54,6 @@ class ProfileController extends Controller
         ->log('User updated profile information.');
 
 
-        // ✅ Handle profile picture
-        // return $request->has('profilePicture');
-        // return $request;
         if($request->has('profilePicture')){
             if ($request->hasFile('profilePicture')) {
                 $image = $request->file('profilePicture');

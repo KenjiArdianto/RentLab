@@ -12,18 +12,6 @@ class UserDetailSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        // UserDetail::factory()->create([
-        //     [
-        //         'user_id' => 2,
-        //         'fname' => 'Tralalero',
-        //         'lname' => 'Tralala',
-        //         'phoneNumber' => '08123456789',
-        //         'idcardNumber' => 'ID-TRAL1234',
-        //         'dateOfBirth' => '2000-01-01',
-        //         'idcardPicture' => 'default.jpg',
-        //     ],
-
-        // ]);
+        
     }
 }

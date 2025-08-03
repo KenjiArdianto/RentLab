@@ -18,6 +18,7 @@ class Vehicle extends Model
         'location_id',
         'engine_cc',
         'seats',
+        'year',
         'price',
         'main_image'
     ];

@@ -11,8 +11,8 @@ class VehicleType extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-    ];
+        'type',
+    ];  
 
     public function vehicles()
     {

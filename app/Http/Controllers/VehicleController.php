@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Transaction;
 
 
+
 class VehicleController extends Controller
 {
     /**
@@ -54,14 +55,15 @@ class VehicleController extends Controller
         $idVehicle = Vehicle::with([
             'vehicleCategories',
             'vehicleName',
-            'vehicleType',
+            'vehicleType', 
             'vehicleTransmission',
-            'location' // Ini akan mengambil data lokasi
+            'location' 
         ])->findOrFail($id);
 
+        //get vehicle id
         $getVehicleByIdsINCarts = Cart::where('user_id', Auth::user()->id)->where('vehicle_id', $id)->get();
-        // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get();
 
+        //get user review
         $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
             $query->where('vehicle_id', $id);
         })->get();
@@ -76,7 +78,7 @@ class VehicleController extends Controller
             ];
         });
 
-
+        //calculate  user rating from userReviews
         $rating = DB::table('user_reviews')
         ->join('transactions', 'user_reviews.transaction_id', '=', 'transactions.id')
         ->join('vehicles', 'transactions.vehicle_id', '=', 'vehicles.id')

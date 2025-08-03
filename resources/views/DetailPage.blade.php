@@ -56,14 +56,14 @@
                     <div class="description">
                         <h1 class="mb-1 fw-bold">{{$idVehicle->vehicleName->name}} {{$idVehicle->year}}</h1>
 
-                        {{-- alamat kendaraan --}}
+                        {{-- vehicle address --}}
                         <div class="d-flex justify-content-between align-items-center p-0">
                             <div class="d-flex justify-content-center align-items-center">
                                 <i class="bi bi-geo-alt-fill me-2"></i>
                                 <h4 class="text-muted m-0">{{$idVehicle->location->location}}</h4>
                             </div>
 
-                            {{-- rating kendaraan --}}
+                            {{-- vehicle rating--}}
                             <div class="justify-content-end">
                                 <div class="d-flex justify-content-center align-items-center">
                                     <img class="justify-content-center align-items-center"
@@ -116,7 +116,7 @@
 
                     <hr class="my-2">
 
-                    {{-- menambahkan tanggal  --}}
+                    {{-- add date  --}}
                     <div class="container overflow-auto card-container border border-2 rounded-2"
                         style="height: 174px;">
                         <h5 class="mt-1 mb-2">{{__('vehicle.AddDate')}}</h5>    
@@ -137,7 +137,7 @@
                         </div>
                     </div>
 
-                    {{-- pop up saat memilih tanggal --}}
+                    {{-- select date pop up --}}
                     <div class="modal fade" id="datePickerModal" tabindex="-1" aria-labelledby="datePickerModalLabel"
                         aria-hidden="true">
 
@@ -150,12 +150,12 @@
                                 </div>
 
                                 <div class="modal-body row g-2">
-                                    {{-- calender input date menggunakan flatpickr  --}}
+                                    {{-- Calender Input --}}
                                     <div class="col-12 col-md-6 text-center d-flex pe-0 justify-content-center">
                                         <div id="dateRangePicker"></div>
                                     </div>
 
-                                    {{-- menampilkan cart milik user dengan vehicle ID yang sama dengan sedang ditampilkan --}}
+                                    {{-- Show user Cart on vehicle --}}
                                     <div class="col-12 col-md-6 ps-0">
                                         <h6 class="text-center mt-3 mt-md-0">{{__('vehicle.Content')}}</h6>
                                         <div class="overflow-auto container p-2" style="max-height: 250px;">
@@ -211,8 +211,8 @@
                 </div>
             </div>
         </div>
-
-        {{-- menyimpan tanggal yang di pilih ke dalam cart --}}
+ 
+        {{-- add selected date to cart--}}
         <div class="container mb-3 mt-2 d-flex justify-content-between align-items-start px-0 add-to-cart-section">
             <hr class="flex-grow-1 ms-0 me-3 mb-0">
             <form class="mb-0" id="addToCartForm" method="POST" action="{{route('cart.store')}}">
@@ -226,14 +226,14 @@
 
         <h2 class="p-2 user-review-heading">{{__('vehicle.UserReviewHeader')}}</h2>
 
-        {{-- section untuk menampilkan review dari user --}}
+        {{-- Show user review --}}
         @foreach ($getCommentByIdVehicle as $comment)
             <div class="px-0 p-2">
                 <div class="card review-card">
                     <div class="card-body row">
                         <div class="col-2 col-md-1 d-flex justify-content-end align-items-center p-0 user-avatar-container">
                             <div class="rounded-circle overflow-hidden p-0 user-avatar">
-                                <img class="w-100 h-100 object-fit-cover" src="{{ $comment->user->profilePicture}}"
+                                <img class="w-100 h-100 object-fit-cover" src="{{ asset($comment->user->profilePicture)}}"
                                     alt="User Avatar">
                             </div>
                         </div>
@@ -282,15 +282,8 @@
                 inline: true,
                 dateFormat: "Y-m-d",
                 minDate: "today",
-                // disini ubah lagi
-                // enable: [
-                //     {
-                //         from: "today",
-                //         to: "2100-01-01"
-                //     }
-                // ],
+                
                 disable: [
-                    // disable tanggal dari tabel carts dan transactions
                     function (date) {
                         let isBooked = false;
                         bookedDatesFromDB.forEach(range => {
@@ -300,7 +293,7 @@
                                 isBooked = true;
                             }
                         });
-                        //tambahan perubahan 
+
                         if (!isBooked) { 
                         cartDateRangesFromDB.forEach(range => {
                             const cartStart = moment(range.start_date).startOf('day');
@@ -383,9 +376,9 @@
                     return;
                 }
 
-                //user maksimal memilih 3 rentang tanggal
+                //maximal select 3 dates
                 if (selectedDateRanges.length >= MAX_DATE_RANGES) {
-                    alert(`Anda hanya dapat memilih maksimal ${MAX_DATE_RANGES} rentang tanggal.`);
+                    alert(`Anda hanya dapat memilih maksimal 3 rentang tanggal.`);
                     return;
                 }
 
@@ -443,7 +436,7 @@
                     endDate: new Date(endDate)
                 });
 
-                selectedDateRanges.sort((a, b) => a.startDate - b.startDate); // Urutkan tanggal
+                selectedDateRanges.sort((a, b) => a.startDate - b.startDate); 
 
                 datePickerModalInstance.hide();
                 updateCartDisplay();
@@ -460,7 +453,7 @@
 
             function updateCartDisplay() {
                 cartDisplay.empty();
-                //ini
+               
                 if (selectedDateRanges.length === 0) {
                     cartDisplay.append('<p id="noDatesMessage" class="text-muted">{{__('vehicle.DateRange')}}</p>');
                 } else {
@@ -498,14 +491,20 @@
             updateCartDisplay();
 
             $('#addToCartForm').on('submit', function (e) {
+
+                e.preventDefault(); 
+
+
                 const hiddenInputContainer = $('#hiddenDateInputs');
                 hiddenInputContainer.empty();
 
                 if (selectedDateRanges.length === 0) {
-                    e.preventDefault();
                     alert("Belum ada tanggal yang dipilih.");
                     return;
                 }
+
+                const addToCartBtn = $('#addToCartBtn');
+                addToCartBtn.prop('disabled', true).text('Adding...'); 
 
                 selectedDateRanges.forEach((range, index) => {
                     const start = moment(range.startDate).format('YYYY-MM-DD');
@@ -516,6 +515,8 @@
                         <input type="hidden" name="date_ranges[${index}][end_date]" value="${end}">
                     `);
                 });
+
+                this.submit(); 
             });
 
         });

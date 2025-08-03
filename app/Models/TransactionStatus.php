@@ -10,6 +10,11 @@ class TransactionStatus extends Model
     /** @use HasFactory<\Database\Factories\TransactionStatusFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        "id",
+        "status"
+    ];
+
     public function transactions()
     {
         return $this->hasMany(Transaction::class);

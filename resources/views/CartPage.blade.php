@@ -3,7 +3,8 @@
 
     <div class="container my-4">
 
-        <div class="row">
+        {{-- header  --}}
+        <div class="row"> 
             <div class="col-12 cart-header-wrapper mb-3">
                 @if(session('errors'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -37,7 +38,7 @@
             </div>
         </div>
 
-
+        {{-- upcomming cart items  --}}
         @if ($upcomingCart->isNotEmpty())
             <h4 class="mb-3">{{__('cart.RecentDate')}}</h4>
             @foreach ($upcomingCart as $cart)
@@ -46,7 +47,7 @@
             @endforeach
         @endif
 
-
+        {{-- expired cart items  --}}
         @if ($outdatedCart->isNotEmpty())
             <div class="container d-flex justify-content-between px-0">
                 <h4 class="mt-5 mb-4">{{__('cart.PastDate')}}</h4>
