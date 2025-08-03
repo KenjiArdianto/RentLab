@@ -178,6 +178,20 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'vehicle_type' => [
+            'required' => 'The vehicle type must be selected.',
+            'in'       => 'The selected vehicle type is invalid.',
+        ],
+        'start_book_date' => [
+            'required'       => 'The start date is required.',
+            'date'           => 'The start date is not a valid date format.',
+            'after_or_equal' => 'The start date cannot be earlier than today.',
+        ],
+        'end_book_date' => [
+            'required'       => 'The end date is required.',
+            'date'           => 'The end date is not a valid date format.',
+            'after_or_equal' => 'The end date must be on or after the start date.',
+        ],
     ],
 
     /*
@@ -196,6 +210,9 @@ return [
         'comment' => 'comment',
         'email' => 'email',
         'password' => 'password',
+        'vehicle_type'    => 'Vehicle Type',
+        'start_book_date' => 'Start Book Date',
+        'end_book_date'   => 'End Book Date',
     ],
     'search' => [
         'string' => 'The search input must be text.',
@@ -211,5 +228,4 @@ return [
     'transaction' => [
         'cancel_denied' => 'This transaction can no longer be canceled.',
     ],
-
 ];

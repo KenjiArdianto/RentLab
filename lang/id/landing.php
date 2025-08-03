@@ -26,7 +26,7 @@ return [
 
     'testimonials_title' => 'Apa Kata Pelanggan Kami',
     'testimonial_1_text' => 'Menyewa mobil di Rentlab benar-benar memuaskan! Situs webnya sangat ramah pengguna, pilihan mobilnya banyak, dan pelayanannya ramah serta responsif. Saya tidak menyangka proses sewa bisa semudah ini.',
-    'testimonial_1_author' => 'Fikri Luhur Pangestu',
+    'testimonial_1_author' => 'Aldyansyah Karim',
     'testimonial_2_text' => 'Pertama kali menyewa motor di sini dan saya sangat terkesan. Motornya dalam kondisi prima dan bersih. Proses pemesanan dan pengambilan sangat cepat. Pasti akan jadi pelanggan tetap!',
     'testimonial_2_author' => 'Siti Aminah',
     'testimonial_3_text' => 'Harga sewanya sangat kompetitif dan transparan, tidak ada biaya tersembunyi. Layanan pelanggannya juga sangat membantu ketika saya ada pertanyaan. Sangat direkomendasikan!',

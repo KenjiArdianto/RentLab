@@ -26,7 +26,7 @@ return [
 
     'testimonials_title' => 'What Our Customers Say',
     'testimonial_1_text' => 'Renting a car at Rentlab was truly satisfying! The website is very user-friendly, there\'s a wide selection of cars, and the service is friendly and responsive. I didn\'t expect the rental process to be this easy.',
-    'testimonial_1_author' => 'Fikri Luhur Pangestu',
+    'testimonial_1_author' => 'Aldyansyah Karim',
     'testimonial_2_text' => 'My first time renting a motorcycle here and I was very impressed. The bike was in excellent and clean condition. The booking and pickup process was very fast. I\'ll definitely be a regular customer!',
     'testimonial_2_author' => 'Siti Aminah',
     'testimonial_3_text' => 'The rental prices are very competitive and transparent, with no hidden fees. The customer service was also very helpful when I had questions. Highly recommended!',

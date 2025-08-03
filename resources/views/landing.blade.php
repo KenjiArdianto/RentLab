@@ -1,8 +1,3 @@
-@php
-    $currLang = session()->get('lang', 'en');
-    app()->setLocale($currLang);
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ __('landing.title') }}</title>
 
-        <link rel="stylesheet" href="{{ asset('build/assets/CSS/landing.css') }}">
+        <link rel="stylesheet" href="{{ asset('landing_assets/CSS/landing.css') }}">
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -23,33 +18,27 @@
     <body>
         <header class="sticky-top bg-light shadow-sm">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                    <a class="navbar-brand fs-3 fw-bold" href="/">RentLab</a>
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand fs-3 fw-bold" href="{{ route('landing.index') }}">RentLab</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="mainNavbar">
                         <ul class="navbar-nav ms-auto align-items-center">
-                            <div class="dropdown me-lg-2">
-                                <button class="btn btn-outline-primary rounded-pill dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="nav-item dropdown me-lg-2">
+                                <a class="btn btn-outline-primary rounded-pill dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-translate me-2"></i>
-                                    <span>{{ app()->getLocale() == 'id' ? 'ID' : 'EN' }}</span>
-                                </button>
+                                    <span>{{ strtoupper(app()->getLocale()) }}</span>
+                                </a>
+                                @php
+                                    $available_locales = ['en' => 'English', 'id' => 'Bahasa Indonesia'];
+                                @endphp
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <form action="/lang" method="POST" class="d-inline">
-                                            @csrf
-                                            <input type="hidden" name="lang" value="en">
-                                            <button type="submit" class="dropdown-item">English</button>
-                                        </form>
-                                    </li>
-                                    <li>
-                                        <form action="/lang" method="POST" class="d-inline">
-                                            @csrf
-                                            <input type="hidden" name="lang" value="id">
-                                            <button type="submit" class="dropdown-item">Bahasa Indonesia</button>
-                                        </form>
-                                    </li>
+                                    @foreach ($available_locales as $locale_code => $locale_name)
+                                        @if ($locale_code !== app()->getLocale())
+                                            <li><a class="dropdown-item" href="{{ route('lang.switch', $locale_code) }}">{{ $locale_name }}</a></li>
+                                        @endif
+                                    @endforeach
                                 </ul>
                             </div>
 
@@ -87,8 +76,8 @@
 
         <section class="hero_section">
             <div class="container">
-                <div class="row align-items-center justify-content-center py-lg-5">
-                    <div class="col-lg-6 col-md-10">
+                <div class="row align-items-center justify-content-center py-lg-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="welcome_card">
                             <div class="card_header_text">
                                 <h1>{{ __('landing.hero_welcome') }}</h1>
@@ -110,14 +99,14 @@
                                 <div class="date_inputs">
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
-                                            <img src="{{ asset('build/assets/images/Calender.png') }}" alt="Calendar Icon">
+                                            <img src="{{ asset('landing_assets/images/Calender.png') }}" alt="Calendar Icon">
                                         </span>
                                         <input type="text" class="date_input_field" placeholder="{{ __('landing.start_date_placeholder') }}" id="startBookDate" name="start_book_date" value="{{ $search_data['start_book_date'] ?? '' }}" required>
                                     </div>
                                     <span class="arrow_separator">&#x2194;</span>
                                     <div class="date_input_group">
                                         <span class="icon_calendar">
-                                            <img src="{{ asset('build/assets/images/Calender.png') }}" alt="Calendar Icon">
+                                            <img src="{{ asset('landing_assets/images/Calender.png') }}" alt="Calendar Icon">
                                         </span>
                                         <input type="text" class="date_input_field" placeholder="{{ __('landing.end_date_placeholder') }}" id="endBookDate" name="end_book_date" value="{{ $search_data['end_book_date'] ?? '' }}" required>
                                     </div>
@@ -128,8 +117,8 @@
                                            @if(isset($search_data['vehicle_type']) && $search_data['vehicle_type'] == 'car') checked @endif>
                                     <label for="vehicleToggle" class="vehicle_toggle_track">
                                         <span class="vehicle_toggle_thumb">
-                                            <img src="{{ asset('build/assets/images/Motor.png') }}" alt="Motorcycle" class="motorcycle_icon_img">
-                                            <img src="{{ asset('build/assets/images/Mobil.png') }}" alt="Car" class="car_icon_img">
+                                            <img src="{{ asset('landing_assets/images/Motor.png') }}" alt="Motorcycle" class="motorcycle_icon_img">
+                                            <img src="{{ asset('landing_assets/images/Mobil.png') }}" alt="Car" class="car_icon_img">
                                         </span>
                                         <span class="track_text motorcycle_track_text">{{ __('landing.toggle_motorcycle') }}</span>
                                         <span class="track_text car_track_text">{{ __('landing.toggle_car') }}</span>
@@ -141,12 +130,12 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6 d-none d-lg-block">
+                    <div class="col-lg-6 col-md-6 d-none d-md-block">
                         <div class="logo_display_area">
                             <div class="image_placeholder_area">
                                 <div class="outer_circle">
                                     <div class="circle_image_placeholder">
-                                        <img src="{{ asset('build/assets/images/RentLab.png') }}" alt="RentLab Logo" class="rentlab_logo_in_circle">
+                                        <img src="{{ asset('landing_assets/images/RentLab.png') }}" alt="RentLab Logo" class="rentlab_logo_in_circle">
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +145,7 @@
             </div>
         </section>
 
-        <section class="about_section py-5">
+        <section class="about_section pb-5">
             <div class="container text-center">
                 <div class="row justify-content-center">
                     <div class="col-lg-12">
@@ -173,19 +162,19 @@
                 <div class="row gy-4">
                     <div class="col-md-4">
                         <div class="feature_item">
-                            <div class="icon_container"><img src="{{ asset('build/assets/images/ArmadaBersih.png') }}" alt="Clean Fleet Icon"></div>
+                            <div class="icon_container"><img src="{{ asset('landing_assets/images/ArmadaBersih.png') }}" alt="Clean Fleet Icon"></div>
                             <h3>{{ __('landing.feature_1') }}</h3>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature_item">
-                            <div class="icon_container"><img src="{{ asset('build/assets/images/HargaKompetitif.png') }}" alt="Competitive Price Icon"></div>
+                            <div class="icon_container"><img src="{{ asset('landing_assets/images/HargaKompetitif.png') }}" alt="Competitive Price Icon"></div>
                             <h3>{{ __('landing.feature_2') }}</h3>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="feature_item">
-                            <div class="icon_container"><img src="{{ asset('build/assets/images/PelayananRamah.png') }}" alt="Friendly Service Icon"></div>
+                            <div class="icon_container"><img src="{{ asset('landing_assets/images/PelayananRamah.png') }}" alt="Friendly Service Icon"></div>
                             <h3>{{ __('landing.feature_3') }}</h3>
                         </div>
                     </div>
@@ -203,59 +192,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script type="text/javascript" src="{{ asset('build/assets/js/landing.js') }}"></script>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-
-                function checkDates() {
-                    const startDateValue = document.getElementById('startBookDate').value;
-                    const endDateValue = document.getElementById('endBookDate').value;
-                    const searchButton = document.getElementById('searchNowBtn');
-
-                    if (startDateValue && endDateValue) {
-                        searchButton.removeAttribute('disabled');
-                    } else {
-                        searchButton.setAttribute('disabled', 'true');
-                    }
-                }
-                const endDatePicker = flatpickr("#endBookDate", {
-                    altInput: true,
-                    altFormat: "d/m/Y",
-                    dateFormat: "Y-m-d",
-                    minDate: "today",
-                    onChange: function(selectedDates, dateStr, instance) {
-                        checkDates();
-                    }
-                });
-                flatpickr("#startBookDate", {
-                    altInput: true,
-                    altFormat: "d/m/Y",
-                    dateFormat: "Y-m-d",
-                    minDate: "today",
-                    onChange: function(selectedDates, dateStr, instance) {
-                        checkDates();
-                        if (selectedDates[0]) {
-                            endDatePicker.set('minDate', selectedDates[0]);
-                            if (endDatePicker.selectedDates[0] < selectedDates[0]) {
-                                endDatePicker.clear();
-                            }
-                        }
-                    }
-                });
-                const vehicleToggle = document.getElementById('vehicleToggle');
-                const vehicleTypeInput = document.getElementById('vehicleTypeInput');
-
-                vehicleToggle.addEventListener('change', function() {
-                    if (this.checked) {
-                        vehicleTypeInput.value = 'car';
-                    } else {
-                        vehicleTypeInput.value = 'motorcycle';
-                    }
-                });
-                checkDates();
-            });
-        </script>
+        <script type="text/javascript" src="{{ asset('landing_assets/js/landing.js') }}?v={{ time() }}"></script>
 
     </body>
 </html>
