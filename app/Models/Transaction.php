@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
     protected $fillable = [
         'external_id',
@@ -20,25 +20,6 @@ class Transaction extends Model
         'return_date',
         'transaction_status_id',
     ];
-
-    // 🔍 Log only relevant fields
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logOnly([
-                'external_id',
-                'vehicle_id',
-                'user_id',
-                'driver_id',
-                'start_book_date',
-                'end_book_date',
-                'return_date',
-                'status',
-            ])
-            ->useLogName('transaction_model')
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
-    }
 
     public function transactionStatus()
     {
