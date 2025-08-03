@@ -14,10 +14,15 @@ use Illuminate\Support\Facades\Log;
 
 class OtpController extends Controller
 {
-    //
-    
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
     public function showForm()
     {
+        // if(Auth::check()){
+        //     return redirect()->back();
+        // }
         // return (session()->get('temp_user')==NULL);
         if(!session('temp_user')){
             return redirect(route('register'))->withErrors(['otp' => 'Session expired. Please register again.'])->with('time',0);

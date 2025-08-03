@@ -63,7 +63,21 @@ class VehicleController extends Controller
             'location' // Ini akan mengambil data lokasi
         ])->findOrFail($id);
 
-        $getVehicleByIdsINCarts = Cart::where('user_id', Auth::user()->id)->where('vehicle_id', $id)->get();
+        if(Auth::check()){
+            $getVehicleByIdsINCarts = Cart::where('user_id', Auth::user()->id)->where('vehicle_id', $id)->get();
+
+            $cartDateRanges = $getVehicleByIdsINCarts->map(function ($item) {
+            return [
+                'start_date' => $item->start_date,
+                'end_date' => $item->end_date,
+            ];
+        });
+        }else{
+            $getVehicleByIdsINCarts=null;
+            $cartDateRanges=null;
+        }
+
+        
         // $getVehicleByIdsINCarts = Cart::where('user_id', auth()->id() )->where('vehicle_id', $id)->get();
 
         $getCommentByIdVehicle = UserReview::whereHas('transaction', function ($query) use ($id) {
@@ -73,12 +87,7 @@ class VehicleController extends Controller
         $getVehicleimagesById = VehicleImage::where("vehicle_id","=",$id)->get();
 
 
-        $cartDateRanges = $getVehicleByIdsINCarts->map(function ($item) {
-            return [
-                'start_date' => $item->start_date,
-                'end_date' => $item->end_date,
-            ];
-        });
+        
 
 
         $rating = DB::table('user_reviews')

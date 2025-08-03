@@ -144,37 +144,40 @@
                                     <div class="col-12 col-md-6 ps-0">
                                         <h6 class="text-center mt-3 mt-md-0">{{__('vehicle.Content')}}</h6>
                                         <div class="overflow-auto container p-2" style="max-height: 250px;">
-                                            @foreach ($getVehicleByIdsINCarts as $getVehicleByIdsINCart)
-                                                <div
-                                                    class="container border rounded-2 my-2 d-flex justify-content-center align-items-center">
-                                                    <div class="flex-grow-1">
-                                                        <div class="container">
-                                                            {{ \Carbon\Carbon::parse($getVehicleByIdsINCart->start_date)->format('j M Y') }}
-                                                            -
-                                                            {{ \Carbon\Carbon::parse($getVehicleByIdsINCart->end_date)->format('j M Y') }}
+                                            @if ($getVehicleByIdsINCarts)
+                                                @foreach ($getVehicleByIdsINCarts as $getVehicleByIdsINCart)
+                                                    <div
+                                                        class="container border rounded-2 my-2 d-flex justify-content-center align-items-center">
+                                                        <div class="flex-grow-1">
+                                                            <div class="container">
+                                                                {{ \Carbon\Carbon::parse($getVehicleByIdsINCart->start_date)->format('j M Y') }}
+                                                                -
+                                                                {{ \Carbon\Carbon::parse($getVehicleByIdsINCart->end_date)->format('j M Y') }}
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div class="m-2">
-                                                        <div class="d-flex justify-content-center align-items-center">
-                                                            <form action="{{route('cart.destroy', ['id'=>$getVehicleByIdsINCart->id])}}"
-                                                                method="POST">
-                                                                <input type="hidden" name="vehicle_id"
-                                                                    value="{{ $getVehicleByIdsINCart->vehicle_id}}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <div class="container bg-danger p-2 rounded-1"
-                                                                    style="width:32px">
-                                                                    <button
-                                                                            class="submit text-light border-0 bg-transparent p-0 w-20">
-                                                                            <i class="bi bi-trash3"></i>
-                                                                        </button>
-                                                                </div>
-                                                            </form>
+                                                        <div class="m-2">
+                                                            <div class="d-flex justify-content-center align-items-center">
+                                                                <form action="{{route('cart.destroy', ['id'=>$getVehicleByIdsINCart->id])}}"
+                                                                    method="POST">
+                                                                    <input type="hidden" name="vehicle_id"
+                                                                        value="{{ $getVehicleByIdsINCart->vehicle_id}}">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <div class="container bg-danger p-2 rounded-1"
+                                                                        style="width:32px">
+                                                                        <button
+                                                                                class="submit text-light border-0 bg-transparent p-0 w-20">
+                                                                                <i class="bi bi-trash3"></i>
+                                                                            </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                            @endif
+                                            
                                         </div>
                                     </div>
                                     <div class="col-12 text-center">
@@ -205,27 +208,31 @@
 
         <h2 class="p-2 user-review-heading">{{__('vehicle.UserReviewHeader')}}</h2>
 
-        @foreach ($getCommentByIdVehicle as $comment)
-            <div class="px-0 p-2">
-                <div class="card review-card">
-                    <div class="card-body row">
-                        <div class="col-2 col-md-1 d-flex justify-content-end align-items-center p-0 user-avatar-container">
-                            <div class="rounded-circle overflow-hidden p-0 user-avatar">
-                                <img class="w-100 h-100 object-fit-cover"
-                                    src="{{ $comment->user->profile_picture_url ?? asset('images/default_avatar.png') }}"
-                                    alt="User Avatar">
+        @if ($getCommentByIdVehicle)
+            @foreach ($getCommentByIdVehicle as $comment)
+                <div class="px-0 p-2">
+                    <div class="card review-card">
+                        <div class="card-body row">
+                            <div class="col-2 col-md-1 d-flex justify-content-end align-items-center p-0 user-avatar-container">
+                                <div class="rounded-circle overflow-hidden p-0 user-avatar">
+                                    <img class="w-100 h-100 object-fit-cover"
+                                        src="{{ $comment->user->profile_picture_url ?? asset('images/default_avatar.png') }}"
+                                        alt="User Avatar">
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-10 col-md-11 ps-4 user-review-content">
-                            <h4>{{$comment->user->name}}</h4>
-                            <hr class="mt-1 mb-2 pe-2 review-hr">
-                            <h5 class="text-muted">{{$comment->comment}}</h5>
+                            <div class="col-10 col-md-11 ps-4 user-review-content">
+                                <h4>{{$comment->user->name}}</h4>
+                                <hr class="mt-1 mb-2 pe-2 review-hr">
+                                <h5 class="text-muted">{{$comment->comment}}</h5>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        @endif
+
+        
     </div>
 
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

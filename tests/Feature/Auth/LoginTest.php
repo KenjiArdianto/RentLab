@@ -17,6 +17,7 @@ class LoginTest extends TestCase
     /**
      * A basic feature test example.
      */
+    use RefreshDatabase;
     protected string $email = "test001@gmail.com";
     protected string $password = "password123";
     protected string $username = "John Doe";
@@ -37,11 +38,22 @@ class LoginTest extends TestCase
         ],$overrides));
     }
 
+
     /** @test */
     public function tc001()
     {    
         $response = $this->get('/login');
         $response -> assertStatus(200);
+    }
+
+    /** @test */
+    public function tc002()
+    {
+        $response = $this->get('/login');
+        $response->assertSee('email');
+        $response->assertSee('password');
+        $response->assertSee('remember');
+        $response->assertSee('Login');
     }
 
     /** @test */
@@ -174,7 +186,7 @@ class LoginTest extends TestCase
     }
 
     /** @test */
-    public function tc014()
+    public function tc014_guest_is_redirected_to_google_auth()
     {
         $response = $this->get('/auth/google');
         $response->assertRedirect(); // Google redirect URL
@@ -182,7 +194,7 @@ class LoginTest extends TestCase
     }
 
     /** @test */
-    public function tc015()
+    public function tc015_existing_user_logs_in_via_google()
     {
         $this->create_test_user(); // Ensure user exists in DB
 
@@ -201,7 +213,7 @@ class LoginTest extends TestCase
     }
 
     /** @test */
-    public function tc016()
+    public function tc016_new_user_created_and_logged_in_via_google()
     {
         $newEmail = 'google_user_' . uniqid() . '@gmail.com';
 
@@ -220,7 +232,7 @@ class LoginTest extends TestCase
     }
 
     /** @test */
-    public function tc017()
+    public function tc017_google_auth_cancellation_redirects_back()
     {
         Socialite::shouldReceive('driver->stateless->user')
             ->andThrow(new \Exception('User cancelled login'));
@@ -239,12 +251,12 @@ class LoginTest extends TestCase
             $user->delete();
             $this->assertSoftDeleted('users',['email'=>$this->email]);
         }else{
-            echo "User doesn't exist to delete";
             $this->assertTrue(true,"User doesn't exist to delete");
         }
     }   
 
-    /** @test */    protected function tearDown(): void
+    /** @test */    
+    protected function tearDown(): void
     {
         Mockery::close();
         parent::tearDown();

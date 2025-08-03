@@ -42,7 +42,7 @@ class UserDetailController extends Controller
 
         if (UserDetail::where('idcardNumber', $request->idcardNumber)->exists()) {
             \activity('user_detail')
-            ->causedBy($user)
+            ->causedBy(Auth::user())
             ->withProperties([
                 'user_id' => $user->id,
                 'email' => $user->email,
@@ -65,7 +65,7 @@ class UserDetailController extends Controller
         Storage::disk('public')->putFileAs('idcard', $image, $filename);
         // return $user;
         // Store data in session temporarily
-        $userDetail=$user->detail()->create([
+        $userDetail=$user->detail->create([
             'fname'=>$request->fname,
             'lname'=>$request->lname,
             'phoneNumber'=>$request->phoneNumber,
@@ -75,7 +75,7 @@ class UserDetailController extends Controller
         ]);
         \activity('user_detail')
         ->performedOn($userDetail)
-        ->causedBy($user)
+        ->causedBy(Auth::user())
         ->withProperties([
             'user_id' => $user->id,
             'email' => $user->email,
