@@ -191,6 +191,25 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'rating' => 'rating',
+        'comment' => 'comment',
+        'email' => 'email',
+        'password' => 'password',
+    ],
+    'search' => [
+        'string' => 'The search input must be text.',
+        'max' => 'The search input may not be greater than :max characters.',
+    ],
+    'date_from' => [
+        'date' => 'The Start Date format is invalid.',
+    ],
+    'date_to' => [
+        'date' => 'The End Date format is invalid.',
+        'after_or_equal' => 'The End Date must be a date after or equal to the Start Date.',
+    ],
+    'transaction' => [
+        'cancel_denied' => 'This transaction can no longer be canceled.',
+    ],
 
 ];

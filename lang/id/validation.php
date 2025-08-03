@@ -195,9 +195,22 @@ return [
     'attributes' => [
         'rating' => 'Penilaian',
         'comment' => 'Komentar',
-        // Tambahkan atribut lain di sini jika perlu
         'email' => 'Alamat Surel',
         'password' => 'Kata Sandi',
     ],
-
+    'search' => [
+        'string' => 'Input pencarian harus berupa teks.',
+        'max' => 'Input pencarian tidak boleh lebih dari :max karakter.',
+    ],
+    'date_from' => [
+        'date' => 'Format Tanggal Mulai tidak valid.',
+    ],
+    'date_to' => [
+        'date' => 'Format Tanggal Selesai tidak valid.',
+        'after_or_equal' => 'Tanggal Selesai harus setelah atau sama dengan Tanggal Mulai.',
+    ],
+    'transaction' => [
+        'cancel_denied' => 'Transaksi ini sudah tidak dapat dibatalkan lagi.',
+    ],
+    
 ];

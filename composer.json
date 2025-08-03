@@ -11,7 +11,7 @@
         "laravel/sanctum": "^4.2",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.9",
-        "laravel/ui": "^4.6",
+        "laravel/ui": "*",
         "spatie/laravel-activitylog": "^4.10",
         "xendit/xendit-php": "^7.0"
     },

@@ -67,7 +67,7 @@
 }
 
 .rating.larger-stars label {
-    font-size: 5rem;
+    font-size: 6rem;
     padding: 0 0.1em;
 }
 
@@ -83,6 +83,44 @@
     align-items: center;
     gap: 0.1rem;
 }
+
+/* [TAMBAHAN] Style untuk search bar dengan garis pemisah */
+.search-container {
+    display: flex;
+    align-items: center;
+    padding: 0.2rem; /* Sedikit padding agar tidak terlalu mepet */
+    border: 1px solid #0d6efd; /* Border biru primer */
+    border-radius: 50rem; /* Sangat bulat */
+    overflow: hidden; /* Menjaga sudut tetap bulat */
+}
+
+.search-container .search-segment {
+    padding: 0 0.5rem; /* Padding di dalam setiap segmen */
+}
+
+/* Garis pemisah vertikal */
+.search-container .search-divider {
+    width: 1px;
+    background-color: #dee2e6; /* Warna abu-abu standar bootstrap */
+    align-self: stretch; /* Membuat garis setinggi container */
+    margin: 0.4rem 0; /* Margin atas-bawah agar tidak mentok */
+}
+
+/* Menghilangkan border dan shadow pada input di dalamnya */
+.search-container .form-control,
+.search-container .form-control:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background-color: transparent;
+}
+
+/* Tombol search di paling kanan */
+.search-container .btn-primary {
+    border-radius: 50rem; /* Pastikan tombol juga bulat */
+    margin-left: auto; /* Dorong ke paling kanan */
+}
+
 
 @media (max-width: 767.98px) {
     .modal-title {
@@ -136,5 +174,27 @@
         display: flex;
         justify-content: center;
         gap: 0.5rem;
+    }
+    
+    .search-container {
+        flex-direction: column;
+        border-radius: 1rem; /* Sudut tidak terlalu bulat di mobile */
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    .search-container .search-segment {
+        width: 100%;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+    .search-container .search-segment:last-of-type {
+        border-bottom: none;
+    }
+    .search-container .search-divider {
+        display: none; /* Sembunyikan garis di mobile */
+    }
+    .search-container .btn-primary {
+        width: 100%;
+        margin-top: 0.5rem;
     }
 }

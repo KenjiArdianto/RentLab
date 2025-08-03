@@ -7,6 +7,7 @@ return [
         'success' => 'Pembayaran Berhasil',
         'pending' => 'Menunggu Pembayaran',
         'failed' => 'Pembayaran Gagal',
+        'countdown' => 'Selesaikan Pembayaran Dalam',
     ],
 
     // Ringkasan Pesanan
