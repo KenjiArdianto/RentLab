@@ -48,7 +48,7 @@ class AdminDriverController extends Controller
         }
 
         // logging
-        $drivers = $query->appends(['search' => $search]);
+        $drivers = $query->paginate(31)->appends(['search' => $search]);
         \activity('admin_driver_index')
         ->causedBy(Auth::user())
         ->withProperties([
