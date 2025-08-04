@@ -26,6 +26,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminUserReviewController;
 use App\Http\Middleware\EnsureUserAuthenticateAsUser;
 use App\Http\Middleware\EnsureUserAuthenticateAsAdmin;
+use App\Http\Middleware\checkSuspended;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminLogsController;
 use Illuminate\Http\Request;
@@ -64,13 +65,13 @@ Route::get('/profile',[ProfileController::class,'index'])->name('view.profile');
 Route::post('/profile/delete',[ProfileController::class,'delete'])->name('delete.profile');
 
 //middleware untuk memastikan user telah login sebagai user
-Route::middleware([EnsureUserAuthenticateAsUser::class])->group(function(){
+Route::middleware([checkSuspended::class,EnsureUserAuthenticateAsUser::class])->group(function(){
     Route::get('/complete-user-detail',[UserDetailController::class,'show'])->name('complete.user.detail');
     Route::post('/complete-user-detail',[UserDetailController::class,'store'])->name('post.user.detail');
 });
 
 // Middleware untuk memastikan user telah login sebagai user dan memiliki user detail
-Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::class])->group(function(){
+Route::middleware([checkSuspended::class,EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::class])->group(function(){
 
     Route::post('/profile',[ProfileController::class,'change'])->name('change.profile');
 
@@ -93,7 +94,7 @@ Route::middleware([EnsureUserAuthenticateAsUser::class,EnsureUserHasDetails::cla
 });
 
 // memastikan admin telah login sebagai admin
-Route::middleware([EnsureUserAuthenticateAsAdmin::class])->group(function(){
+Route::middleware([checkSuspended::class,EnsureUserAuthenticateAsAdmin::class])->group(function(){
     // ADMIN
     Route::get('/admin',[AdminIndexController::class, 'index'])->name('admin.index');
 

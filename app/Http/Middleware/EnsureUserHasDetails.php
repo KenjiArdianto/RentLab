@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 // use Closure;
 use Illuminate\Support\Facades\Auth;
 
+
 class EnsureUserHasDetails
 {
     /**
